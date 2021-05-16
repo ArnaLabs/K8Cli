@@ -1,0 +1,63 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceName": {
+      "value": "test-cluster"
+    },
+    "location": {
+      "value": "eastus"
+    },
+    "dnsPrefix": {
+      "value": "test-cluster-dns"
+    },
+    "kubernetesVersion": {
+      "value": "1.17.9"
+    },
+    "networkPlugin": {
+      "value": "azure"
+    },
+    "enableRBAC": {
+      "value": true
+    },
+    "servicePrincipalClientId": {
+      "value": null
+    },
+    "servicePrincipalClientSecret": {
+      "value": null
+    },
+    "enablePrivateCluster": {
+      "value": true
+    },
+    "aadSessionKey": {
+      "value": null
+    },
+    "enableHttpApplicationRouting": {
+      "value": true
+    },
+    "enableAzurePolicy": {
+      "value": false
+    },
+    "vmssNodePool": {
+      "value": true
+    },
+    "vnetSubnetID": {
+      "value": "/subscriptions/d3d5c541-15a8-46f3-9aae-c8948f3067e6/resourceGroups/AKS-test-Resourse-Group/providers/Microsoft.Network/virtualNetworks/AKS-test-Resourse-Group-vnet/subnets/default"
+    },
+    "serviceCidr": {
+      "value": "10.0.0.0/16"
+    },
+    "dnsServiceIP": {
+      "value": "10.0.0.10"
+    },
+    "dockerBridgeCidr": {
+      "value": "172.17.0.1/16"
+    },
+    "principalId": {
+      "value": "a100d20e-3eac-4867-adfe-aba8578ca7cc"
+    },
+    "networkPolicy": {
+      "value": "calico"
+    }
+  }
+}

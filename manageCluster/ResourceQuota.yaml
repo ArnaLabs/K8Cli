@@ -1,0 +1,21 @@
+---
+ResourceQuota:
+  - QuotaName: "q1"
+    RequestsCPU: 10
+    LimitsCPU: 10
+    RequestsMemory: 10
+    LimitsMemory: 10
+    Pods: 40
+    RequestsStorage: 10
+    RequestsEphemeralStorage: 10
+    LimitsEphemeralStorage: 10
+    StorageClasses:
+      - Name:
+        RequestsStorage: 5G
+      - Name:
+        RequestsStorage: 20G
+      - Name:
+        RequestsStorage: 40G
+    Labels:
+      "Key1": "Val1"
+      "Key2": "Val2"

@@ -1,0 +1,22 @@
+---
+StorageClasses:
+  - Name:
+    Provisioner:
+    Parameters:
+      Key1 : Val1
+    ReclaimPolicy:
+    VolumeBindingMode:
+    Labels:
+      Key1: Val1
+      Key2: Val2
+  - Name: slow
+    Provisioner: kubernetes.io/azure-disk
+    Parameters:
+      skuName: Standard_LRS
+      location: eastus
+      storageAccount: azure_storage_account_test
+    ReclaimPolicy:
+    VolumeBindingMode:
+    Labels:
+      Key1: Val1
+      Key2: Val2

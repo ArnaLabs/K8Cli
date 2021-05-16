@@ -1,0 +1,77 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: Amazon EKS - Node Group Role
+Parameters:
+  NodegroupName:
+    Type: String
+    Default: "eks-ng-1"
+  ClusterName:
+    Type: String
+    Default: "cluster-1"
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+  InstanceTypes:
+    Type: String
+    Default: "t3.medium"
+  MinSize:
+    Type: Number
+    Default: 2
+  DesiredSize:
+    Type: Number
+    Default: 2
+  MaxSize:
+    Type: Number
+    Default: 5
+  DiskSize:
+    Type: Number
+    Default: 20
+
+
+Mappings:
+  ServicePrincipals:
+    aws-cn:
+      ec2: ec2.amazonaws.com.cn
+    aws:
+      ec2: ec2.amazonaws.com
+
+Resources:
+  NodeInstanceRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - !FindInMap [ServicePrincipals, !Ref "AWS::Partition", ec2]
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/AmazonEKS_CNI_Policy"
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+      Path: /
+  EKSNodegroup:
+    Type: 'AWS::EKS::Nodegroup'
+    Properties:
+      NodegroupName: !Ref NodegroupName
+      ClusterName: !Ref ClusterName
+      NodeRole: !GetAtt NodeInstanceRole.Arn
+      InstanceTypes: [ !Ref InstanceTypes ]
+      ScalingConfig:
+        MinSize: !Ref MinSize
+        DesiredSize: !Ref DesiredSize
+        MaxSize: !Ref MaxSize
+      DiskSize: !Ref DiskSize
+      Labels:
+        Name: !Ref NodegroupName
+        ClusterName: !Ref ClusterName
+      Tags:
+        Name: !Ref NodegroupName
+        ClusterName: !Ref ClusterName
+      Subnets: !Ref SubnetIds
+Outputs:
+  NodeInstanceRole:
+    Description: The node instance role
+    Value: !GetAtt NodeInstanceRole.Arn

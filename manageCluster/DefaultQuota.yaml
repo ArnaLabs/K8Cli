@@ -1,0 +1,28 @@
+---
+DefaultQuota:
+  Details:
+    - Name: Container
+      max:
+        cpu: 2
+        memory: 1Gi
+      min:
+        cpu: 100m
+        memory: 4Mi
+      default:
+        cpu: 300m
+        memory: 200Mi
+      defaultRequest:
+        cpu: 200m
+        memory: 100Mi
+      maxLimitRequestRatio:
+        cpu: 10
+    - Name: Pod
+      max:
+        cpu: 2
+        memory: 1Gi
+      min:
+        cpu: 200m
+        memory: 6Mi
+  Labels:
+   Key1: Val1
+   Key2: Val2

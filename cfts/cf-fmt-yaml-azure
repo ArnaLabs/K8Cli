@@ -1,0 +1,49 @@
+---
+Cloud:
+  Name: Azure
+  ServicePrinciple: service-principle.auth
+  ResourceGroup: AKS-test-Resourse-Group
+  Region: eastus
+VPC:
+  Enabled: "True"
+  ClusterName: aks-vnet
+  VpcBlock: 10.0.0.0/16
+  PublicSubnets:
+    PublicSubnet01BlockName: Public
+    PublicSubnet01BlockRange: 10.0.1.0/24
+  ServiceSubnets:
+    PrivateSubnet01BlockName: Service
+    PrivateSubnet01BlockRange: 10.0.2.0/24
+Master:
+  Enabled: "True"
+  #StackName: EKS-Master-Stack-1
+  ClusterName:
+  KubernetesVersion: "1.14"
+  SecurityGroupIds:
+  SubnetIds: [PublicSubnet01Block, PublicSubnet02Block]
+  TemplateURL: https://poc-vnmrk7788.s3.amazonaws.com/eks-cluster-1.yml
+  Nodes: [Node0, Node1, Node2, Node3]
+Node0:
+  StackName: EKS-Master-Node0-stack-1
+  ClusterName: cluster1
+  NodegroupName: EKS-Master-Node0
+  SubnetIds:
+  TemplateURL: https://poc-vnmrk7788.s3.amazonaws.com/eks-nodes-1.yml
+Node1:
+  StackName: EKS-Master-Node1-stack-1
+  ClusterName: cluster1
+  NodegroupName: EKS-Master-Node1
+  SubnetIds:  [PublicSubnet01Block, PublicSubnet02Block, PrivateSubnet01Block]
+  TemplateURL: https://poc-vnmrk7788.s3.amazonaws.com/eks-nodes-1.yml
+Node2:
+  StackName: EKS-Master-Node2-stack-1
+  ClusterName: cluster2
+  NodegroupName: EKS-Master-Node2
+  SubnetIds:  [PublicSubnet01Block, subnet-0ab38bb22f968b762]
+  TemplateURL: https://poc-vnmrk7788.s3.amazonaws.com/eks-nodes-1.yml
+Node3:
+  StackName: EKS-Master-Node3-stack-1
+  ClusterName: cluster2
+  NodegroupName: EKS-Master-Node3
+  SubnetIds:  [PublicSubnet01Block, PublicSubnet02Block]
+  TemplateURL: https://poc-vnmrk7788.s3.amazonaws.com/eks-nodes-1.yml

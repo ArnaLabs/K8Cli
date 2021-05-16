@@ -1,0 +1,19 @@
+Change File name in the script and provide the path and Comipile the script in goland
+
+{{filename := "cf-aws-fmt.yml"}}
+
+	source, err := ioutil.ReadFile(filename)
+	if err != nil {
+		panic(err)
+	}
+	yaml, err := simpleyaml.NewYaml(source)
+	if err != nil {
+		panic(err)
+	}
+
+	//fmt.Printf("VPC Creation enabled")
+
+	StackName, _ := yaml.Get("Master").Get("StackName").String()
+	TemplateURL, _ := yaml.Get("Master").Get("TemplateURL").String()
+	KubernetesVersion, _ := yaml.Get("Master").Get("KubernetesVersion").String()
+	NodesSelected, _ := yaml.Get("Master").Get("Nodes").Array()

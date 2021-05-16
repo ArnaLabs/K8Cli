@@ -1,0 +1,29 @@
+---
+Cloud:
+  Name: AWS
+  Profile: kv3
+  Region: us-east-1
+  Cluster: test-eks5
+  Bucket: k8-cloud-setup-cluster
+VPC:
+  VpcBlock: 10.1.0.0/16
+  PublicSubnets:
+    PublicSubnet01Block: 10.1.1.0/24
+    PublicSubnet02Block: 10.1.2.0/24
+  PrivateSubnets:
+    PrivateSubnet01Block: 10.1.4.0/24
+    PrivateSubnet02Block: 10.1.5.0/24
+Master:
+  KubernetesVersion: 1.18
+#  SecurityGroupIds: sg-091340d1dd5486d40
+  SubnetIds: [PublicSubnet02Block, PublicSubnet01Block, PrivateSubnet01Block, PrivateSubnet02Block ]
+Nodes:
+#  - NodegroupName: nodegroup-1
+#    SubnetIds: []
+#    InstanceTypes: m5.large
+#  - NodegroupName: nodegroup-2
+#    SubnetIds: [PrivateSubnet01Block, PrivateSubnet02Block]
+#    InstanceTypes: t2.small
+  - NodegroupName: nodegroup-3
+    SubnetIds: [ PrivateSubnet01Block, PrivateSubnet02Block ]
+    InstanceTypes: t2.small

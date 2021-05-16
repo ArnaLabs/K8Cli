@@ -1,0 +1,12 @@
+---
+NameSpaceRoleDetails:
+  AppendName: test123
+  PolicyRules:
+    - APIGroups: ["","extensions","apps"]
+      Resources: ["*"]
+      Verbs:     ["*"]
+    - APIGroups: ["batch"]
+      Resources: ["jobs","cronjobs"]
+      Verbs:     ["*"]
+  Labels:
+    Key1: Val1

@@ -1,0 +1,12 @@
+---
+NameSpace:
+  - Name: "test"
+    ResourceQuota: "q1"
+    DefaultQuota: " "
+    Labels:
+      "Key1": "Val1"
+  - Name: "test1"
+    ResourceQuota: "q1"
+    DefaultQuota: " "
+    Labels:
+      "Key1": "Val1"

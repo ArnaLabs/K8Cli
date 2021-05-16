@@ -1,0 +1,25 @@
+# Refer https://github.com/helm/charts/blob/master/stable/velero/values.yaml
+configuration:
+  restoreOnlyMode: false
+  provider: 'aws'
+  backupStorageLocation:
+    name: 'aws'
+    bucket: 'k8s-velero-backups'
+    prefix: 'dev-cluster # e.g. name of the cluster
+    config:
+      region: '<aws region>'
+  volumeSnapshotLocation:
+    name: 'aws'
+    config:
+      region: '<aws region>'
+#  podAnnotations:
+#    iam.amazonaws.com/role: "<role arn>"
+  schedules:
+    daily:
+      schedule: "0 0 * * *"
+      template:
+        ttl: "240h"
+    monthly:
+      schedule: "0 0 1 * *"
+      template:
+        ttl: "8760h"

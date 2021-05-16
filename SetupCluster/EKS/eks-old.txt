@@ -1,0 +1,559 @@
+package ekssetup
+
+import (
+	"encoding/json"
+	"fmt"
+	"github.com/Azure/go-autorest/autorest/azure"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awsutil"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/smallfish/simpleyaml"
+	"io/ioutil"
+	"log"
+	"os"
+	"strconv"
+	"strings"
+)
+
+type Config struct {
+	Key   string
+	Value string
+}
+
+type cftvpc struct {
+	StackName   string
+	TemplateURL string
+}
+
+//Setup EKS Cluster
+
+func PassYaml() {
+
+}
+func setupCluster() {
+
+	////Reading inputs from yaml
+
+	filename := "cf-fmt.yaml-azure" // AKS
+	source, err := ioutil.ReadFile(filename)
+	if err != nil {
+		panic(err)
+	}
+	yaml, err := simpleyaml.NewYaml(source)
+	if err != nil {
+		panic(err)
+	}
+
+	////Creating Elements
+	//Start EKS Cluster elements
+	ElementsSubnetIDs := make(map[string]string)
+	var MClusterName, vpcsubnets, vpcsecuritygps, vpcclustername, MSubnetIds, Acceesskey, Secretkey, ServicePrinciple, ResourceGroup, Region string
+	var nodelen int
+	var nodelist []interface{}
+	var sess *session.Session
+	//End EKS Cluster elements
+
+	//passing values for setting up connections
+
+	//Start EKS Cluster session values
+	Cloud, err := yaml.Get("Cloud").Get("Name").String()
+	if Cloud == "AWS" {
+		Acceesskey, _ = yaml.Get("Cloud").Get("AccessKey").String()
+		Secretkey, _ = yaml.Get("Cloud").Get("SecretAccKey").String()
+		Region, _ = yaml.Get("Cloud").Get("Region").String()
+	}
+	//End EKS Cluster elements session values
+	if Cloud == "Azure" {
+		ServicePrinciple, _ = yaml.Get("Cloud").Get("ServicePrinciple").String()
+		ResourceGroup, _ = yaml.Get("Cloud").Get("ResourceGroup").String()
+		Region, _ = yaml.Get("Cloud").Get("Region").String()
+	}
+	//start AKS Cluster session values
+	//Cloud, err := yaml.Get("Cloud").Get("Name").String()
+	//Acceesskey, err := yaml.Get("Cloud").Get("AccessKey").String()
+	//Secretkey, err := yaml.Get("Cloud").Get("SecretAccKey").String()
+	//Region, err := yaml.Get("Cloud").Get("Region").String()
+
+	//Print EKS Cluster elements
+	if Cloud == "AWS" {
+		fmt.Printf("Cloud: %#v\n", Cloud)
+		fmt.Printf("AccessKey: %#v\n", Acceesskey)
+		fmt.Printf("SecAccKey: %#v\n", Secretkey)
+		fmt.Printf("Region: %#v\n", Region)
+		fmt.Printf("Creating sessions")
+	}
+	//Print AKS Cluster elements
+	if Cloud == "Azure" {
+		fmt.Printf("Cloud: %#v\n", Cloud)
+		fmt.Printf("ServicePrinciple: %#v\n", ServicePrinciple)
+		fmt.Printf("ResourceGroup: %#v\n", ResourceGroup)
+		fmt.Printf("Region: %#v\n", Region)
+		fmt.Printf("Creating sessions")
+	}
+
+	////Create Sessions
+	//Create session EKS Cluster elements
+	if Cloud == "AWS" {
+		sess, err = session.NewSession(&aws.Config{
+			//aws.Config{throttle.Throttle()}
+			Region:      aws.String(Region),
+			Credentials: credentials.NewStaticCredentials(Acceesskey, Secretkey, ""),
+		})
+	}
+	//End session EKS Cluster elements
+	if Cloud == "Azure" {
+		var err error
+		authorizer, err = auth.NewAuthorizerFromFile(azure.PublicCloud.ResourceManagerEndpoint)
+		if err != nil {
+			log.Fatalf("Failed to get OAuth config: %v", err)
+		}
+
+		authInfo, err := readJSON(os.Getenv("service-principle.auth"))
+		if err != nil {
+			log.Fatalf("Failed to read JSON: %+v", err)
+		}
+		clientData.SubscriptionID = (*authInfo)["subscriptionId"].(string)
+		clientData.VMPassword = (*authInfo)["clientSecret"].(string)
+	}
+
+	fmt.Printf("Session created ")
+
+
+
+	////Checking if VPC is enabled
+
+	//Start check if EKS VPC enabled
+	//fmt.Printf("Checking if VPC creation enabled")
+	VPC, err := yaml.Get("VPC").Get("Enabled").String()
+	if VPC == "True" {
+		fmt.Printf("VPC creation enabled, creating/updating VPC.......\n")
+		vpcsubnets, vpcsecuritygps, vpcclustername, ElementsSubnetIDs = Create_VPC(sess)
+	}
+	//End check if EKS VPC enabled
+
+	////............
+	//Checking if Master Cluster creation is enabled
+	Master, err := yaml.Get("Master").Get("Enabled").String()
+	if Master == "True" {
+		fmt.Printf("Master creation enabled, creating/updating stacks.......\n")
+		nodelen, nodelist, MClusterName, MSubnetIds = Create_Master(sess, vpcsecuritygps, vpcclustername, vpcsubnets, ElementsSubnetIDs)
+	}
+
+	if nodelen == 0 {
+		fmt.Printf("Master creation completed, no node groups provided.......\n")
+	} else if nodelen != 0 {
+		fmt.Printf("Master creation completed, node groups listed.......\n")
+		fmt.Printf("Creating node groups.......\n")
+		for i := 0; i < nodelen; i++ {
+			Create_Node(sess, i, nodelist, MClusterName, MSubnetIds, ElementsSubnetIDs)
+		}
+
+	}
+}
+func Create_Node(sess *session.Session, nodelen int, nodelist []interface{}, MClusterName string, MSubnetIds string, ElementsSubnetIDs map[string]string) {
+
+	// Creating vars
+	var v = cftvpc{}
+	var nlen = nodelen
+	NodeName := nodelist[nlen]
+	var NodeClusterName, NSubnetIds string
+	ElementsCreate := make(map[string]string)
+	ElementsUpdate := make(map[string]string)
+
+	fmt.Println("Creating Node group: ", NodeName)
+	fmt.Println("Master Cluster SubnetIds: ", MSubnetIds)
+
+	//Reading Yaml
+	//Reading Node Values
+	//	filename := "cf-aws-fmt.yml"
+
+	source, err := ioutil.ReadFile(filename)
+	if err != nil {
+		panic(err)
+	}
+	yaml, err := simpleyaml.NewYaml(source)
+	if err != nil {
+		panic(err)
+	}
+
+	NodeStackName, _ := yaml.Get(NodeName).Get("StackName").String()
+	NodeTemplateURL, _ := yaml.Get(NodeName).Get("TemplateURL").String()
+	NodegroupName, _ := yaml.Get(NodeName).Get("NodegroupName").String()
+
+	if MClusterName == "" {
+		NodeClusterName, _ = yaml.Get(NodeName).Get("ClusterName").String()
+	} else if MClusterName != "" {
+		NodeClusterName = MClusterName
+	}
+
+	if MSubnetIds == "" {
+		NSubnetIds, _ = yaml.Get(NodeName).Get("SubnetIds").String()
+	} else if MSubnetIds != "" {
+		arrayl, _ := yaml.Get(NodeName).Get("SubnetIds").Array()
+		fmt.Println("Subnets passed for the node: ", arrayl)
+		arrlen := len(arrayl)
+		arropt := make([]string, int(arrlen))
+		if arrlen == 0 {
+			NSubnetIds = strings.Trim(awsutil.StringValue(MSubnetIds), "\"")
+		} else if arrlen != 0 {
+			for i := 0; i < arrlen; i++ {
+				var subnetIDValue string
+				subnetName := awsutil.StringValue(arrayl[i])
+				b := strconv.Quote(strings.Trim(subnetName, "\""))
+				if ElementsSubnetIDs[b] != "" {
+					subnetIDValue = ElementsSubnetIDs[b]
+				} else if ElementsSubnetIDs[b] == "" {
+					subnetIDValue = string(b)
+				}
+				arropt[i] = subnetIDValue
+			}
+			NSubnetIds, _ = strconv.Unquote(awsutil.StringValue(strings.Join(arropt, ",")))
+		}
+	}
+
+	fmt.Println("Values getting passed: ", NSubnetIds, NodeClusterName, NodegroupName)
+	//fmt.Printf(yaml.Get("VPC").Map())
+	NodeSubnetIdsTrim := strings.TrimSpace(strings.Trim(strings.Trim(strings.Trim(NSubnetIds, "\""), "\""), ""))
+	NodeSubnetIdsReplace := strings.Replace(NodeSubnetIdsTrim, "\",\"", ",", -1)
+	v.StackName = NodeStackName
+	v.TemplateURL = NodeTemplateURL
+
+	//Passing values for creating stack
+	ElementsCreate = map[string]string{
+		"ClusterName":   NodeClusterName,
+		"NodegroupName": NodegroupName,
+		"SubnetIds":     NodeSubnetIdsReplace,
+	}
+	fmt.Println("Create Elements :", ElementsCreate)
+
+	//Passing values for updating Stack
+
+	ElementsUpdate = map[string]string{
+		"ClusterName":   NodeClusterName,
+		"NodegroupName": NodegroupName,
+		"SubnetIds":     NodeSubnetIdsReplace,
+	}
+	fmt.Printf("Update Elements :", ElementsUpdate)
+	fmt.Printf("StackName: %#v\n", v.StackName)
+	fmt.Printf("TemplateURL: %#v\n", v.TemplateURL)
+
+	if err != nil {
+		fmt.Println(os.Stderr, "YAML Prasing failed with Error: %v\n", err)
+		os.Exit(1)
+	}
+
+	// Calling stack validation
+
+	a, b := setupCluster2.ValidateStack(sess, v.TemplateURL, ElementsCreate, ElementsUpdate)
+
+	// Calling outputs from created/updated stack
+
+	setupCluster2.ListStack(sess, v, a, b)
+	list := setupCluster2.CheckStack(sess, NodeStackName).Stacks[0].StackName
+
+	//NoOP := len(CheckStack(sess, StackName).Stacks[0].Outputs)
+	fmt.Println("StackID of the Stack:", awsutil.StringValue(list))
+	if err != nil {
+		panic(err)
+	}
+
+}
+func Create_VPC(sess *session.Session) (string, string, string, map[string]string) {
+
+	// Creating vars
+
+	//svc := awscf.New(sess)
+	ElementsSubnetIDs := make(map[string]string)
+	ElementsCreate := make(map[string]string)
+	ElementsUpdate := make(map[string]string)
+	ElementsSubnets := make(map[string]string)
+	//ElementsSubnets := make(map[string]string)
+	var v = cftvpc{}
+	var value, Keyname string
+	var vpcsubnets string
+	var vpcsecuritygps string
+	var vpcclustername string
+	//var vpcpublicSubnet01, vpcpublicSubnet02, vpcprivateSubnet01, vpcprivateSubnet02 string
+
+	//Reading VPC Values
+
+	//filename := "cf-aws-fmt.yml"
+	source, err := ioutil.ReadFile(filename)
+	if err != nil {
+		panic(err)
+	}
+	yaml, err := simpleyaml.NewYaml(source)
+	if err != nil {
+		panic(err)
+	}
+
+	//fmt.Printf("VPC Creation enabled")
+	StackName, _ := yaml.Get("VPC").Get("StackName").String()
+	VpcBlock, _ := yaml.Get("VPC").Get("VpcBlock").String()
+	ClusterName, _ := yaml.Get("VPC").Get("ClusterName").String()
+
+	ElementsCreate = map[string]string{
+		"VpcBlock":    VpcBlock,
+		"ClusterName": ClusterName,
+	}
+	ElementsUpdate = map[string]string{}
+	PublicSubnetKeys, _ := yaml.Get("VPC").Get("PublicSubnets").GetMapKeys()
+	//fmt.Printf(PublicSubnetKeys)
+	PublicSubnet, _ := yaml.Get("VPC").Get("PublicSubnets").Map()
+	NoofKeyspublic := len(PublicSubnetKeys)
+	for i := 0; i < NoofKeyspublic; i++ {
+		Keyname = PublicSubnetKeys[i]
+		//fmt.Printf(Keyname)
+		//fmt.Printf(PublicSubnetKeys[i])
+		value, _ = strconv.Unquote(awsutil.StringValue(PublicSubnet[string(Keyname)]))
+		//fmt.Printf(value)
+		ElementsCreate[string(Keyname)] = value
+		ElementsSubnets[string(Keyname)] = value
+	}
+	PrivateSubnetKeys, _ := yaml.Get("VPC").Get("PrivateSubnets").GetMapKeys()
+	//fmt.Printf(PrivateSubnetKeys)
+	PrivateSubnet, _ := yaml.Get("VPC").Get("PrivateSubnets").Map()
+	NoofKeysprivate := len(PrivateSubnetKeys)
+	for i := 0; i < NoofKeysprivate; i++ {
+		Keyname = PrivateSubnetKeys[i]
+		//fmt.Printf(Keyname)
+		//fmt.Printf(PrivateSubnetKeys[i])
+		value, _ = strconv.Unquote(awsutil.StringValue(PrivateSubnet[string(Keyname)]))
+		//fmt.Printf(value)
+		ElementsCreate[string(Keyname)] = value
+		ElementsSubnets[string(Keyname)] = value
+		ElementsUpdate[string(Keyname)] = value
+	}
+
+	TemplateURL, _ := yaml.Get("VPC").Get("TemplateURL").String()
+	v.StackName = StackName
+	v.TemplateURL = TemplateURL
+
+	//Passing values for creating stack
+
+	fmt.Println(".......ElementsCreate.....", ElementsCreate)
+	//Passing values for updating Stack
+
+	fmt.Println(".......ElementsUpdate.....", ElementsUpdate)
+	fmt.Printf("StackName: %#v\n", v.StackName)
+	fmt.Printf("TemplateURL: %#v\n", v.TemplateURL)
+
+	if err != nil {
+		fmt.Println(os.Stderr, "YAML Prasing failed with Error: %v\n", err)
+		os.Exit(1)
+	}
+
+	// Calling stack validation
+
+	a, b := setupCluster2.ValidateStack(sess, v.TemplateURL, ElementsCreate, ElementsUpdate)
+
+	// Calling outputs from created/updated stack
+
+	setupCluster2.ListStack(sess, v, a, b)
+
+	NoOP := len(setupCluster2.CheckStack(sess, StackName).Stacks[0].Outputs)
+
+	for p := 0; p < NoOP; p++ {
+		//time.Sleep(10 * time.Second)
+		k := awsutil.StringValue(setupCluster2.CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputKey)
+		var c string = strings.Trim(k, "\"")
+		if string(c) == "SubnetIds" {
+			//	time.Sleep(10 * time.Second)
+			value := awsutil.StringValue(setupCluster2.CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputValue)
+			fmt.Printf("Subnets are: ", value)
+			vpcsubnets = value
+			//	time.Sleep(10 * time.Second)
+		}
+	}
+	for p := 0; p < NoOP; p++ {
+		//time.Sleep(10 * time.Second)
+		k := awsutil.StringValue(setupCluster2.CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputKey)
+		var c string = strings.Trim(k, "\"")
+		if string(c) == "SecurityGroups" {
+			//	time.Sleep(10 * time.Second)
+			value := awsutil.StringValue(setupCluster2.CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputValue)
+			fmt.Printf("SecurityGroups are: ", value)
+			vpcsecuritygps = value
+			//	time.Sleep(10 * time.Second)
+		}
+	}
+	for p := 0; p < NoOP; p++ {
+		//time.Sleep(10 * time.Second)
+		k := awsutil.StringValue(setupCluster2.CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputKey)
+		var c string = strings.Trim(k, "\"")
+		if string(c) == "ClusterName" {
+			//	time.Sleep(10 * time.Second)
+			value := awsutil.StringValue(setupCluster2.CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputValue)
+			fmt.Printf("Cluster Name is: ", value)
+			vpcclustername = value
+			//	time.Sleep(10 * time.Second)
+		}
+	}
+
+	// Creating SubnetIDs elements
+
+	for i := 0; i < NoofKeysprivate; i++ {
+		Keyname = PrivateSubnetKeys[i]
+		for p := 0; p < NoOP; p++ {
+			//time.Sleep(10 * time.Second)
+			k := awsutil.StringValue(setupCluster2.CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputKey)
+			var c string = strings.Trim(k, "\"")
+			if string(c) == Keyname {
+				//time.Sleep(10 * time.Second)
+				value := awsutil.StringValue(setupCluster2.CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputValue)
+				fmt.Printf(Keyname, ":", value)
+				ElementsSubnetIDs[strconv.Quote(Keyname)] = value
+				//time.Sleep(10 * time.Second)
+			}
+		}
+	}
+	for i := 0; i < NoofKeyspublic; i++ {
+		Keyname = PublicSubnetKeys[i]
+		for p := 0; p < NoOP; p++ {
+			//time.Sleep(10 * time.Second)
+			k := awsutil.StringValue(setupCluster2.CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputKey)
+			var c string = strings.Trim(k, "\"")
+			if string(c) == Keyname {
+				//time.Sleep(10 * time.Second)
+				value := awsutil.StringValue(setupCluster2.CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputValue)
+				fmt.Printf(Keyname, ":", value)
+				ElementsSubnetIDs[strconv.Quote(Keyname)] = value
+				//time.Sleep(10 * time.Second)
+			}
+		}
+	}
+
+	fmt.Printf("ElementsSubnetIDs: ", ElementsSubnetIDs)
+	list := setupCluster2.CheckStack(sess, StackName).Stacks[0].StackName
+	fmt.Printf("StackID of the Stack:", awsutil.StringValue(list))
+	if err != nil {
+		panic(err)
+	}
+
+	return vpcsubnets, vpcsecuritygps, vpcclustername, ElementsSubnetIDs
+}
+func Create_Master(sess *session.Session, vpcsecuritygps string, vpcclustername string, vpcsubnets string, ElementsSubnetIDs map[string]string) (int, []interface{}, string, string) {
+
+	// Creating vars
+	//svc := awscf.New(sess)
+	ElementsCreate := make(map[string]string)
+	ElementsUpdate := make(map[string]string)
+	var v = cftvpc{}
+	var ClusterName, SecurityGroupIds, SubnetIds string
+	//filename := "cf-aws-fmt.yml"
+
+	source, err := ioutil.ReadFile(filename)
+	if err != nil {
+		panic(err)
+	}
+	yaml, err := simpleyaml.NewYaml(source)
+	if err != nil {
+		panic(err)
+	}
+
+	//fmt.Printf("VPC Creation enabled")
+
+	StackName, _ := yaml.Get("Master").Get("StackName").String()
+	TemplateURL, _ := yaml.Get("Master").Get("TemplateURL").String()
+	KubernetesVersion, _ := yaml.Get("Master").Get("KubernetesVersion").String()
+	NodesSelected, _ := yaml.Get("Master").Get("Nodes").Array()
+
+	//.....//
+	if vpcclustername == "" {
+		ClusterName, _ = yaml.Get("Master").Get("ClusterName").String()
+	} else if vpcclustername != "" {
+		ClusterName = strings.Trim(vpcclustername, "\"")
+	}
+	//.....//
+	if vpcsecuritygps == "" {
+		SecurityGroupIds, _ = yaml.Get("Master").Get("SecurityGroupIds").String()
+	} else if vpcsecuritygps != "" {
+		SecurityGroupIds = strings.Trim(vpcsecuritygps, "\"")
+	}
+	if vpcsubnets == "" {
+		SubnetIds, _ = yaml.Get("Master").Get("SubnetIds").String()
+	} else if vpcsubnets != "" {
+		arrayl, _ := yaml.Get("Master").Get("SubnetIds").Array()
+		//fmt.Printf("........",arrayl)
+		arrlen := len(arrayl)
+		arropt := make([]string, int(arrlen))
+		if arrlen == 0 {
+			SubnetIds = strings.Trim(vpcsubnets, "\"")
+		} else if arrlen != 0 {
+			for i := 0; i < arrlen; i++ {
+				var subnetIDValue string
+				subnetName := awsutil.StringValue(arrayl[i])
+				b := strconv.Quote(strings.Trim(subnetName, "\""))
+				if ElementsSubnetIDs[b] != "" {
+					subnetIDValue = ElementsSubnetIDs[b]
+				} else if ElementsSubnetIDs[b] == "" {
+					subnetIDValue = string(b)
+				}
+				arropt[i] = subnetIDValue
+			}
+			//ArraySubnetIds = arropt
+			SubnetIds, _ = strconv.Unquote(awsutil.StringValue(strings.Join(arropt, ",")))
+		}
+	}
+
+	fmt.Printf("Values getting passed: ", SubnetIds, SecurityGroupIds, ClusterName)
+	//fmt.Printf(yaml.Get("VPC").Map())
+	SubnetIdsTrim := strings.TrimSpace(strings.Trim(strings.Trim(strings.Trim(SubnetIds, "\""), "\""), ""))
+	SubnetIdsReplace := strings.Replace(SubnetIdsTrim, "\",\"", ",", -1)
+	v.StackName = StackName
+	v.TemplateURL = TemplateURL
+
+	//Passing values for creating stack
+	ElementsCreate = map[string]string{
+		"ClusterName":       ClusterName,
+		"KubernetesVersion": KubernetesVersion,
+		"SecurityGroupIds":  SecurityGroupIds,
+		"SubnetIds":         SubnetIdsReplace,
+	}
+	fmt.Printf("Create Elements :", ElementsCreate)
+
+	//Passing values for updating Stack
+
+	ElementsUpdate = map[string]string{
+		"ClusterName":       ClusterName,
+		"KubernetesVersion": KubernetesVersion,
+		"SecurityGroupIds":  SecurityGroupIds,
+		"SubnetIds":         SubnetIdsReplace,
+	}
+	fmt.Printf("Update Elements :", ElementsUpdate)
+	fmt.Printf("StackName: %#v\n", v.StackName)
+	fmt.Printf("TemplateURL: %#v\n", v.TemplateURL)
+
+	if err != nil {
+		fmt.Println(os.Stderr, "YAML Prasing failed with Error: %v\n", err)
+		os.Exit(1)
+	}
+
+	// Calling stack validation
+
+	a, b := setupCluster2.ValidateStack(sess, v.TemplateURL, ElementsCreate, ElementsUpdate)
+
+	// Calling outputs from created/updated stack
+
+	setupCluster2.ListStack(sess, v, a, b)
+	list := setupCluster2.CheckStack(sess, StackName).Stacks[0].StackName
+
+	//NoOP := len(CheckStack(sess, StackName).Stacks[0].Outputs)
+	fmt.Printf("StackID of the Stack:", awsutil.StringValue(list))
+	if err != nil {
+		panic(err)
+	}
+
+	Nodelen := len(NodesSelected)
+	return Nodelen, NodesSelected, ClusterName, SubnetIdsReplace
+}
+func readJSON(path string) (*map[string]interface{}, error) {
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Fatalf("failed to read file: %v", err)
+	}
+	contents := make(map[string]interface{})
+	_ = json.Unmarshal(data, &contents)
+	return &contents, nil
+}

@@ -7,7 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/aws/aws-sdk-go/aws/session"
 	awscf "github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/K8-Cloud/k8-cloud/cfts"
+	"github.com/ArnaLabs/K8Cli/cfts"
 	"os"
 	"strconv"
 	"strings"

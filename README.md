@@ -48,11 +48,6 @@ aws eks update-kubeconfig --name <cluster_name> --alias <alias_name>
 ./K8Cli --operation resourcequota --context test-eks9
 ```
 
-
-
-
-
-
 #### Examples
 
 #### TODO
@@ -69,10 +64,6 @@ aws eks update-kubeconfig --name <cluster_name> --alias <alias_name>
 4. k8s netwok policies               -- Evaluation
 5. Compare CFT checksum before apply -- Evaluation
     
-
-
-
-
 ### 17/02/2021
 * version command                       -- Pending
 * backup take option with config file   -- Review 

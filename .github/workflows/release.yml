@@ -21,6 +21,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         goos: ${{ matrix.goos }}
         goarch: ${{ matrix.goarch }}
+        goversion: 1.15
         binary_name: "K8Cli"
         extra_files: LICENSE README.md
         pre_command: go get gopkg.in/yaml.v2 k8s.io/client-go@v0.19.0

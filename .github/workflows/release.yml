@@ -20,5 +20,5 @@ jobs:
         goarch: ${{ matrix.goarch }}
         binary_name: "K8Cli"
         extra_files: LICENSE README.md
-        pre_command: go get gopkg.in/yaml.v2 k8s.io/client-go@v12.0.0
+        pre_command: go get gopkg.in/yaml.v2 k8s.io/client-go/kubernetes
 

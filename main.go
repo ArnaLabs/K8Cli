@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/K8-Cloud/k8-cloud/SetupCluster"
-	"github.com/K8-Cloud/k8-cloud/manageCluster"
+	"github.com/ArnaLabs/K8Cli/SetupCluster"
+	"github.com/ArnaLabs/K8Cli/manageCluster"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"k8s.io/client-go/kubernetes"

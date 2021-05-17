@@ -48,7 +48,7 @@ func main() {
 	flag.Parse()
 
 	if *version {
-		fmt.Print("k8-cloud version: 1.0.0\n")
+		fmt.Print("K8Cli version: 1.0.0\n")
 		os.Exit(0)
 	}
 

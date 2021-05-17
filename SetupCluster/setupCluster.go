@@ -2,7 +2,7 @@ package SetupCluster
 
 import (
 	"fmt"
-	"github.com/K8-Cloud/k8-cloud/SetupCluster/EKS"
+	"github.com/ArnaLabs/K8Cli/SetupCluster/EKS"
 	"gopkg.in/yaml.v2"
 )
 

@@ -1,4 +1,4 @@
-module github.com/K8-Cloud/k8-cloud
+module github.com/ArnaLabs/K8Cli
 
 go 1.15
 

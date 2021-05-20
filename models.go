@@ -35,11 +35,12 @@ type InitialConfigVals struct {
 	ClusterDetails struct {
 		ClusterName       string `yaml:"ClusterName"`
 		MasterKey         string `yaml:"Masterkey"`
-		MasterUrl         string `yaml:"MasterUrl"`
 		KubeConfig        string `yaml:"kubeConfig"`
 		Configs           string `yaml:"Configs"`
 		StorageClassFile  string `yaml:"StorageClassesFile"`
 		NameSpaceFile     string `yaml:"NameSpaceFile"`
 		ResourceQuotaFile string `yaml:"ResourceQuotaFile"`
+		ClusterYaml       string `yaml:"ClusterYaml"`
+		Addons            string `yaml:"Addons"`
 	} `yaml:"ClusterDetails"`
 }

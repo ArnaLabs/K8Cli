@@ -32,6 +32,7 @@ Parameters:
   ClusterName:
     Type: String
     Default: "cluster-1"
+    Description: ClusterName for EKS in the VPC
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -252,7 +253,6 @@ Resources:
       - Key: !Join [ '/', ["kubernetes.io/cluster", !Ref ClusterName] ]
         Value: shared
 
-
   PublicSubnet01RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
@@ -304,3 +304,23 @@ Outputs:
   VpcId:
     Description: The VPC Id
     Value: !Ref VPC
+    
+  ClusterName:
+    Description: ClusterName for EKS in the VPC
+    Value: !Ref ClusterName
+  
+  PublicSubnet01Block:
+    Description: CidrBlock for public subnet 01 ID within the VPC
+    Value: !Ref PublicSubnet01
+    
+  PublicSubnet02Block:
+    Description: CidrBlock for public subnet 02 ID within the VPC
+    Value: !Ref PublicSubnet02
+    
+  PrivateSubnet01Block:
+    Description: CidrBlock for private subnet 01 ID within the VPC
+    Value: !Ref PrivateSubnet01
+    
+  PrivateSubnet02Block:
+    Description: CidrBlock for private subnet 02 ID within the VPC
+    Value: !Ref PrivateSubnet02

@@ -77,6 +77,11 @@ func DownloadFile(filepath string, url string) error {
 	}
 	defer resp.Body.Close()
 
+	// Create Directory
+	if _, err := os.Stat("templates"); os.IsNotExist(err) {
+		os.Mkdir("templates", 0775)
+	}
+
 	// Create the file
 	out, err := os.Create(filepath)
 	if err != nil {
@@ -89,7 +94,7 @@ func DownloadFile(filepath string, url string) error {
 	return err
 }
 
-func getFileFromURL(fileName string, fileUrl string)  {
+func getFileFromURL(fileName string, fileUrl string) {
 	err := DownloadFile(fileName, fileUrl)
 	if err != nil {
 		panic(err)
@@ -104,7 +109,7 @@ func ReadEKSYaml(f []byte) {
 	////Setting up variables
 	ElementsSubnetIDs := make(map[string]string)
 
-	var MClusterName, vpcsubnets, vpcsecuritygps, vpcclustername, MSubnetIds, Profile, Acceesskey, Secretkey, Region, Cluster, VPCfileName, EksfileName, NodesfileName,  VPCSourceFile string
+	var MClusterName, vpcsubnets, vpcsecuritygps, vpcclustername, MSubnetIds, Profile, Acceesskey, Secretkey, Region, Cluster, VPCfileName, EksfileName, NodesfileName, VPCSourceFile string
 	var nodelen int
 
 	var sess *session.Session
@@ -192,10 +197,9 @@ func ReadEKSYaml(f []byte) {
 		VPCSourceFile = "https://k8s-cloud-templates.s3.amazonaws.com/vpc-6subnets.yaml"
 	}
 
-	getFileFromURL("templates/0001-vpc.yaml",VPCSourceFile)
-	getFileFromURL("templates/0005-eks-cluster.yaml","https://k8s-cloud-templates.s3.amazonaws.com/0005-eks-cluster.yaml")
-	getFileFromURL("templates/0007-esk-managed-node-group.yaml","https://k8s-cloud-templates.s3.amazonaws.com/0007-esk-managed-node-group.yaml")
-
+	getFileFromURL("templates/0001-vpc.yaml", VPCSourceFile)
+	getFileFromURL("templates/0005-eks-cluster.yaml", "https://k8s-cloud-templates.s3.amazonaws.com/0005-eks-cluster.yaml")
+	getFileFromURL("templates/0007-esk-managed-node-group.yaml", "https://k8s-cloud-templates.s3.amazonaws.com/0007-esk-managed-node-group.yaml")
 
 	if VPCName != "" {
 		fmt.Printf("VPC creation enabled, creating/updating VPC.......\n")

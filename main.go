@@ -3,48 +3,28 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/ArnaLabs/K8Cli/manageCluster"
 	"github.com/ArnaLabs/K8Cli/SetupCluster"
+	_ "github.com/ArnaLabs/K8Cli/SetupCluster/EKS"
+	"github.com/ArnaLabs/K8Cli/manageCluster"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"k8s.io/client-go/kubernetes"
 	"log"
 	"os"
-	"strings"
 )
 
-func setupK8sConnection(InitialConfigVals InitialConfigVals) *kubernetes.Clientset {
-	fmt.Println("Setting up Connection")
-	fmt.Println(InitialConfigVals.ClusterDetails)
-	fmt.Printf("MasterUrl: %v\n", InitialConfigVals.ClusterDetails.MasterUrl)
-	fmt.Printf("KubeConfig: %v\n", InitialConfigVals.ClusterDetails.KubeConfig)
-	connection, _ := manageCluster.SetupConnection(InitialConfigVals.ClusterDetails.MasterUrl, InitialConfigVals.ClusterDetails.KubeConfig)
-	fmt.Printf("ClusterName: %v\n", InitialConfigVals.ClusterDetails.ClusterName)
-	fmt.Printf("MasterKey: %v\n", InitialConfigVals.ClusterDetails.MasterKey)
-	fmt.Printf("Configs: %v\n", InitialConfigVals.ClusterDetails.Configs)
-	fmt.Printf("StorageClasses.yaml: %v\n", InitialConfigVals.ClusterDetails.StorageClassFile)
-	fmt.Printf("Namepaces.yaml: %v\n", InitialConfigVals.ClusterDetails.NameSpaceFile)
-	fmt.Printf("ResourceQuotas.yaml: %v\n", InitialConfigVals.ClusterDetails.ResourceQuotaFile)
-
-	return connection
-}
-
 func main() {
-	var config HelmConfig
-	var masterurl, kubeconfigfile string
+	var masterurl, kubeconfigfile, clusterfile, helmconfig string
 	var InitialConfigVals InitialConfigVals
-	var operation, configFile, context, name string
-	//var version bool
+	var config HelmConfig
+	var operation, context, name string
 
-	//flag.StringVar(&operation, "o", "all", "Provide the operation that needs to be performed, valid inputs - namespace, storage, resourcequota, defaultquota, serviceaccount")
 	flag.StringVar(&operation, "operation", "cluster", "Provide whether operation needed to be performed - Cluster/Addons")
-	flag.StringVar(&configFile, "config", "cf-fmt.yaml", "Provide path to Config yaml")
 	flag.StringVar(&context, "context", "minikube", "Provide kubernetes context for addon")
 	flag.StringVar(&name, "name", "backup", "backup name")
 	flag.StringVar(&kubeconfigfile, "kube-config", "", "Provide path to kubeconfig")
 	version := flag.Bool("version", false, "display version")
-	//flag.StringVar(&clustername, "cluster-name", "dev-cluster", "Provide cluster name")
-	//flag.StringVar(&masterurl, "u", "https://localhost:6443", "Provide master url")
+
 	flag.Parse()
 
 	if *version {
@@ -52,74 +32,76 @@ func main() {
 		os.Exit(0)
 	}
 
-	if operation == "addons" {
-		yamlFile, err := ioutil.ReadFile(configFile)
-
-		makeDir("templates")
-
-		if err != nil {
-			log.Printf("yamlFile.Get err   #%v ", err)
-		}
-
-		err = yaml.Unmarshal(yamlFile, &config)
-		if err != nil {
-			panic(err)
-		}
-		helmInit(context)
-		helmAddRepositories(config)
-		fmt.Print(config)
-		helmInstallReleases(config, context)
-	} else if operation == "cluster" {
-		yamlFile, err := ioutil.ReadFile(configFile)
-
-		makeDir("templates")
-
-		if err != nil {
-			log.Printf("yamlFile.Get err   #%v ", err)
-		}
-
-		SetupCluster.CheckCluster(yamlFile)
-	} else if operation == "take_backup" {
-		takeBackup(name, context)
-		fmt.Print("Work In Progress\n")
-	} else {
-		fmt.Print("Operation Not Supported")
-	}
-
-	var manageOperation = StrSlice{"all", "init", "namespace", "storage", "resourcequota", "defaultquota", "serviceaccount"}
+	var manageOperation = StrSlice{"cluster", "addons", "all", "namespace", "storage", "resourcequota", "defaultquota", "serviceaccount"}
 
 	if manageOperation.Has(operation) {
-		filePath := "K8Cli" + "/mgmt/" + context
 
-		ConfigFile := strings.TrimSpace(filePath + "/config.yaml")
-		fileConfigYml, err := ioutil.ReadFile(ConfigFile)
+		filePath := "K8Cli/" + context + "/config.yml"
+		fmt.Println(filePath)
+
+		fileConfigYml, err := ioutil.ReadFile(filePath)
 		if err != nil {
 			fmt.Println(err)
 		}
 
-		//var InitClusterConfigVals InitClusterConfigVals
 		err = yaml.Unmarshal([]byte(fileConfigYml), &InitialConfigVals)
 		if err != nil {
 			panic(err)
 		}
 
+		if operation == "cluster" {
 
-		if kubeconfigfile == "" {
-			dirname, err := os.UserHomeDir()
-			if err != nil {
-				log.Fatal(err)
+			clusterfile = InitialConfigVals.ClusterDetails.ClusterYaml
+			fmt.Println("Path to cluster yml: ", clusterfile)
+
+		} else {
+
+			clusterfile = InitialConfigVals.ClusterDetails.ClusterYaml
+			fmt.Println("Path to cluster yml: ", clusterfile)
+
+			kubeconfigfile = InitialConfigVals.ClusterDetails.KubeConfig
+			fmt.Println("Path to kubeconfig: ", kubeconfigfile)
+
+			if kubeconfigfile == "" {
+				dirname, err := os.UserHomeDir()
+				if err != nil {
+					log.Fatal(err)
+				}
+				fmt.Println(dirname)
+
+				kubeconfigfile = dirname + "/.kube/config"
 			}
-			fmt.Println(dirname)
+			masterurl, err = getClusterEndpoint(context, kubeconfigfile)
+			if err != nil {
+				masterurl = " "
+			}
 
-			kubeconfigfile = dirname + "/.kube/config"
+			helmconfig = InitialConfigVals.ClusterDetails.Addons
+			err = yaml.Unmarshal([]byte(helmconfig), &config)
+
 		}
-		masterurl = getClusterEndpoint(context, kubeconfigfile)
 
 	}
 
-	if operation == "all" {
+	if operation == "addons" {
 
-		connection := setupK8sConnection(InitialConfigVals)
+		helmInit(context)
+
+		helmAddRepositories(config)
+		fmt.Print(config)
+		helmInstallReleases(config, context)
+
+	} else if operation == "cluster" {
+
+		SetupCluster.CheckCluster(clusterfile)
+
+	} else if operation == "take_backup" {
+		takeBackup(name, context)
+		fmt.Print("Work In Progress\n")
+
+	} else if operation == "all" {
+
+		connection := setupK8sConnection(InitialConfigVals, masterurl)
 
 		fmt.Println("Executing Create or Update StorageClasses")
 		manageCluster.CreateorUpdateStorageClass(InitialConfigVals.ClusterDetails.StorageClassFile, connection, InitialConfigVals.ClusterDetails.MasterKey)
@@ -138,19 +120,19 @@ func main() {
 
 	} else if operation == "namespace" {
 
-		connection := setupK8sConnection(InitialConfigVals)
+		connection := setupK8sConnection(InitialConfigVals, masterurl)
 		fmt.Println("Executing Create or Update NameSpaces")
 		manageCluster.CreateorUpdateNameSpace(InitialConfigVals.ClusterDetails.NameSpaceFile, connection, InitialConfigVals.ClusterDetails.MasterKey)
 
 	} else if operation == "storage" {
 
-		connection := setupK8sConnection(InitialConfigVals)
+		connection := setupK8sConnection(InitialConfigVals, masterurl)
 		fmt.Println("Executing Create or Update StorageClasses")
 		manageCluster.CreateorUpdateStorageClass(InitialConfigVals.ClusterDetails.StorageClassFile, connection, InitialConfigVals.ClusterDetails.MasterKey)
 
 	} else if operation == "resourcequota" {
 
-		connection := setupK8sConnection(InitialConfigVals)
+		connection := setupK8sConnection(InitialConfigVals, masterurl)
 		fmt.Println("Executing Create or Update NameSpaces")
 		manageCluster.CreateorUpdateNameSpace(InitialConfigVals.ClusterDetails.NameSpaceFile, connection, InitialConfigVals.ClusterDetails.MasterKey)
 		fmt.Println("Executing Create or Update DefaultQuotas")
@@ -160,7 +142,7 @@ func main() {
 
 	} else if operation == "defaultquota" {
 
-		connection := setupK8sConnection(InitialConfigVals)
+		connection := setupK8sConnection(InitialConfigVals, masterurl)
 		fmt.Println("Executing Create or Update NameSpaces")
 		manageCluster.CreateorUpdateNameSpace(InitialConfigVals.ClusterDetails.NameSpaceFile, connection, InitialConfigVals.ClusterDetails.MasterKey)
 		fmt.Println("Executing Create or Update DefaultQuotas")
@@ -168,7 +150,7 @@ func main() {
 
 	} else if operation == "serviceaccount" {
 
-		connection := setupK8sConnection(InitialConfigVals)
+		connection := setupK8sConnection(InitialConfigVals, masterurl)
 		fmt.Println("Executing Create or Update NameSpaces")
 		manageCluster.CreateorUpdateNameSpace(InitialConfigVals.ClusterDetails.NameSpaceFile, connection, InitialConfigVals.ClusterDetails.MasterKey)
 		fmt.Println("Executing Create or Update NameSpaceUsers")
@@ -176,15 +158,26 @@ func main() {
 
 	} else if operation == "init" {
 
+		if kubeconfigfile == "" {
+			dirname, err := os.UserHomeDir()
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println(dirname)
+
+			kubeconfigfile = dirname + "/.kube/config"
+		}
+
 		fmt.Println("Initializing K8Cli")
-		fmt.Printf("ClusterName: %v\n", &context)
-		fmt.Printf("masterurl: %v\n", masterurl)
-		fmt.Printf("kubeconfigfile: %v\n", kubeconfigfile)
-		manageCluster.Init(context, masterurl, kubeconfigfile)
+		fmt.Printf("ClusterName: %v\n", context)
+		fmt.Printf("Kubeconfigfile: %v\n", kubeconfigfile)
 
-	} else {
+		//manageCluster.Init(context, kubeconfigfile)
+		Init(context, kubeconfigfile)
 
-		fmt.Printf("MasterUrl: %v\n", InitialConfigVals.ClusterDetails.MasterUrl)
+	} else if operation == "" {
+
+		fmt.Printf("MasterUrl: %v\n", masterurl)
 		fmt.Printf("KubeConfig: %v\n", InitialConfigVals.ClusterDetails.KubeConfig)
 		fmt.Printf("MasterKey: %v\n", InitialConfigVals.ClusterDetails.MasterKey)
 		fmt.Printf("Configs: %v\n", InitialConfigVals.ClusterDetails.Configs)
@@ -192,7 +185,27 @@ func main() {
 		fmt.Printf("Namepaces.yaml: %v\n", InitialConfigVals.ClusterDetails.NameSpaceFile)
 		fmt.Printf("ResourceQuotas.yaml: %v\n", InitialConfigVals.ClusterDetails.ResourceQuotaFile)
 		fmt.Println("Provide Valid input operation")
+	} else {
+		fmt.Print("Operation Not Supported")
 	}
 
 	deleteDir("templates")
+
+}
+
+func setupK8sConnection(InitialConfigVals InitialConfigVals, masterurl string) *kubernetes.Clientset {
+	fmt.Println("Setting up Connection")
+	fmt.Println(InitialConfigVals.ClusterDetails)
+	fmt.Printf("MasterUrl: %v\n", masterurl)
+	fmt.Printf("KubeConfig: %v\n", InitialConfigVals.ClusterDetails.KubeConfig)
+	fmt.Printf("ClusterName: %v\n", InitialConfigVals.ClusterDetails.ClusterName)
+	fmt.Printf("MasterKey: %v\n", InitialConfigVals.ClusterDetails.MasterKey)
+	fmt.Printf("Configs: %v\n", InitialConfigVals.ClusterDetails.Configs)
+	fmt.Printf("StorageClasses.yaml: %v\n", InitialConfigVals.ClusterDetails.StorageClassFile)
+	fmt.Printf("Namepaces.yaml: %v\n", InitialConfigVals.ClusterDetails.NameSpaceFile)
+	fmt.Printf("ResourceQuotas.yaml: %v\n", InitialConfigVals.ClusterDetails.ResourceQuotaFile)
+
+	connection, _ := manageCluster.SetupConnection(masterurl, InitialConfigVals.ClusterDetails.KubeConfig)
+
+	return connection
 }

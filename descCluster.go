@@ -43,8 +43,7 @@ type kubeConfig struct {
 	} `json:"users"`
 }
 
-
-func getClusterEndpoint(context string, kubeConfigFile string ) string {
+func getClusterEndpoint(context string, kubeConfigFile string) (string, error) {
 	var config kubeConfig
 	var configCluster, endpoint string
 
@@ -78,5 +77,5 @@ func getClusterEndpoint(context string, kubeConfigFile string ) string {
 		k++
 	}
 
-	return endpoint
+	return endpoint, err
 }

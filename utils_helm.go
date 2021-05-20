@@ -14,7 +14,7 @@ func helmInit(context string) {
 
 	checkKubectlExists()
 	checkHelmExists()
-	getFileFromURL("templates/tiller-rbac.yaml","https://k8s-cloud-templates.s3.amazonaws.com/tiller-rbac.yaml")
+	getFileFromURL("templates/tiller-rbac.yaml", "https://k8s-cloud-templates.s3.amazonaws.com/tiller-rbac.yaml")
 
 	cmd := exec.Command("kubectl", "config", "use-context", context)
 	failOnError(cmd)
@@ -140,7 +140,6 @@ func helmAddRepositories(config HelmConfig) {
 	}
 	helmRepoUpdate()
 }
-
 
 func helmInstallReleases(config HelmConfig, context string) {
 	for i := 0; i < len(config.Releases); i++ {

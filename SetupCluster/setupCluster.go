@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ArnaLabs/K8Cli/SetupCluster/EKS"
 	"gopkg.in/yaml.v2"
+	"io/ioutil"
 )
 
 type CldDetails struct {
@@ -17,14 +18,19 @@ type CldDetails struct {
 
 //Setup AKS or EKS Cluster
 
-func CheckCluster(f []byte) {
+func CheckCluster(f string) {
 
 	////Reading inputs from yaml
 
 	file := f
 	var cloud CldDetails
-	//m := make(map[interface{}]interface{})
-	err := yaml.Unmarshal([]byte(file), &cloud)
+
+	fileConfigYml, err := ioutil.ReadFile(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = yaml.Unmarshal([]byte(fileConfigYml), &cloud)
 	fmt.Println(cloud)
 	if err != nil {
 		panic(err)
@@ -37,9 +43,8 @@ func CheckCluster(f []byte) {
 		fmt.Printf("Bucket: %#v\n", cloud.Cloud.Bucket)
 		fmt.Println("Setting up EKS Cluster ........")
 		//Passing cluster file
-		ekssetup.ReadEKSYaml(file)
+		ekssetup.ReadEKSYaml([]byte(fileConfigYml))
 	}
-
 
 	//End EKS Cluster elements session values
 	//if cloud.Cloud.Name == "Azure" {

@@ -17,9 +17,16 @@ Multi Cloud K8s CLuster Setup
 * Support 3 Private and Public subnets max - Review
 
 ##Commands:
+### Init Cluster Management
+```
+./K8Cli --operation init --context test-eks9
+ you can give kubeconfig path here 
+```
+
 ### Setup EKS Cluster
 ```
-./K8Cli --operation cluster --config examples/eks-cluster.yml
+./K8Cli --operation cluster --context test-eks9
+Run the Cli in the path where you have your folder K8CLI/<cluster-name>
 ```
 ### get cluster config on local
 it will create kubeconfig under ~/.kube/config or if there is existing file it will do a safe merge with existing contexts
@@ -29,14 +36,9 @@ aws eks update-kubeconfig --name <cluster_name> --alias <alias_name>
 
 ### Setup Add-Ons
 ```
-./K8Cli --operation addons --config examples/addon.yaml --context test-eks5
 
+./K8Cli --operation addons --context test-eks9
 ``` 
-
-### Init Cluster Management
-```
-./K8Cli --operation init --context test-eks9
-```
 
 ### Setup namespace
 ```
@@ -76,3 +78,6 @@ aws eks update-kubeconfig --name <cluster_name> --alias <alias_name>
 
 ## 23/02/2021
 * Azure Support                              -- Review
+
+
+// Udated commands:

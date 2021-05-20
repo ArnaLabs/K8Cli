@@ -32,7 +32,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	var manageOperation = StrSlice{"cluster", "addons", "all", "namespace", "storage", "resourcequota", "defaultquota", "serviceaccount"}
+	var manageOperation = StrSlice{"cluster", "addons", "resource-all", "namespace", "storage", "resourcequota", "defaultquota", "serviceaccount"}
 
 	if manageOperation.Has(operation) {
 
@@ -99,7 +99,7 @@ func main() {
 		takeBackup(name, context)
 		fmt.Print("Work In Progress\n")
 
-	} else if operation == "all" {
+	} else if operation == "resource-all" {
 
 		connection := setupK8sConnection(InitialConfigVals, masterurl)
 

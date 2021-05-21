@@ -93,7 +93,7 @@ func main() {
 
 	} else if operation == "cluster" {
 
-		SetupCluster.CheckCluster(clusterfile)
+		SetupCluster.CheckCluster(clusterfile, context)
 
 	} else if operation == "take_backup" {
 		takeBackup(name, context)

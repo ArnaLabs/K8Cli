@@ -2,7 +2,7 @@ package SetupCluster
 
 import (
 	"fmt"
-	"github.com/ArnaLabs/K8Cli/SetupCluster/EKS"
+	ekssetup "github.com/ArnaLabs/K8Cli/SetupCluster/EKS"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 )
@@ -18,7 +18,7 @@ type CldDetails struct {
 
 //Setup AKS or EKS Cluster
 
-func CheckCluster(f string) {
+func CheckCluster(f string, context string) {
 
 	////Reading inputs from yaml
 
@@ -31,7 +31,7 @@ func CheckCluster(f string) {
 	}
 
 	err = yaml.Unmarshal([]byte(fileConfigYml), &cloud)
-	fmt.Println(cloud)
+	//fmt.Println(cloud)
 	if err != nil {
 		panic(err)
 	}
@@ -41,9 +41,13 @@ func CheckCluster(f string) {
 		fmt.Printf("Region: %#v\n", cloud.Cloud.Region)
 		fmt.Printf("Cluster: %#v\n", cloud.Cloud.Cluster)
 		fmt.Printf("Bucket: %#v\n", cloud.Cloud.Bucket)
-		fmt.Println("Setting up EKS Cluster ........")
+		//fmt.Println("Setting up EKS Cluster ........")
 		//Passing cluster file
-		ekssetup.ReadEKSYaml([]byte(fileConfigYml))
+		if context == cloud.Cloud.Cluster {
+			ekssetup.ReadEKSYaml([]byte(fileConfigYml))
+		} else {
+			fmt.Println("ClusterName doesn't match with Context name. Please validate cluster yml")
+		}
 	}
 
 	//End EKS Cluster elements session values

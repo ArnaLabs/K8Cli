@@ -7,6 +7,8 @@ import (
 	"io"
 	"net/http"
 	_ "net/http"
+	"time"
+
 	//"errors"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
@@ -137,7 +139,7 @@ func ReadEKSYaml(f []byte) {
 	Region = eksSession.Cloud.Region
 	Cluster = eksSession.Cloud.Cluster
 
-	fmt.Printf("Creating sessions.......")
+	fmt.Println("Creating sessions.......")
 
 	//Create AWS session
 	if Profile == "" {
@@ -160,10 +162,10 @@ func ReadEKSYaml(f []byte) {
 			//SharedConfigState: session.SharedConfigEnable,
 		})
 	}
-	fmt.Printf("Session created \n")
+	fmt.Println("Session created \n")
 
 	////Setting up S3 Bucket
-	fmt.Printf("Setting up S3 bucket \n")
+	fmt.Println("Setting up S3 bucket \n")
 	S3Name := eksSession.Cloud.Bucket
 
 	//Loading Yaml
@@ -177,7 +179,7 @@ func ReadEKSYaml(f []byte) {
 	}
 
 	////Checking if VPC is enabled
-	fmt.Printf("Checking if VPC creation enabled\n")
+	fmt.Println("Checking if VPC creation enabled\n")
 	err = yaml.Unmarshal([]byte(file), &eksvpc)
 	if err != nil {
 		panic(err)
@@ -187,7 +189,7 @@ func ReadEKSYaml(f []byte) {
 	PrivateSubnetLen := len(eksvpc.VPC.PrivateSubnets)
 
 	if PublicSubnetLen != PrivateSubnetLen {
-		fmt.Printf("PublicSubnets and PrivateSubnets count should  be same\n")
+		fmt.Println("PublicSubnets and PrivateSubnets count should  be same\n")
 		os.Exit(255)
 	}
 
@@ -195,6 +197,9 @@ func ReadEKSYaml(f []byte) {
 		VPCSourceFile = "https://k8s-cloud-templates.s3.amazonaws.com/vpc-4subnets.yaml"
 	} else if PublicSubnetLen == 3 {
 		VPCSourceFile = "https://k8s-cloud-templates.s3.amazonaws.com/vpc-6subnets.yaml"
+	} else {
+		fmt.Println("Only 2 or 4 Public/Private Subnet pairs are accepted")
+		os.Exit(255)
 	}
 
 	getFileFromURL("templates/0001-vpc.yaml", VPCSourceFile)
@@ -202,10 +207,10 @@ func ReadEKSYaml(f []byte) {
 	getFileFromURL("templates/0007-esk-managed-node-group.yaml", "https://k8s-cloud-templates.s3.amazonaws.com/0007-esk-managed-node-group.yaml")
 
 	if VPCName != "" {
-		fmt.Printf("VPC creation enabled, creating/updating VPC.......\n")
+		fmt.Println("VPC creation enabled, checking VPC state.......\n")
 		vpcsubnets, vpcsecuritygps, vpcclustername, ElementsSubnetIDs = Create_VPC(sess, file, Cluster, S3Name, VPCfileName)
 	} else {
-		fmt.Printf("VPC creation Not Enabled\n")
+		fmt.Println("VPC creation Not Enabled\n")
 	}
 
 	err = yaml.Unmarshal([]byte(file), &ConfNode)
@@ -220,13 +225,13 @@ func ReadEKSYaml(f []byte) {
 	}
 	MasterName := eksMaster.Master.KubernetesVersion
 	if MasterName != "" {
-		fmt.Printf("Master creation enabled, creating/updating stacks.......\n")
+		fmt.Println("Master creation enabled, creating/updating stacks.......\n")
 		MClusterName, MSubnetIds = Create_Master(sess, vpcsecuritygps, vpcclustername, vpcsubnets, ElementsSubnetIDs, file, Cluster, S3Name, EksfileName)
 		if nodelen == 0 {
-			fmt.Printf("Master creation completed, no node groups provided.......\n")
+			fmt.Println("Master creation completed, no node groups provided.......\n")
 		} else if nodelen != 0 {
-			fmt.Printf("Master creation completed, node groups listed.......\n")
-			fmt.Printf("Creating node groups.......\n")
+			fmt.Println("Master creation completed, node groups listed.......\n")
+			fmt.Println("Creating node groups.......\n")
 			for i := 0; i < nodelen; i++ {
 				println("Subnets passed from Master: ", MSubnetIds)
 				println("Cluster Name passed from Master: ", MClusterName)
@@ -234,7 +239,7 @@ func ReadEKSYaml(f []byte) {
 			}
 		}
 	} else {
-		fmt.Printf("EKS Cluster Not Enabled\n")
+		fmt.Println("EKS Cluster Not Enabled\n")
 	}
 
 }
@@ -306,10 +311,12 @@ func Create_VPC(sess *session.Session, file []byte, cluster string, S3 string, V
 	ClusterName := cluster
 	//ClusterName := eksvpc.VPC.ClusterName
 
+	Module := "VPC"
 	ElementsCreate = map[string]string{
 		"VpcBlock":    VpcBlock,
 		"ClusterName": ClusterName,
 	}
+	// specify elements that needs to be updated below as above
 	ElementsUpdate = map[string]string{}
 
 	datapublic := eksvpc.VPC.PublicSubnets
@@ -330,9 +337,9 @@ func Create_VPC(sess *session.Session, file []byte, cluster string, S3 string, V
 	for i := 0; i < NoofKeyspublic; i++ {
 		Keyname = PublicSubnetKeys[i]
 		//		fmt.Printf("KeyName: %v\n", Keyname)
-		fmt.Printf("Keyname passed: %v\n", PublicSubnetKeys[i])
+		fmt.Println("Keyname: ", PublicSubnetKeys[i])
 		value, _ = strconv.Unquote(awsutil.StringValue(PublicSubnet[Keyname]))
-		fmt.Printf("Values prased: %#v\n", value)
+		fmt.Println("Values: ", value)
 		ElementsCreate[Keyname] = value
 		ElementsSubnets[Keyname] = value
 	}
@@ -360,7 +367,7 @@ func Create_VPC(sess *session.Session, file []byte, cluster string, S3 string, V
 		//fmt.Printf(value)
 		ElementsCreate[Keyname] = value
 		ElementsSubnets[Keyname] = value
-		//ElementsUpdate[Keyname] = value not updating VPC after it is created
+		//ElementsUpdate[Keyname] = value // Commenting this as to not up update VPC after it got created
 	}
 
 	//TemplateURL, _ := yaml.Get("VPC").Get("TemplateURL").String()
@@ -374,12 +381,13 @@ func Create_VPC(sess *session.Session, file []byte, cluster string, S3 string, V
 	//	fmt.Println(".......ElementsCreate.....", ElementsCreate)
 	//Passing values for updating Stack
 
-	//	fmt.Println(".......ElementsUpdate.....", ElementsUpdate)
-	fmt.Printf("StackName: %v\n", v.StackName)
-	fmt.Printf("TemplateURL: %v\n", v.TemplateURL)
+	fmt.Println("StackName: ", v.StackName)
+	fmt.Println("TemplateURL: ", v.TemplateURL)
+	//fmt.Println("Parameters to be created", ElementsCreate)
+	//fmt.Println("Parameters to be updated", ElementsUpdate)
 
 	if err != nil {
-		fmt.Println(os.Stderr, "YAML Prasing failed with Error: %v\n", err)
+		fmt.Println(os.Stderr, "YAML Prasing failed with Error: ", err)
 		os.Exit(1)
 	}
 
@@ -389,44 +397,44 @@ func Create_VPC(sess *session.Session, file []byte, cluster string, S3 string, V
 
 	// Calling outputs from created/updated stack
 
-	ListStack(sess, v, a, b)
+	ListStack(sess, v, a, b, Module)
 
 	NoOP := len(CheckStack(sess, StackName).Stacks[0].Outputs)
 
 	for p := 0; p < NoOP; p++ {
-		//time.Sleep(5 * time.Second)
+		time.Sleep(2 * time.Second)
 		k := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputKey)
 		var c string = strings.Trim(k, "\"")
 		if string(c) == "SubnetIds" {
-			//time.Sleep(5 * time.Second)
+			time.Sleep(2 * time.Second)
 			value := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputValue)
-			fmt.Printf("Subnets: %v\n", value)
+			fmt.Println("Subnets: ", value)
 			vpcsubnets = value
-			//time.Sleep(5 * time.Second)
+			time.Sleep(2 * time.Second)
 		}
 	}
 	for p := 0; p < NoOP; p++ {
-		//time.Sleep(5 * time.Second)
+		time.Sleep(2 * time.Second)
 		k := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputKey)
 		var c string = strings.Trim(k, "\"")
 		if string(c) == "SecurityGroups" {
-			//time.Sleep(5 * time.Second)
+			time.Sleep(2 * time.Second)
 			value := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputValue)
-			fmt.Printf("SecurityGroups: %v\n", value)
+			fmt.Println("SecurityGroups: ", value)
 			vpcsecuritygps = value
-			//time.Sleep(5 * time.Second)
+			time.Sleep(2 * time.Second)
 		}
 	}
 	for p := 0; p < NoOP; p++ {
-		//time.Sleep(5 * time.Second)
+		time.Sleep(2 * time.Second)
 		k := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputKey)
 		var c string = strings.Trim(k, "\"")
 		if string(c) == "ClusterName" {
-			//time.Sleep(5 * time.Second)
+			time.Sleep(2 * time.Second)
 			value := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputValue)
-			fmt.Printf("Cluster Name: %v\n", value)
+			fmt.Println("Cluster Name: ", value)
 			vpcclustername = value
-			//time.Sleep(5 * time.Second)
+			time.Sleep(2 * time.Second)
 		}
 	}
 
@@ -435,42 +443,42 @@ func Create_VPC(sess *session.Session, file []byte, cluster string, S3 string, V
 	for i := 0; i < NoofKeysprivate; i++ {
 		Keyname = PrivateSubnetKeys[i]
 		for p := 0; p < NoOP; p++ {
-			//time.Sleep(5 * time.Second)
+			time.Sleep(2 * time.Second)
 			k := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputKey)
 			var c string = strings.Trim(k, "\"")
 			if string(c) == Keyname {
-				//time.Sleep(5 * time.Second)
+				time.Sleep(2 * time.Second)
 				value := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputValue)
 				//fmt.Printf(Keyname, ":", value)
 				fmt.Printf("%v", Keyname)
 				fmt.Printf(":")
 				fmt.Printf("%v\n", value)
 				ElementsSubnetIDs[strconv.Quote(Keyname)] = value
-				//time.Sleep(5 * time.Second)
+				time.Sleep(2 * time.Second)
 			}
 		}
 	}
 	for i := 0; i < NoofKeyspublic; i++ {
 		Keyname = PublicSubnetKeys[i]
 		for p := 0; p < NoOP; p++ {
-			//time.Sleep(5 * time.Second)
+			time.Sleep(2 * time.Second)
 			k := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputKey)
 			var c string = strings.Trim(k, "\"")
 			if string(c) == Keyname {
-				//time.Sleep(5 * time.Second)
+				time.Sleep(2 * time.Second)
 				value := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputValue)
 				fmt.Printf("%v", Keyname)
 				fmt.Printf(":")
 				fmt.Printf("%v\n", value)
 				ElementsSubnetIDs[strconv.Quote(Keyname)] = value
-				//time.Sleep(5 * time.Second)
+				time.Sleep(2 * time.Second)
 			}
 		}
 	}
 
 	//	fmt.Printf("ElementsSubnetIDs: %v\n", ElementsSubnetIDs)
 	list := CheckStack(sess, StackName).Stacks[0].StackName
-	fmt.Printf("StackID of the Stack: %v\n", awsutil.StringValue(list))
+	fmt.Println("StackID of the Stack: ", awsutil.StringValue(list))
 	if err != nil {
 		panic(err)
 	}
@@ -488,6 +496,7 @@ func Create_Master(sess *session.Session, vpcsecuritygps string, vpcclustername 
 	var eksmaster EksMaster
 	FileMaster := file
 	err := yaml.Unmarshal([]byte(FileMaster), &eksmaster)
+	Module := "Master"
 
 	//StackName := eksmaster.Master.StackName
 	//TemplateURL := eksmaster.Master.TemplateURL
@@ -534,7 +543,9 @@ func Create_Master(sess *session.Session, vpcsecuritygps string, vpcclustername 
 		}
 	}
 
-	fmt.Printf("Values getting passed: %v\n", SubnetIds, SecurityGroupIds, ClusterName)
+	fmt.Println("ClusterName: ", ClusterName)
+	fmt.Println("SecurityGroups: ", SecurityGroupIds)
+	fmt.Println("Subnets: ", SubnetIds)
 
 	SubnetIdsTrim := strings.TrimSpace(strings.Trim(strings.Trim(strings.Trim(SubnetIds, "\""), "\""), ""))
 	SubnetIdsReplace := strings.Replace(SubnetIdsTrim, "\",\"", ",", -1)
@@ -553,17 +564,17 @@ func Create_Master(sess *session.Session, vpcsecuritygps string, vpcclustername 
 	//Passing values for updating Stack
 
 	ElementsUpdate = map[string]string{
-		"ClusterName":       ClusterName,
+		//"ClusterName":       ClusterName,
 		"KubernetesVersion": KubernetesVersion,
 		"SecurityGroupIds":  SecurityGroupIds,
 		"SubnetIds":         SubnetIdsReplace,
 	}
 	//	fmt.Printf("Update Elements: %v\n", ElementsUpdate)
-	fmt.Printf("StackName: %v\n", awsutil.StringValue(v.StackName))
-	fmt.Printf("TemplateURL: %v\n", v.TemplateURL)
+	fmt.Println("StackName: ", awsutil.StringValue(v.StackName))
+	fmt.Println("TemplateURL: ", v.TemplateURL)
 
 	if err != nil {
-		fmt.Println(os.Stderr, "YAML Prasing failed with Error: %v\n", err)
+		fmt.Println(os.Stderr, "YAML Prasing failed with Error: ", err)
 		os.Exit(1)
 	}
 
@@ -573,11 +584,11 @@ func Create_Master(sess *session.Session, vpcsecuritygps string, vpcclustername 
 
 	// Calling outputs from created/updated stack
 
-	ListStack(sess, v, a, b)
+	ListStack(sess, v, a, b, Module)
 	list := CheckStack(sess, StackName).Stacks[0].StackName
 
 	//NoOP := len(CheckStack(sess, StackName).Stacks[0].Outputs)
-	fmt.Printf("StackID of the Stack: %v\n", awsutil.StringValue(list))
+	fmt.Println("StackID of the Stack: ", awsutil.StringValue(list))
 	if err != nil {
 		panic(err)
 	}
@@ -600,6 +611,7 @@ func Create_Node(sess *session.Session, nodelen int, MClusterName string, MSubne
 	if err != nil {
 		panic(err)
 	}
+	Module := "Nodes"
 
 	ElementsCreate := make(map[string]string)
 	ElementsUpdate := make(map[string]string)
@@ -669,6 +681,7 @@ func Create_Node(sess *session.Session, nodelen int, MClusterName string, MSubne
 	}
 
 	fmt.Println("Values getting passed: ", NSubnetIds, NodeClusterName, NodegroupName, InstanceTypes)
+
 	//fmt.Printf(yaml.Get("VPC").Map())
 	NodeSubnetIdsTrim := strings.TrimSpace(strings.Trim(strings.Trim(strings.Trim(NSubnetIds, "\""), "\""), ""))
 	NodeSubnetIdsReplace := strings.Replace(NodeSubnetIdsTrim, "\",\"", ",", -1)
@@ -695,11 +708,11 @@ func Create_Node(sess *session.Session, nodelen int, MClusterName string, MSubne
 		//"SecurityGroupIds": "sg-09972c390e1452989",
 	}
 	//	fmt.Printf("Update Elements :", ElementsUpdate)
-	fmt.Printf("StackName: %#v\n", v.StackName)
-	fmt.Printf("TemplateURL: %#v\n", v.TemplateURL)
+	fmt.Println("StackName: %#v\n", v.StackName)
+	fmt.Println("TemplateURL: %#v\n", v.TemplateURL)
 
 	if err != nil {
-		fmt.Println(os.Stderr, "YAML Prasing failed with Error: %v\n", err)
+		fmt.Println(os.Stderr, "YAML Prasing failed with Error: ", err)
 		os.Exit(1)
 	}
 
@@ -709,7 +722,7 @@ func Create_Node(sess *session.Session, nodelen int, MClusterName string, MSubne
 
 	// Calling outputs from created/updated stack
 
-	ListStack(sess, v, a, b)
+	ListStack(sess, v, a, b, Module)
 	list := CheckStack(sess, NodeStackName).Stacks[0].StackName
 
 	//NoOP := len(CheckStack(sess, StackName).Stacks[0].Outputs)
@@ -729,7 +742,7 @@ func ValidateStack(sess *session.Session, TemplateURL string, ElementsCreate map
 	resp, err := svc.ValidateTemplate(params)
 
 	if err != nil {
-		fmt.Println(os.Stderr, "Validation Failed with Error: %v\n", err)
+		fmt.Println(os.Stderr, "Validation Failed with Error: ", err)
 		os.Exit(1)
 	} else if err == nil {
 		fmt.Println("Stack validation passed")
@@ -776,7 +789,7 @@ func ValidateStack(sess *session.Session, TemplateURL string, ElementsCreate map
 
 	return paramcreate, paramupdate
 }
-func ListStack(sess *session.Session, c cftvpc, stackcreate []*awscf.Parameter, stackupdate []*awscf.Parameter) {
+func ListStack(sess *session.Session, c cftvpc, stackcreate []*awscf.Parameter, stackupdate []*awscf.Parameter, Module string) {
 	type ByAge []Config
 	var v = c
 	var count = 0
@@ -785,7 +798,7 @@ func ListStack(sess *session.Session, c cftvpc, stackcreate []*awscf.Parameter, 
 	resp, err := svc.DescribeStacks(params)
 
 	if err != nil {
-		fmt.Println(os.Stderr, "Validation Failed with Error: %v\n", err)
+		fmt.Println(os.Stderr, "Validation Failed with Error: ", err)
 		os.Exit(1)
 	} else if err == nil {
 		fmt.Println("Checking Stacks.......")
@@ -809,7 +822,7 @@ func ListStack(sess *session.Session, c cftvpc, stackcreate []*awscf.Parameter, 
 			//var b string = strings.Trim(DescribeStack(sess, c.StackName, j), "\"")
 			if a != c {
 				fmt.Println("Status: ", b)
-				//time.Sleep(5 * time.Second)
+				time.Sleep(2 * time.Second)
 				fmt.Println()
 				break
 			}
@@ -826,7 +839,7 @@ func ListStack(sess *session.Session, c cftvpc, stackcreate []*awscf.Parameter, 
 				present[k].Key = "no"
 			}
 		}
-		fmt.Println(present)
+		//fmt.Println(present)
 		for i := range present {
 			if present[i].Key == "yes" {
 				count = 1
@@ -840,20 +853,25 @@ func ListStack(sess *session.Session, c cftvpc, stackcreate []*awscf.Parameter, 
 				if stacks == c.StackName {
 					//j := k
 					fmt.Println("Stack exist, updating stack")
-					UpdateStack(sess, v, stackupdate)
-					println("Checking Status.......")
-					for {
-						var a string = "UPDATE_IN_PROGRESS"
-						b := awsutil.StringValue(CheckStack(sess, c.StackName).Stacks[0].StackStatus)
-						var c string = strings.Trim(b, "\"")
-						if a != c {
-							fmt.Println("Status: ", b)
-							//time.Sleep(5 * time.Second)
-							fmt.Println()
-							break
+					if Module == "VPC" {
+						fmt.Println("VPC already created and cannot be updated")
+					} else {
+						UpdateStack(sess, v, stackupdate)
+						println("Checking Status.......")
+						for {
+							var a string = "UPDATE_IN_PROGRESS"
+							b := awsutil.StringValue(CheckStack(sess, c.StackName).Stacks[0].StackStatus)
+							var c string = strings.Trim(b, "\"")
+							if a != c {
+								fmt.Println("Status: ", b)
+								time.Sleep(2 * time.Second)
+								fmt.Println()
+								break
+							}
 						}
+						fmt.Println("Update Completed")
 					}
-					fmt.Println("Update Completed")
+
 				}
 			}
 		} else if count == 0 {
@@ -869,7 +887,7 @@ func ListStack(sess *session.Session, c cftvpc, stackcreate []*awscf.Parameter, 
 				//var b string = strings.Trim(DescribeStack(sess, c.StackName, j), "\"")
 				if a != c {
 					fmt.Println("Status: ", b)
-					//time.Sleep(5 * time.Second)
+					time.Sleep(2 * time.Second)
 					fmt.Println()
 					break
 				}
@@ -887,7 +905,7 @@ func CheckStack(sess *session.Session, StackName string) *awscf.DescribeStacksOu
 	resp, err := svc.DescribeStacks(params)
 
 	if err != nil {
-		fmt.Println(os.Stderr, "Listing failed with Error: %v\n", err)
+		fmt.Println(os.Stderr, "Listing failed with Error: ", err)
 		os.Exit(1)
 	} else if err == nil {
 		//fmt.Println("Listing stacks passed")
@@ -920,7 +938,7 @@ func Createcft(sess *session.Session, d cftvpc, stack []*awscf.Parameter) *awscf
 	rep, err := svc.CreateStack(params)
 
 	if err != nil {
-		fmt.Println(os.Stderr, "Creation Failed with Error: %v\n", err)
+		fmt.Println(os.Stderr, "Creation Failed with Error: ", err)
 		os.Exit(1)
 	} else if err == nil {
 		fmt.Println("Stack Creation passed")
@@ -962,7 +980,7 @@ func UpdateStack(sess *session.Session, u cftvpc, stack []*awscf.Parameter) *aws
 				exitErrorf("No updates to be performed", os.Args[2], os.Args[1])
 			}
 		}
-		exitErrorf("unknown error occurred, %v", err)
+		exitErrorf("unknown error occurred: ", err)
 	}
 
 	//fmt.Printf("StackID: ", awsutil.StringValue(resp.StackId))
@@ -972,7 +990,7 @@ func UpdateStack(sess *session.Session, u cftvpc, stack []*awscf.Parameter) *aws
 func readJSON(path string) (*map[string]interface{}, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		log.Fatalf("failed to read file: %v", err)
+		log.Fatalf("failed to read file: ", err)
 	}
 	contents := make(map[string]interface{})
 	_ = json.Unmarshal(data, &contents)

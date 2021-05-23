@@ -7,8 +7,6 @@ import (
 	"io"
 	"net/http"
 	_ "net/http"
-	"time"
-
 	//"errors"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
@@ -402,39 +400,39 @@ func Create_VPC(sess *session.Session, file []byte, cluster string, S3 string, V
 	NoOP := len(CheckStack(sess, StackName).Stacks[0].Outputs)
 
 	for p := 0; p < NoOP; p++ {
-		time.Sleep(2 * time.Second)
+	//	time.Sleep(2 * time.Second)
 		k := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputKey)
 		var c string = strings.Trim(k, "\"")
 		if string(c) == "SubnetIds" {
-			time.Sleep(2 * time.Second)
+		//	time.Sleep(2 * time.Second)
 			value := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputValue)
 			fmt.Println("Subnets: ", value)
 			vpcsubnets = value
-			time.Sleep(2 * time.Second)
+		//	time.Sleep(2 * time.Second)
 		}
 	}
 	for p := 0; p < NoOP; p++ {
-		time.Sleep(2 * time.Second)
+	//	time.Sleep(2 * time.Second)
 		k := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputKey)
 		var c string = strings.Trim(k, "\"")
 		if string(c) == "SecurityGroups" {
-			time.Sleep(2 * time.Second)
+	//		time.Sleep(2 * time.Second)
 			value := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputValue)
 			fmt.Println("SecurityGroups: ", value)
 			vpcsecuritygps = value
-			time.Sleep(2 * time.Second)
+	//		time.Sleep(2 * time.Second)
 		}
 	}
 	for p := 0; p < NoOP; p++ {
-		time.Sleep(2 * time.Second)
+	//	time.Sleep(2 * time.Second)
 		k := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputKey)
 		var c string = strings.Trim(k, "\"")
 		if string(c) == "ClusterName" {
-			time.Sleep(2 * time.Second)
+		//	time.Sleep(2 * time.Second)
 			value := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputValue)
 			fmt.Println("Cluster Name: ", value)
 			vpcclustername = value
-			time.Sleep(2 * time.Second)
+		//	time.Sleep(2 * time.Second)
 		}
 	}
 
@@ -443,35 +441,35 @@ func Create_VPC(sess *session.Session, file []byte, cluster string, S3 string, V
 	for i := 0; i < NoofKeysprivate; i++ {
 		Keyname = PrivateSubnetKeys[i]
 		for p := 0; p < NoOP; p++ {
-			time.Sleep(2 * time.Second)
+			//time.Sleep(2 * time.Second)
 			k := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputKey)
 			var c string = strings.Trim(k, "\"")
 			if string(c) == Keyname {
-				time.Sleep(2 * time.Second)
+				//time.Sleep(2 * time.Second)
 				value := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputValue)
 				//fmt.Printf(Keyname, ":", value)
 				fmt.Printf("%v", Keyname)
 				fmt.Printf(":")
 				fmt.Printf("%v\n", value)
 				ElementsSubnetIDs[strconv.Quote(Keyname)] = value
-				time.Sleep(2 * time.Second)
+				//time.Sleep(2 * time.Second)
 			}
 		}
 	}
 	for i := 0; i < NoofKeyspublic; i++ {
 		Keyname = PublicSubnetKeys[i]
 		for p := 0; p < NoOP; p++ {
-			time.Sleep(2 * time.Second)
+			//time.Sleep(2 * time.Second)
 			k := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputKey)
 			var c string = strings.Trim(k, "\"")
 			if string(c) == Keyname {
-				time.Sleep(2 * time.Second)
+				//time.Sleep(2 * time.Second)
 				value := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputValue)
 				fmt.Printf("%v", Keyname)
 				fmt.Printf(":")
 				fmt.Printf("%v\n", value)
 				ElementsSubnetIDs[strconv.Quote(Keyname)] = value
-				time.Sleep(2 * time.Second)
+				//time.Sleep(2 * time.Second)
 			}
 		}
 	}
@@ -822,7 +820,7 @@ func ListStack(sess *session.Session, c cftvpc, stackcreate []*awscf.Parameter, 
 			//var b string = strings.Trim(DescribeStack(sess, c.StackName, j), "\"")
 			if a != c {
 				fmt.Println("Status: ", b)
-				time.Sleep(2 * time.Second)
+				////time.Sleep(2 * time.Second)
 				fmt.Println()
 				break
 			}
@@ -855,6 +853,20 @@ func ListStack(sess *session.Session, c cftvpc, stackcreate []*awscf.Parameter, 
 					fmt.Println("Stack exist, updating stack")
 					if Module == "VPC" {
 						fmt.Println("VPC already created and cannot be updated")
+						//UpdateStack(sess, v, stackupdate)
+						for {
+							var a string = "UPDATE_IN_PROGRESS"
+							b := awsutil.StringValue(CheckStack(sess, c.StackName).Stacks[0].StackStatus)
+							var c string = strings.Trim(b, "\"")
+							if a != c {
+								fmt.Println("Status: ", b)
+								////time.Sleep(2 * time.Second)
+								fmt.Println()
+								break
+							}
+						}
+						println("Checking Status.......")
+						//fmt.Println("Update Completed")
 					} else {
 						UpdateStack(sess, v, stackupdate)
 						println("Checking Status.......")
@@ -864,7 +876,7 @@ func ListStack(sess *session.Session, c cftvpc, stackcreate []*awscf.Parameter, 
 							var c string = strings.Trim(b, "\"")
 							if a != c {
 								fmt.Println("Status: ", b)
-								time.Sleep(2 * time.Second)
+								////time.Sleep(2 * time.Second)
 								fmt.Println()
 								break
 							}
@@ -887,7 +899,7 @@ func ListStack(sess *session.Session, c cftvpc, stackcreate []*awscf.Parameter, 
 				//var b string = strings.Trim(DescribeStack(sess, c.StackName, j), "\"")
 				if a != c {
 					fmt.Println("Status: ", b)
-					time.Sleep(2 * time.Second)
+					//time.Sleep(2 * time.Second)
 					fmt.Println()
 					break
 				}

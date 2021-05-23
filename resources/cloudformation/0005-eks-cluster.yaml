@@ -1,2 +1,53 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Error><Code>AccessDenied</Code><Message>Access Denied</Message><RequestId>9RZYJ976FWVZP4Y4</RequestId><HostId>2EMVIl1cFf0VHebo1YvZOl4VCd3nKic/QPpIlDPRkIIO47bRmKBN24aoFPbx+sJWL0ABQ53Ry0c=</HostId></Error>
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Deploys the EKS control plane with IAM Roles"
+Parameters:
+  SecurityGroupIds:
+    Type: List<AWS::EC2::SecurityGroup::Id>
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+  ClusterName:
+    Type: String
+    Default: "cluster-1"
+  KubernetesVersion:
+    Type: String
+    AllowedValues: [ "1.20", "1.19", "1.18", "1.17", "1.16" ]
+    Default: "1.20"
+Resources:
+  EKSServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - eks.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSServicePolicy
+        - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+  EKS:
+    Type: "AWS::EKS::Cluster"
+    Properties:
+      Name: !Ref ClusterName
+      ResourcesVpcConfig:
+        SecurityGroupIds: !Ref SecurityGroupIds
+        SubnetIds: !Ref SubnetIds
+      RoleArn: !GetAtt EKSServiceRole.Arn
+      Version: !Ref KubernetesVersion
+Outputs:
+  RoleArn:
+    Description: The role that Amazon EKS will use to create AWS resources for Kubernetes clusters
+    Value: !GetAtt EKSServiceRole.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-RoleArn"
+  EksArn:
+    Value: !GetAtt EKS.Arn
+  CAData:
+    Value: !GetAtt EKS.CertificateAuthorityData
+  EKSEndpoint:
+    Value: !GetAtt EKS.Endpoint
+  EKSName:
+    Value: !Ref EKS

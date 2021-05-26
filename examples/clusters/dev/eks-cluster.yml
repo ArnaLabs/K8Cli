@@ -1,29 +1,66 @@
 ---
 Cloud:
   Name: AWS
-  Profile: kv3
+  AccessKey: AKIARCASOU5Y3JPHAC7Z
+  SecretAccKey: 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
   Region: us-east-1
-  Cluster: test-eks5
-  Bucket: k8-cloud-setup-cluster
+  Cluster: test-eks9
+  Bucket: k8cli-test-eks5-cluster
 VPC:
+  # VPC can not be updated once created
   VpcBlock: 10.1.0.0/16
   PublicSubnets:
     PublicSubnet01Block: 10.1.1.0/24
     PublicSubnet02Block: 10.1.2.0/24
+    #PublicSubnet03Block: 10.1.3.0/24
   PrivateSubnets:
     PrivateSubnet01Block: 10.1.4.0/24
     PrivateSubnet02Block: 10.1.5.0/24
+    #PrivateSubnet03Block: 10.1.6.0/24
 Master:
-  KubernetesVersion: 1.18
-#  SecurityGroupIds: sg-091340d1dd5486d40
-  SubnetIds: [PublicSubnet02Block, PublicSubnet01Block, PrivateSubnet01Block, PrivateSubnet02Block ]
-Nodes:
-#  - NodegroupName: nodegroup-1
-#    SubnetIds: []
-#    InstanceTypes: m5.large
-#  - NodegroupName: nodegroup-2
-#    SubnetIds: [PrivateSubnet01Block, PrivateSubnet02Block]
-#    InstanceTypes: t2.small
-  - NodegroupName: nodegroup-3
+  # Security Group, and subnets, Tags, KMS can't be updated once created
+  # Subnets can be KEY Name if VPC is enabled or actual ID if VPC is disabled
+  # SecurityGroupIds: sg-091340d1dd5486d40
+  KubernetesVersion: 1.20
+  SubnetIds: [PublicSubnet01Block, PrivateSubnet02Block, PublicSubnet02Block, "subnet-0738902add270dce4"]
+  PrivateAccess: true
+  PublicAccess: true
+  PublicCIDR:  [192.170.0.0/15]
+  #Logging: [api, audit, authenticator, controllerManager]
+  #Tags: { NodetypeLabel: test, NodeValeLabel: test2 } # can also be of this format, can be empty
+  #KubernetesNetworkCIDR:
+  KMSKey: arn:aws:kms:us-east-1:073053153137:key/c9d95612-a728-4cd6-99c2-0106feb8146a
+  ## SG/KMS either from cf or user should provide
+  ## kcidr add
+Nodes: ##SG has to be properly test, as of now onlt single sg
+  - NodegroupName: nodegroup-1 #ScalingConfig/Taints/Labels can only be updated on existing nodegroup, lauch config, version, relversion are not enabled
+    AmiType: AL2_x86_64_GPU               # Can be empty
+    SpotInstance: false                   # Can be empty, defaults to false and create ondemand instance
+    DiskSize: 30G                         # defaults to 20G, if left empty
+    InstanceTypes: [t3.medium, t2.medium] # Can be empty defaults to t3.medium
     SubnetIds: [ PrivateSubnet01Block, PrivateSubnet02Block ]
-    InstanceTypes: t2.small
+    ScalingConfig:  #Can be empty
+      DesiredSize: 4 # If left empty, defaults to 1
+      MaxSize: 4       # If left empty, defaults to 1
+      MinSize: 4      # If left empty, defaults to 1
+    RemoteAccess:
+      SSHKey: kops    # Can't be left empty, can we create this key when creating Master?., if not let user pass the value
+      SourceSecurityGroups: [ sg-0bfeecadd9ea6deac] # can be empty, defaults to 0.0.0.0/0, but how this sgs are created?.
+    Labels:
+      Nodetype: test
+      NodeVale: "test2"
+      #Labels: {Nodetype: "test", NodeVale: "test2"} # can also be of this format, can be empty
+    Tags: {NodetypeLabel: test, NodeValeLabel: test2} # can also be of this format, can be empty
+    Taints:
+      - Effect: NO_SCHEDULE
+        Key:    "2"
+        Value:  "3"
+      - Effect: NO_SCHEDULE
+        Key:    "b"
+        Value:  "c"
+#  #  - NodegroupName: nodegroup-2
+#  #    SubnetIds: [PrivateSubnet01Block, PrivateSubnet02Block]
+#  #    InstanceTypes: t2.small
+#  - NodegroupName: nodegroup-3
+#    SubnetIds: [ PrivateSubnet01Block, PrivateSubnet02Block, PrivateSubnet03Block ]
+#    InstanceTypes: t2.micro

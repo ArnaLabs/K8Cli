@@ -1,8 +1,8 @@
 ---
 Cloud:
   Name: AWS
-  AccessKey: AKIARCASOU5Y3JPHAC7Z
-  SecretAccKey: 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
+  AccessKey:
+  SecretAccKey: 
   Region: us-east-1
   Cluster: test-eks9
   Bucket: k8cli-test-eks5-cluster
@@ -27,8 +27,8 @@ Master:
   PublicAccess: true
   PublicCIDR:  [192.170.0.0/15]
   #Logging: [api, audit, authenticator, controllerManager]
-  #Tags: { NodetypeLabel: test, NodeValeLabel: test2 } # can also be of this format, can be empty
-  #KubernetesNetworkCIDR:
+  Tags: { clustertypeLabel: test, clusterValeLabel: test2 } # can also be of this format, can be empty
+  KubernetesNetworkCIDR: 10.250.36.0/24
   KMSKey: arn:aws:kms:us-east-1:073053153137:key/c9d95612-a728-4cd6-99c2-0106feb8146a
   ## SG/KMS either from cf or user should provide
   ## kcidr add

@@ -2,7 +2,7 @@
 Cloud:
   Name: AWS
   AccessKey:
-  SecretAccKey: 
+  SecretAccKey:
   Region: us-east-1
   Cluster: test-eks9
   Bucket: k8cli-test-eks5-cluster

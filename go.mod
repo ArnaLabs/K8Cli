@@ -3,7 +3,7 @@ module github.com/ArnaLabs/K8Cli
 go 1.15
 
 require (
-	github.com/aws/aws-sdk-go v1.36.2
+	github.com/aws/aws-sdk-go v1.38.46
 	github.com/imdario/mergo v0.3.11 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/smallfish/simpleyaml v0.0.0-20170911015856-a32031077861

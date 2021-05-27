@@ -95,6 +95,10 @@ func main() {
 
 		SetupCluster.CheckCluster(clusterfile, context)
 
+	} else if operation == "update-kube-config" {
+
+		SetupCluster.UpdateKubeConfig(clusterfile, context)
+
 	} else if operation == "take_backup" {
 		takeBackup(name, context)
 		fmt.Print("Work In Progress\n")

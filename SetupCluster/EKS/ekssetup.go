@@ -3,10 +3,7 @@ package ekssetup
 import (
 	_ "bytes"
 	"github.com/aws/aws-sdk-go/service/eks"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"io"
 	"k8s.io/apimachinery/pkg/util/json"
-	"net/http"
 	_ "net/http"
 	"regexp"
 	"time"
@@ -18,8 +15,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/iam"
 	awscf "github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go/service/iam"
 	_ "github.com/aws/aws-sdk-go/service/s3"
 	yaml "gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -111,76 +108,76 @@ type Taints struct {
 	Value string `yaml:"Value"`
 }
 
-func DownloadFile(filepath string, url string) error {
-
-	// Get the data
-	resp, err := http.Get(url)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	// Create Directory
-	if _, err := os.Stat("templates"); os.IsNotExist(err) {
-		os.Mkdir("templates", 0775)
-	}
-
-	// Create the file
-	out, err := os.Create(filepath)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	// Write the body to file
-	_, err = io.Copy(out, resp.Body)
-	return err
-}
-func getFileFromURL(fileName string, fileUrl string) {
-	err := DownloadFile(fileName, fileUrl)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("Downloaded: " + fileUrl)
-
-}
-func AddFileToS3(sess *session.Session, VPC []byte, Nodes []byte, s3 string, cluster string) (error, string) {
-	svc := s3manager.NewUploader(sess)
-
-	// Open the file for use
-	VPCfile := string(VPC)
-	VPCfileName := cluster + "-VPC" + ".yml"
-	println("VPC Cloudformation YAML Name: \n", VPCfileName)
-	Nodefile := string(Nodes)
-	NodesfileName := cluster + "-Nodes" + ".yml"
-	println("Nodes Cloudformation YAML Name: \n", NodesfileName)
-
-	_, err := svc.Upload(&s3manager.UploadInput{
-		Bucket: aws.String(s3),             // Bucket to be used
-		Key:    aws.String(VPCfileName),    // Name of the file to be saved
-		Body:   strings.NewReader(VPCfile), // File
-	})
-	if err != nil {
-		fmt.Println(err)
-		return err, ""
-	}
-
-	if err != nil {
-		// Do your error handling here
-		return err, ""
-	}
-	_, err = svc.Upload(&s3manager.UploadInput{
-		Bucket: aws.String(s3),              // Bucket to be used
-		Key:    aws.String(NodesfileName),   // Name of the file to be saved
-		Body:   strings.NewReader(Nodefile), // File
-	})
-	if err != nil {
-		// Do your error handling here
-		return err, ""
-	}
-
-	return err, VPCfileName
-}
+//func DownloadFile(filepath string, url string) error {
+//
+//	// Get the data
+//	resp, err := http.Get(url)
+//	if err != nil {
+//		return err
+//	}
+//	defer resp.Body.Close()
+//
+//	// Create Directory
+//	if _, err := os.Stat("templates"); os.IsNotExist(err) {
+//		os.Mkdir("templates", 0775)
+//	}
+//
+//	// Create the file
+//	out, err := os.Create(filepath)
+//	if err != nil {
+//		return err
+//	}
+//	defer out.Close()
+//
+//	// Write the body to file
+//	_, err = io.Copy(out, resp.Body)
+//	return err
+//}
+//func getFileFromURL(fileName string, fileUrl string) {
+//	err := DownloadFile(fileName, fileUrl)
+//	if err != nil {
+//		panic(err)
+//	}
+//	fmt.Println("Downloaded: " + fileUrl)
+//
+//}
+//func AddFileToS3(sess *session.Session, VPC []byte, Nodes []byte, s3 string, cluster string) (error, string) {
+//	svc := s3manager.NewUploader(sess)
+//
+//	// Open the file for use
+//	VPCfile := string(VPC)
+//	VPCfileName := cluster + "-VPC" + ".yml"
+//	println("VPC Cloudformation YAML Name: \n", VPCfileName)
+//	Nodefile := string(Nodes)
+//	NodesfileName := cluster + "-Nodes" + ".yml"
+//	println("Nodes Cloudformation YAML Name: \n", NodesfileName)
+//
+//	_, err := svc.Upload(&s3manager.UploadInput{
+//		Bucket: aws.String(s3),             // Bucket to be used
+//		Key:    aws.String(VPCfileName),    // Name of the file to be saved
+//		Body:   strings.NewReader(VPCfile), // File
+//	})
+//	if err != nil {
+//		fmt.Println(err)
+//		return err, ""
+//	}
+//
+//	if err != nil {
+//		// Do your error handling here
+//		return err, ""
+//	}
+//	_, err = svc.Upload(&s3manager.UploadInput{
+//		Bucket: aws.String(s3),              // Bucket to be used
+//		Key:    aws.String(NodesfileName),   // Name of the file to be saved
+//		Body:   strings.NewReader(Nodefile), // File
+//	})
+//	if err != nil {
+//		// Do your error handling here
+//		return err, ""
+//	}
+//
+//	return err, VPCfileName
+//}
 
 //Setup EKS Cluster
 
@@ -188,7 +185,7 @@ func ReadEKSYaml(f []byte) {
 	////Setting up variables
 	ElementsSubnetIDs := make(map[string]string)
 
-	var MClusterName, vpcsecuritygps, vpcclustername, Profile, Acceesskey, Secretkey, Region, Cluster, VPCfileName, EksfileName, VPCSourceFile string
+	var MClusterName, vpcsecuritygps, vpcclustername, Profile, Acceesskey, Secretkey, Region, Cluster, VPCfileName, EksfileName string
 	var nodelen int
 	var vpcsubnets *string
 	var MSubnetIds []*string
@@ -248,14 +245,14 @@ func ReadEKSYaml(f []byte) {
 	S3Name := eksSession.Cloud.Bucket
 
 	//Loading Yaml
-	VPCFile, err := ioutil.ReadFile("templates/0001-vpc.yaml")
-	NodeFile, err := ioutil.ReadFile("templates/0007-esk-managed-node-group.yaml")
+	//VPCFile, err := ioutil.ReadFile("templates/0001-vpc.yaml")
+	//NodeFile, err := ioutil.ReadFile("templates/0007-esk-managed-node-group.yaml")
 
 	//Add Yaml templates to s3
-	err, VPCfileName = AddFileToS3(sess, VPCFile, NodeFile, S3Name, Cluster)
-	if err != nil {
-		log.Fatal(err)
-	}
+	//err, VPCfileName = AddFileToS3(sess, VPCFile, NodeFile, S3Name, Cluster)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 
 	////Checking if VPC is enabled
 	fmt.Println("Checking if VPC creation enabled")
@@ -273,16 +270,16 @@ func ReadEKSYaml(f []byte) {
 	}
 
 	if PublicSubnetLen == 2 {
-		VPCSourceFile = "https://k8s-cloud-templates.s3.amazonaws.com/vpc-4subnets.yaml"
+		VPCfileName = "https://k8s-cloud-templates.s3.amazonaws.com/vpc-4subnets.yaml"
 	} else if PublicSubnetLen == 3 {
-		VPCSourceFile = "https://k8s-cloud-templates.s3.amazonaws.com/vpc-6subnets.yaml"
+		VPCfileName = "https://k8s-cloud-templates.s3.amazonaws.com/vpc-6subnets.yaml"
 	} else {
 		fmt.Println("Only 2 or 4 Public/Private Subnet pairs are accepted")
 		os.Exit(255)
 	}
 
-	getFileFromURL("templates/0001-vpc.yaml", VPCSourceFile)
-	getFileFromURL("templates/0007-esk-managed-node-group.yaml", "https://k8s-cloud-templates.s3.amazonaws.com/0007-esk-managed-node-group.yaml")
+	//getFileFromURL("templates/0001-vpc.yaml", VPCSourceFile)
+	//getFileFromURL("templates/0007-esk-managed-node-group.yaml", "https://k8s-cloud-templates.s3.amazonaws.com/0007-esk-managed-node-group.yaml")
 
 	if VPCName != "" {
 		fmt.Println("VPC creation enabled, checking VPC state.......\n")
@@ -411,7 +408,8 @@ func Create_VPC(sess *session.Session, file []byte, cluster string, S3 string, V
 
 	//TemplateURL, _ := yaml.Get("VPC").Get("TemplateURL").String()
 	//TemplateURL := eksvpc.VPC.TemplateURL
-	TemplateURL := "https://" + S3 + ".s3.amazonaws.com/" + VPCFilename
+	//TemplateURL := "https://" + S3 + ".s3.amazonaws.com/" + VPCFilename
+	TemplateURL := VPCFilename
 	v.StackName = StackName
 	v.TemplateURL = TemplateURL
 

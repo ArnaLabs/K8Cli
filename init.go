@@ -26,7 +26,9 @@ func Init(clustername string, kubeconfig string) (err error) {
 
 	addonsfilePath := "K8Cli/" + clustername + "/addons"
 	clusterfilePath := "K8Cli/" + clustername + "/cluster"
+	securitygppath := "K8Cli/" + clustername + "/SecurityGroups/"
 	clusterpath := clusterfilePath + "/cluster.yml"
+	sgpath := securitygppath + "/samplesg.yml"
 	addonpath := addonsfilePath + "/addons.yml"
 
 	//println(data)
@@ -54,6 +56,7 @@ func Init(clustername string, kubeconfig string) (err error) {
 			ResourceQuotaFile string `yaml:"ResourceQuotafile"`
 			ClusterYaml       string `yaml:"ClusterYaml"`
 			Addons            string `yaml:"Addons"`
+			SecurityGroups    string `Yaml:"SecurityGroups"`
 		}
 		var data = `
 ---
@@ -67,6 +70,7 @@ ClusterDetails:
   ResourceQuotaFile: {{ .ResourceQuotaFile }}
   ClusterYaml: {{ .ClusterYaml }}
   Addons: {{ .Addons }}
+  SecurityGroups: {{ .SecurityGroups }}
 `
 
 		// Create the file:
@@ -288,6 +292,53 @@ ResourceQuota:
 
 	} else {
 		fmt.Println("K8Cli/" + clustername + "/mgmt/ResourceQuotas exists, please manually edit file to make changes or provide new cluster name")
+	}
+
+	_, err = os.Stat(securitygppath)
+	if os.IsNotExist(err) {
+		errDir := os.MkdirAll(securitygppath, 0755)
+		if errDir != nil {
+			log.Fatal(err)
+		}
+
+		var SampleSGYaml = `
+Name: testsg1
+Egress:
+  - FromPort: 20
+    IPProtocal: tcp
+    IPRange: [193.0.2.0/24,198.51.100.0/24]
+    ToPort: 35
+  #SecurityGroups: [sg-123,sg-123]
+  - FromPort: 31
+    IPProtocal: udp
+    IPRange: [0.0.0.0/0]
+    ToPort: 35
+  # - FromPort: -1
+  #   IPProtocal: "-1"
+  #   IPRange: [ 198.52.100.0/24 ]
+  #   ToPort: -1
+  #  #SecurityGroups: [ ]
+Ingress:
+  - FromPort: 20
+    IPProtocal: tcp
+    IPRange: [193.0.2.0/24,198.51.100.0/24]
+    ToPort: 35
+  #SecurityGroups: [sg-123,sg-123]
+  - FromPort: 31
+    IPProtocal: udp
+    IPRange: [0.0.0.0/0]
+    ToPort: 35
+  # - FromPort: -1
+  #   IPProtocal: "-1"
+  #   IPRange: [ 198.52.100.0/24 ]
+  #   ToPort: -1
+  #  #SecurityGroups: [ ]`
+		fmt.Println("Creating K8Cli/" + clustername + "/cluster/securitygroups/samplesg.yml sample file")
+		err = ioutil.WriteFile(sgpath, []byte(SampleSGYaml), 0644)
+		check(err)
+
+	} else {
+		fmt.Println("K8Cli/" + clustername + "/cluster exists, please manually edit file to make changes or provide new cluster name")
 	}
 
 	_, err = os.Stat(clusterfilePath)

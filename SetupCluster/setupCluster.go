@@ -18,7 +18,7 @@ type CldDetails struct {
 
 //Setup AKS or EKS Cluster
 
-func CheckCluster(f string, context string) {
+func CheckCluster(sf string, f string, context string, clustertype string, clustergreenfile string) {
 
 	////Reading inputs from yaml
 
@@ -36,6 +36,17 @@ func CheckCluster(f string, context string) {
 		panic(err)
 	}
 
+	filegreenConfigYml, err := ioutil.ReadFile(clustergreenfile)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	//err = yaml.Unmarshal([]byte(filegreenConfigYml), &cloud)
+	//fmt.Println(cloud)
+	//if err != nil {
+	//	panic(err)
+	//}
+
 	if cloud.Cloud.Name == "AWS" {
 		fmt.Printf("Cloud: %#v\n", cloud.Cloud.Name)
 		fmt.Printf("Region: %#v\n", cloud.Cloud.Region)
@@ -44,7 +55,7 @@ func CheckCluster(f string, context string) {
 		//fmt.Println("Setting up EKS Cluster ........")
 		//Passing cluster file
 		if context == cloud.Cloud.Cluster {
-			ekssetup.ReadEKSYaml([]byte(fileConfigYml))
+			ekssetup.ReadEKSYaml([]byte(fileConfigYml), sf, clustertype, filegreenConfigYml)
 		} else {
 			fmt.Println("ClusterName doesn't match with Context name. Please validate cluster yml")
 		}

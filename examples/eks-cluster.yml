@@ -3,7 +3,7 @@ Cloud:
   Name: AWS
   #Profile: kv3
   AccessKey:
-  SecretAccKey: 
+  SecretAccKey:
   Region: us-east-1
   Cluster: test-eks999
   Bucket: k8-cloud-setup-cluster

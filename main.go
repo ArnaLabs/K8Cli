@@ -14,11 +14,12 @@ import (
 )
 
 func main() {
-	var masterurl, kubeconfigfile, clusterfile, helmconfig string
+	var masterurl, kubeconfigfile, clusterfile, helmconfig, securityfolder, clustergreenfile string
 	var InitialConfigVals InitialConfigVals
 	var config HelmConfig
-	var operation, context, name string
+	var operation, context, name, ctype, clustertype string
 
+	flag.StringVar(&ctype, "clustertype", "green", "Provide whether operation needed to be performed - Blue/Green Cluster")
 	flag.StringVar(&operation, "operation", "cluster", "Provide whether operation needed to be performed - Cluster/Addons")
 	flag.StringVar(&context, "context", "minikube", "Provide kubernetes context for addon")
 	flag.StringVar(&name, "name", "backup", "backup name")
@@ -51,13 +52,26 @@ func main() {
 
 		if operation == "cluster" {
 
-			clusterfile = InitialConfigVals.ClusterDetails.ClusterYaml
+			securityfolder = InitialConfigVals.ClusterDetails.SecurityGroups
+			clusterfile = InitialConfigVals.ClusterDetails.ClusterYaml + "/cluster.yml"
+			clustergreenfile = InitialConfigVals.ClusterDetails.ClusterYaml + "/cluster-green.yml"
+			clustertype = ctype
+			//fmt.Println("test123", securityfolder)
+
 			fmt.Println("Path to cluster yml: ", clusterfile)
+			fmt.Println("Path to cluster green yml: ", clustergreenfile)
+			fmt.Println("Path to Security Groups: ", securityfolder)
+			fmt.Println("Cluster type: ", clustertype)
 
 		} else {
 
-			clusterfile = InitialConfigVals.ClusterDetails.ClusterYaml
+			securityfolder = InitialConfigVals.ClusterDetails.SecurityGroups
+			clusterfile = InitialConfigVals.ClusterDetails.ClusterYaml + "/cluster.yml"
+			clustergreenfile = InitialConfigVals.ClusterDetails.ClusterYaml + "/cluster-green.yml"
+			//fmt.Println("test123", securityfolder)
 			fmt.Println("Path to cluster yml: ", clusterfile)
+			fmt.Println("Path to Security Groups: ", securityfolder)
+			fmt.Println("Path to cluster green yml: ", clustergreenfile)
 
 			kubeconfigfile = InitialConfigVals.ClusterDetails.KubeConfig
 			fmt.Println("Path to kubeconfig: ", kubeconfigfile)
@@ -93,7 +107,7 @@ func main() {
 
 	} else if operation == "cluster" {
 
-		SetupCluster.CheckCluster(clusterfile, context)
+		SetupCluster.CheckCluster(securityfolder, clusterfile, context, clustertype, clustergreenfile)
 
 	} else if operation == "take_backup" {
 		takeBackup(name, context)

@@ -42,5 +42,6 @@ type InitialConfigVals struct {
 		ResourceQuotaFile string `yaml:"ResourceQuotaFile"`
 		ClusterYaml       string `yaml:"ClusterYaml"`
 		Addons            string `yaml:"Addons"`
+		SecurityGroups    string `yaml:"SecurityGroups"`
 	} `yaml:"ClusterDetails"`
 }

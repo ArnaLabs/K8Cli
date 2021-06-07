@@ -33,7 +33,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	var manageOperation = StrSlice{"cluster", "addons", "resource-all", "namespace", "storage", "resourcequota", "defaultquota", "serviceaccount"}
+	var manageOperation = StrSlice{"cluster", "update-kube-config", "addons", "resource-all", "namespace", "storage", "resourcequota", "defaultquota", "serviceaccount"}
 
 	if manageOperation.Has(operation) {
 
@@ -50,7 +50,7 @@ func main() {
 			panic(err)
 		}
 
-		if operation == "cluster" {
+		if operation == "cluster" || operation == "update-kube-config" {
 
 			securityfolder = InitialConfigVals.ClusterDetails.SecurityGroups
 			clusterfile = InitialConfigVals.ClusterDetails.ClusterYaml + "/cluster.yml"
@@ -111,6 +111,8 @@ func main() {
 
 	} else if operation == "update-kube-config" {
 
+		fmt.Println(clusterfile)
+		fmt.Println(context)
 		SetupCluster.UpdateKubeConfig(clusterfile, context)
 
 	} else if operation == "take_backup" {

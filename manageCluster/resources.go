@@ -1,6 +1,6 @@
 package manageCluster
 
-import "C"
+//import "C"
 import (
 	"context"
 	"fmt"

@@ -1,0 +1,80 @@
+---
+Cloud:
+  Name: AWS
+  AccessKey: xxxxxxxx
+  SecretAccKey: xxxxxxx
+  Region: us-east-1
+  Cluster: test-eks9
+  Bucket: k8cli-test-eks5-cluster
+VPC:
+# VPC can not be updated once created
+  VpcBlock: 10.1.0.0/16
+  PublicSubnets:
+    PublicSubnet01Block: 10.1.1.0/24
+    PublicSubnet02Block: 10.1.2.0/24
+    #PublicSubnet03Block: 10.1.3.0/24
+  PrivateSubnets:
+    PrivateSubnet01Block: 10.1.4.0/24
+    PrivateSubnet02Block: 10.1.5.0/24
+    #PrivateSubnet03Block: 10.1.6.0/24
+SecurityGroups: ## SG has to be passed in sperate yml file in cluster folder with sg-<sg name>, SGs can be updated after cluster creation
+  Names: [testsg1, testsg2]     # but new sgs cant be added to cluster once Master is created
+Master:
+# Security Group, and subnets, Tags, KMS can't be updated once created
+# Subnets can be KEY Name if VPC is enabled or actual ID if VPC is disabled
+# If subnets are not listed here the VPC subents will be assigned to master
+# SecurityGroupIds: sg-091340d1dd5486d40
+  KubernetesVersion: 1.20
+  SubnetIds: [PublicSubnet01Block, PrivateSubnet02Block, PublicSubnet02Block]
+  PrivateAccess: true
+  PublicAccess: true
+  PublicCIDR:  [192.170.0.0/15]
+  #Logging: [api, audit, authenticator, controllerManager]
+  #Tags: { NodetypeLabel: test, NodeValeLabel: test2 } # can also be of this format, can be empty
+  #KubernetesNetworkCIDR:
+  KMSKey: arn:aws:kms:us-east-1:073053153137:key/c9d95612-a728-4cd6-99c2-0106feb8146a
+Nodes: ##SG has to be properly test, as of now only single sg
+  - NodegroupName: nodegroup-1 #ScalingConfig/Taints/Labels can only be updated on existing nodegroup, lauch config, version, relversion are not enabled
+    AmiType: AL2_x86_64_GPU               # Can be empty
+    SpotInstance: false                   # Can be empty, defaults to false and create ondemand instance
+    DiskSize: 30G                         # defaults to 20G, if left empty
+    InstanceTypes: [t3.medium, t2.medium] # Can be empty defaults to t3.medium
+    SubnetIds: [ PrivateSubnet01Block, PrivateSubnet02Block ]
+    ScalingConfig:  #Can be empty
+      DesiredSize: 4 # If left empty, defaults to 1
+      MaxSize: 4       # If left empty, defaults to 1
+      MinSize: 4      # If left empty, defaults to 1
+    RemoteAccess:
+     # SSHKey: kops    # Can't be left empty, can we create this key when creating Master?., if not let user pass the value
+      SourceSecurityGroups: [ sg-0bfeecadd9ea6deac] # can be empty, defaults to 0.0.0.0/0, but how this sgs are created?.
+    Labels:
+      Nodetype: test
+      NodeVale: "test2"
+    #Labels: {Nodetype: "test", NodeVale: "test2"} # can also be of this format, can be empty
+    Tags: {NodetypeLabel: test, NodeValeLabel: test2} # can also be of this format, can be empty
+    Taints:
+      - Effect: NO_SCHEDULE
+        Key:    "2"
+        Value:  "3"
+      - Effect: NO_SCHEDULE
+        Key:    "b"
+        Value:  "c"
+  #  - NodegroupName: nodegroup-2
+  #    SubnetIds: [PrivateSubnet01Block, PrivateSubnet02Block]
+  #    InstanceTypes: t2.small
+    #- NodegroupName: nodegroup-3
+     # SubnetIds: [ PrivateSubnet01Block, PrivateSubnet02Block, PrivateSubnet03Block ]
+     # InstanceTypes: t2.micro
+
+##CreateSG, CreateKeyPair, Architure, BlueGree, backup restore, helm - aws demo,
+
+##AWS kubeconfig,
+##Architecture
+ #- VPC netorkimg
+ #- EKS networking
+
+
+##Destroy next release
+##Change waiting marker Creating NodeGroups... to ..............
+##Creating and testing sgs
+##KMS key will be created outside, and people should pass,it. if added it can't be removed

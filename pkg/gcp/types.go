@@ -4,7 +4,7 @@ type Cluster struct {
 	Cloud struct {
 		Name            string `yaml:"Name"`
 		Project         string `yaml:"Project"`
-		Zone            string `yaml:"Zone"`
+		Region          string `yaml:"Region"`
 		Cluster         string `yaml:"Cluster"`
 		CredentialsPath string `yaml:"CredentialsPath"`
 	} `yaml:"Cloud"`

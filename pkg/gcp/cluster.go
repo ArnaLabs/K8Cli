@@ -92,9 +92,11 @@ func ApplyCluster(clusterYaml []byte) error {
 
 	fmt.Printf("Got VPC : %s\n", *vpc.SelfLink)
 
-	vpcUrl := vpc.SelfLink
-	if err := CreateSubnets(ctx, snClient, cluster, vpcUrl); err != nil {
-		return err
+	if !*cluster.VPC.AutoCreateSubnetworks {
+		vpcUrl := vpc.SelfLink
+		if err := CreateSubnets(ctx, snClient, cluster, vpcUrl); err != nil {
+			return err
+		}
 	}
 
 	return nil

@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"github.com/ArnaLabs/K8Cli/pkg/gcp"
 )
 
 type CldDetails struct {
@@ -42,8 +43,10 @@ func CheckCluster(sf string, f string, context string, clustertype string, clust
 	}
 
 	filegreenConfigYml, err := ioutil.ReadFile(clustergreenfile)
-	if err != nil {
-		fmt.Println(err)
+  if os.IsNotExist(err) {
+    fmt.Printf("Green cluster config doesn't exist, ignoring\n")
+  }else if err != nil {
+    fmt.Printf("Unable to open green config file, err : %v", err)
 	}
 
 	//err = yaml.Unmarshal([]byte(filegreenConfigYml), &cloud)
@@ -65,6 +68,17 @@ func CheckCluster(sf string, f string, context string, clustertype string, clust
 			fmt.Println("ClusterName doesn't match with Context name. Please validate cluster yml")
 		}
 	}
+
+  if cloud.Cloud.Name == "GCP" {
+    fmt.Printf("\nSetting up GCP Cluster\n")
+
+    if err := gcp.ApplyCluster(fileConfigYml); err != nil {
+      fmt.Printf("Unable to apply gcp cluster, err : %v", err)
+      // Exit and return error code 1
+      os.Exit(1)
+    }
+
+  }
 
 	//End EKS Cluster elements session values
 	//if cloud.Cloud.Name == "Azure" {

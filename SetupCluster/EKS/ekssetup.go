@@ -57,47 +57,47 @@ type EksVPC struct {
 }
 type EksMaster struct {
 	Master struct {
-		KubernetesVersion string      `yaml:"KubernetesVersion"`
-		SecurityGroupIds  string      `yaml:"SecurityGroupIds"`
-		SubnetIds         interface{} `yaml:"SubnetIds"`
-		PrivateAccess		*bool     `yaml:"PrivateAccess"`
-		PublicAccess 		*bool	  `yaml:"PublicAccess"`
-		PublicCIDR 		 interface{}     `yaml:"PublicCIDR"`
-		Logging          interface{} `yaml:"Logging"`
-		KMSKey			 string   	`yaml:"KMSKey"`
-		Tags 		     interface{} `yaml:"Tags"`
-		KubernetesNetworkCIDR string `yaml:"KubernetesNetworkCIDR"`
+		KubernetesVersion     string      `yaml:"KubernetesVersion"`
+		SecurityGroupIds      string      `yaml:"SecurityGroupIds"`
+		SubnetIds             interface{} `yaml:"SubnetIds"`
+		PrivateAccess         *bool       `yaml:"PrivateAccess"`
+		PublicAccess          *bool       `yaml:"PublicAccess"`
+		PublicCIDR            interface{} `yaml:"PublicCIDR"`
+		Logging               interface{} `yaml:"Logging"`
+		KMSKey                string      `yaml:"KMSKey"`
+		Tags                  interface{} `yaml:"Tags"`
+		KubernetesNetworkCIDR string      `yaml:"KubernetesNetworkCIDR"`
 	} `yaml:"Master"`
 }
 type EksMasterSDK struct {
 	Master struct {
-		KubernetesVersion string      `yaml:"KubernetesVersion"`
-		SecurityGroupIds  []*string      `yaml:"SecurityGroupIds"`
-		SubnetIds         []*string   `yaml:"SubnetIds"`
-		PrivateAccess		*bool     `yaml:"PrivateAccess"`
-		PublicAccess 		*bool	  `yaml:"PublicAccess"`
-		PublicCIDR 		[]*string     `yaml:"PublicCIDR"`
-		Logging         []*string `yaml:"Logging"`
-		KMSKey			*string   	`yaml:"KMSKey"`
-		Tags 		  map[string]string `yaml:"Tags"`
-		KubernetesNetworkCIDR string `yaml:"KubernetesNetworkCIDR"`
+		KubernetesVersion     string            `yaml:"KubernetesVersion"`
+		SecurityGroupIds      []*string         `yaml:"SecurityGroupIds"`
+		SubnetIds             []*string         `yaml:"SubnetIds"`
+		PrivateAccess         *bool             `yaml:"PrivateAccess"`
+		PublicAccess          *bool             `yaml:"PublicAccess"`
+		PublicCIDR            []*string         `yaml:"PublicCIDR"`
+		Logging               []*string         `yaml:"Logging"`
+		KMSKey                *string           `yaml:"KMSKey"`
+		Tags                  map[string]string `yaml:"Tags"`
+		KubernetesNetworkCIDR string            `yaml:"KubernetesNetworkCIDR"`
 	} `yaml:"Master"`
 }
 type NodeList struct {
 	Nodes []Nodevalues `yaml:"Nodes"`
 }
 type Nodevalues struct {
-	NodegroupName string      		`yaml:"NodegroupName"`
-	InstanceTypes []*string     	`yaml:"InstanceTypes"`
-	SubnetIds     []*string 		`yaml:"SubnetIds"`
-	SpotInstance	 bool			`yaml:"SpotInstance"`
-	DiskSize 	 string			`yaml:"DiskSize"`
-	Labels 		 map[string]string `yaml:"Labels"`
-	AmiType 	 string           `yaml:"AmiType"`
-	Tags 		  map[string]string `yaml:"Tags"`
-	ScalingConfig map[string]int `yaml:"ScalingConfig"`
-	RemoteAccess  RemoteAccess `yaml:"RemoteAccess"`
-	Taints 		  []Taints	`yaml:"Taints"`
+	NodegroupName string            `yaml:"NodegroupName"`
+	InstanceTypes []*string         `yaml:"InstanceTypes"`
+	SubnetIds     []*string         `yaml:"SubnetIds"`
+	SpotInstance  bool              `yaml:"SpotInstance"`
+	DiskSize      string            `yaml:"DiskSize"`
+	Labels        map[string]string `yaml:"Labels"`
+	AmiType       string            `yaml:"AmiType"`
+	Tags          map[string]string `yaml:"Tags"`
+	ScalingConfig map[string]int    `yaml:"ScalingConfig"`
+	RemoteAccess  RemoteAccess      `yaml:"RemoteAccess"`
+	Taints        []Taints          `yaml:"Taints"`
 }
 type RemoteAccess struct {
 	//SSHKey string `yaml:"SSHKey"`
@@ -105,8 +105,8 @@ type RemoteAccess struct {
 }
 type Taints struct {
 	Effect string `yaml:"Effect"`
-	Key string `yaml:"Key"`
-	Value string `yaml:"Value"`
+	Key    string `yaml:"Key"`
+	Value  string `yaml:"Value"`
 }
 type SecurityGroup struct {
 	SecurityGroups struct {
@@ -114,44 +114,45 @@ type SecurityGroup struct {
 	} `yaml:"SecurityGroups"`
 }
 type SecurityRules struct {
-	Name          string `yaml:"Name"`
+	Name   string `yaml:"Name"`
 	Egress []struct {
-		FromPort       int64   `yaml:"FromPort"`
+		FromPort       int64    `yaml:"FromPort"`
 		IPProtocal     string   `yaml:"IPProtocal"`
 		IPRange        []string `yaml:"IPRange"`
-		ToPort         int64   `yaml:"ToPort"`
+		ToPort         int64    `yaml:"ToPort"`
 		SecurityGroups []string `yaml:"SecurityGroups"`
 	} `yaml:"Egress"`
 	Ingress []struct {
-		FromPort       int64   `yaml:"FromPort"`
+		FromPort       int64    `yaml:"FromPort"`
 		IPProtocal     string   `yaml:"IPProtocal"`
 		IPRange        []string `yaml:"IPRange"`
-		ToPort         int64   `yaml:"ToPort"`
+		ToPort         int64    `yaml:"ToPort"`
 		SecurityGroups []string `yaml:"SecurityGroups"`
 	} `yaml:"Ingress"`
 }
+
 //func DownloadFile(filepath string, url string) error {
 
-	// Get the data
+// Get the data
 //	resp, err := http.Get(url)
 //	if err != nil {
 //		return err
 //	}
 //	defer resp.Body.Close()
 
-	// Create Directory
+// Create Directory
 //	if _, err := os.Stat("templates"); os.IsNotExist(err) {
 //		os.Mkdir("templates", 0775)
 //	}
 
-	// Create the file
+// Create the file
 //	out, err := os.Create(filepath)
 //	if err != nil {
 //		return err
 //	}
 //	defer out.Close()
 
-	// Write the body to file
+// Write the body to file
 //	_, err = io.Copy(out, resp.Body)
 //	return err
 //}
@@ -166,13 +167,13 @@ type SecurityRules struct {
 //func AddFileToS3(sess *session.Session, VPC []byte, s3 string, cluster string) (error, string) {
 //	svc := s3manager.NewUploader(sess)
 //
-	// Open the file for use
+// Open the file for use
 //	VPCfile := string(VPC)
 //	VPCfileName := cluster + "-VPC" + ".yml"
 //	println("VPC Cloudformation YAML Name: \n", VPCfileName)
-	//Nodefile := string(Nodes)
-	//NodesfileName := cluster + "-Nodes" + ".yml"
-	//println("Nodes Cloudformation YAML Name: \n", NodesfileName)
+//Nodefile := string(Nodes)
+//NodesfileName := cluster + "-Nodes" + ".yml"
+//println("Nodes Cloudformation YAML Name: \n", NodesfileName)
 
 //	_, err := svc.Upload(&s3manager.UploadInput{
 //		Bucket: aws.String(s3),             // Bucket to be used
@@ -184,19 +185,19 @@ type SecurityRules struct {
 //		return err, ""
 //	}
 
-	//if err != nil {
-		// Do your error handling here
-		//return err, ""
-	//}
-	//_, err = svc.Upload(&s3manager.UploadInput{
-		//Bucket: aws.String(s3),              // Bucket to be used
-		//Key:    aws.String(NodesfileName),   // Name of the file to be saved
-		//Body:   strings.NewReader(Nodefile), // File
-	//})
-	//if err != nil {
-		// Do your error handling here
-	//	return err, ""
-	//}
+//if err != nil {
+// Do your error handling here
+//return err, ""
+//}
+//_, err = svc.Upload(&s3manager.UploadInput{
+//Bucket: aws.String(s3),              // Bucket to be used
+//Key:    aws.String(NodesfileName),   // Name of the file to be saved
+//Body:   strings.NewReader(Nodefile), // File
+//})
+//if err != nil {
+// Do your error handling here
+//	return err, ""
+//}
 
 //	return err, VPCfileName
 //}
@@ -209,7 +210,7 @@ func ReadEKSYaml(f []byte, sf string, clustertype string, clustergreenfile []byt
 	ElementsSubnetIDs := make(map[string]string)
 	ElementsSGIDs := make(map[string]string)
 
-	var MClusterName,  vpcclustername, Profile, Acceesskey, Secretkey, Region, Cluster, VPCfileName, EksfileName string
+	var MClusterName, vpcclustername, Profile, Acceesskey, Secretkey, Region, Cluster, VPCfileName, EksfileName string
 	var nodelen int
 	var vpcsubnets *string
 	var MSubnetIds, vpcsecuritygps []*string
@@ -278,7 +279,7 @@ func ReadEKSYaml(f []byte, sf string, clustertype string, clustergreenfile []byt
 	//err, VPCfileName = AddFileToS3(sess, VPCFile, S3Name, Cluster)
 	//if err != nil {
 	//	log.Fatal(err)
-    //}
+	//}
 
 	////Checking if VPC is enabled
 
@@ -297,9 +298,9 @@ func ReadEKSYaml(f []byte, sf string, clustertype string, clustergreenfile []byt
 	}
 
 	if PublicSubnetLen == 2 {
-		VPCfileName  = "https://k8s-cloud-templates.s3.amazonaws.com/vpc-4subnets.yaml"
+		VPCfileName = "https://k8s-cloud-templates.s3.amazonaws.com/vpc-4subnets.yaml"
 	} else if PublicSubnetLen == 3 {
-		VPCfileName  = "https://k8s-cloud-templates.s3.amazonaws.com/vpc-6subnets.yaml"
+		VPCfileName = "https://k8s-cloud-templates.s3.amazonaws.com/vpc-6subnets.yaml"
 	} else {
 		fmt.Println("Only 2 or 4 Public/Private Subnet pairs are accepted")
 		os.Exit(255)
@@ -324,7 +325,7 @@ func ReadEKSYaml(f []byte, sf string, clustertype string, clustergreenfile []byt
 			fmt.Println("security groups not provided")
 		} else {
 			fmt.Println("Creating security groups")
-			vpcsecuritygps, ElementsSGIDs = Create_SG (sess, sglist, Cluster, VPCName, sf)
+			vpcsecuritygps, ElementsSGIDs = Create_SG(sess, sglist, Cluster, VPCName, sf)
 		}
 
 		err = yaml.Unmarshal([]byte(file), &ConfNode)
@@ -339,10 +340,10 @@ func ReadEKSYaml(f []byte, sf string, clustertype string, clustergreenfile []byt
 		}
 
 		Master := eksMaster
-		if (EksMaster{}) != Master  {
+		if (EksMaster{}) != Master {
 			fmt.Println("Master creation enabled, creating/updating stacks.......")
 			//MClusterName, MSubnetIds = Create_Master(sess, vpcsecuritygps, vpcclustername, vpcsubnets, ElementsSubnetIDs, file, Cluster, S3Name, EksfileName)
-			MClusterName, MSubnetIds, _ = Create_Master_sdk(sess, vpcsecuritygps, vpcclustername, vpcsubnets, ElementsSGIDs ,ElementsSubnetIDs, file, Cluster, S3Name, EksfileName)
+			MClusterName, MSubnetIds, _ = Create_Master_sdk(sess, vpcsecuritygps, vpcclustername, vpcsubnets, ElementsSGIDs, ElementsSubnetIDs, file, Cluster, S3Name, EksfileName)
 
 			if nodelen == 0 {
 				fmt.Println("Master creation completed, no node groups provided.......")
@@ -369,7 +370,7 @@ func ReadEKSYaml(f []byte, sf string, clustertype string, clustergreenfile []byt
 			fmt.Println("security groups not provided")
 		} else {
 			fmt.Println("Creating security groups")
-			vpcsecuritygps, ElementsSGIDs = Create_SG (sess, sglist, Cluster, VPCName, sf)
+			vpcsecuritygps, ElementsSGIDs = Create_SG(sess, sglist, Cluster, VPCName, sf)
 		}
 
 		err = yaml.Unmarshal([]byte(filegreen), &ConfNode)
@@ -383,14 +384,14 @@ func ReadEKSYaml(f []byte, sf string, clustertype string, clustergreenfile []byt
 			panic(err)
 		}
 		//vpcclusternamegreen := vpcclustername+"-green"
-		vpcclusternamegreen := Cluster+"-green"
-		Clustergreen := Cluster+"-green"
+		vpcclusternamegreen := Cluster + "-green"
+		Clustergreen := Cluster + "-green"
 		//fmt.Println("test123", vpcclusternamegreen,Clustergreen)
 		Master := eksMaster
-		if (EksMaster{}) != Master  {
+		if (EksMaster{}) != Master {
 			fmt.Println("Master creation enabled, creating/updating stacks.......")
 			//MClusterName, MSubnetIds = Create_Master(sess, vpcsecuritygps, vpcclusternamegreen, vpcsubnets, ElementsSubnetIDs, file, Cluster, S3Name, EksfileName)
-			MClusterName, MSubnetIds, _ = Create_Master_sdk(sess, vpcsecuritygps, vpcclusternamegreen, vpcsubnets, ElementsSGIDs ,ElementsSubnetIDs, filegreen, Clustergreen, S3Name, EksfileName)
+			MClusterName, MSubnetIds, _ = Create_Master_sdk(sess, vpcsecuritygps, vpcclusternamegreen, vpcsubnets, ElementsSGIDs, ElementsSubnetIDs, filegreen, Clustergreen, S3Name, EksfileName)
 
 			if nodelen == 0 {
 				fmt.Println("Master creation completed, no node groups provided.......")
@@ -413,32 +414,31 @@ func ReadEKSYaml(f []byte, sf string, clustertype string, clustergreenfile []byt
 		fmt.Println("Please provide valid inputs")
 	}
 
-
 }
 func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR string, sgpath string) ([]*string, map[string]string) {
 
 	svc := ec2.New(sess)
-	stackname := ClusterName+"-VPC-Stack-VPC"
+	stackname := ClusterName + "-VPC-Stack-VPC"
 	ClusterNamest := []*string{}
-	for i := 0; i < len(ClusterName); i ++ {
+	for i := 0; i < len(ClusterName); i++ {
 		ClusterNamest = append(ClusterNamest, &stackname)
 	}
 
 	//fmt.Println(stackname, ClusterNamest)
 
 	CIDRst := []*string{}
-	for i := 0; i < len(CIDR); i ++ {
+	for i := 0; i < len(CIDR); i++ {
 		CIDRst = append(CIDRst, &CIDR)
 	}
 
 	vpcid := &ec2.DescribeVpcsInput{
-		Filters: []*ec2.Filter{ &ec2.Filter{
-		Name:   aws.String("tag:Name"),
-		Values: ClusterNamest,
-			}, &ec2.Filter {
-		Name: aws.String("cidr"),
-		Values: CIDRst,
-	},
+		Filters: []*ec2.Filter{&ec2.Filter{
+			Name:   aws.String("tag:Name"),
+			Values: ClusterNamest,
+		}, &ec2.Filter{
+			Name:   aws.String("cidr"),
+			Values: CIDRst,
+		},
 		},
 	}
 	result, err := svc.DescribeVpcs(vpcid)
@@ -459,7 +459,6 @@ func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR
 	elemetsg := []*string{}
 	ElementsSGIDs := make(map[string]string)
 
-
 	if len(result.Vpcs) == 0 {
 		fmt.Println("No VPC found")
 	} else {
@@ -469,9 +468,9 @@ func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR
 		fmt.Println("Security Groups listed: ", SGNames)
 		fmt.Println("VPC ID: ", awsutil.StringValue(ID))
 
-		for i := 0; i < len(SGNames); i ++ {
+		for i := 0; i < len(SGNames); i++ {
 
-			SGNameRaw := ClusterName+"-"+SGNames[i]
+			SGNameRaw := ClusterName + "-" + SGNames[i]
 			var SGName []*string
 			SGName = append(SGName, &SGNameRaw)
 
@@ -481,10 +480,10 @@ func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR
 				Filters: []*ec2.Filter{&ec2.Filter{
 					Name:   aws.String("vpc-id"),
 					Values: []*string{ID},
-					},&ec2.Filter{
+				}, &ec2.Filter{
 					Name:   aws.String("group-name"),
 					Values: SGName,
-					},
+				},
 				},
 			}
 			result0, err := svc.DescribeSecurityGroups(check)
@@ -501,7 +500,7 @@ func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR
 			}
 
 			fmt.Println(result0.SecurityGroups)
-			filePath := sgpath+"/"+"sg-"+SGNames[i]+".yml"
+			filePath := sgpath + "/" + "sg-" + SGNames[i] + ".yml"
 			fmt.Println(filePath)
 			sg, err := ioutil.ReadFile(filePath)
 
@@ -519,7 +518,7 @@ func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR
 				var srcountegress = len(sgrulesegress.Egress)
 				var srnameegress = sgrulesegress.Name
 				fmt.Println(awsutil.StringValue(srnameegress))
-				for i := 0;  i < srcountegress; i ++ {
+				for i := 0; i < srcountegress; i++ {
 
 					//var srfromportegress = sgrulesegress.Egress[i].FromPort
 					//var srtoportegress = sgrulesegress.Egress[i].ToPort
@@ -538,63 +537,63 @@ func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR
 					//	fmt.Println("Please provide either IP Range or list of security groups both are not accepted")
 					//} else {
 
-						for j := range srsgrangeegress {
+					for j := range srsgrangeegress {
 
-							var IpPermissionscollectionst []*ec2.IpPermission
-							SPRangeegress := []*ec2.UserIdGroupPair{}
-							m := ec2.UserIdGroupPair{
-								GroupId: &srsgrangeegress[j],
-							}
-
-							SPRangeegress = append(SPRangeegress, &m)
-
-							n := ec2.IpPermission{
-								FromPort:         aws.Int64(sgrulesegress.Egress[i].FromPort),
-								IpProtocol:       aws.String(sgrulesegress.Egress[i].IPProtocal),
-								UserIdGroupPairs:         SPRangeegress,
-								ToPort:           aws.Int64(sgrulesegress.Egress[i].ToPort),
-							}
-
-							IpPermissionscollectionst = append(IpPermissionscollectionst, &n)
-							addegress := &ec2.AuthorizeSecurityGroupEgressInput{
-								GroupId: GroupId,
-								IpPermissions: IpPermissionscollectionst,
-							}
-							fmt.Println("Adding Egress Rule: ", addegress)
-							_, err := svc.AuthorizeSecurityGroupEgress(addegress)
-							if err != nil {
-								fmt.Println(err.Error())
-							}
+						var IpPermissionscollectionst []*ec2.IpPermission
+						SPRangeegress := []*ec2.UserIdGroupPair{}
+						m := ec2.UserIdGroupPair{
+							GroupId: &srsgrangeegress[j],
 						}
 
-						for j := range sriprangeegress {
+						SPRangeegress = append(SPRangeegress, &m)
 
-							var IpPermissionscollectionst []*ec2.IpPermission
-							IPRangeegress := []*ec2.IpRange{}
-							m := ec2.IpRange{
-								CidrIp: &sriprangeegress[j],
-							}
-
-							IPRangeegress = append(IPRangeegress, &m)
-
-							n := ec2.IpPermission{
-								FromPort:         aws.Int64(sgrulesegress.Egress[i].FromPort),
-								IpProtocol:       aws.String(sgrulesegress.Egress[i].IPProtocal),
-								IpRanges:         IPRangeegress,
-								ToPort:           aws.Int64(sgrulesegress.Egress[i].ToPort),
-							}
-
-							IpPermissionscollectionst = append(IpPermissionscollectionst, &n)
-							addegress := &ec2.AuthorizeSecurityGroupEgressInput{
-								GroupId: GroupId,
-								IpPermissions: IpPermissionscollectionst,
-							}
-							fmt.Println("Adding Egress Rule: ", addegress)
-							_, err := svc.AuthorizeSecurityGroupEgress(addegress)
-							if err != nil {
-								fmt.Println(err.Error())
-							}
+						n := ec2.IpPermission{
+							FromPort:         aws.Int64(sgrulesegress.Egress[i].FromPort),
+							IpProtocol:       aws.String(sgrulesegress.Egress[i].IPProtocal),
+							UserIdGroupPairs: SPRangeegress,
+							ToPort:           aws.Int64(sgrulesegress.Egress[i].ToPort),
 						}
+
+						IpPermissionscollectionst = append(IpPermissionscollectionst, &n)
+						addegress := &ec2.AuthorizeSecurityGroupEgressInput{
+							GroupId:       GroupId,
+							IpPermissions: IpPermissionscollectionst,
+						}
+						fmt.Println("Adding Egress Rule: ", addegress)
+						_, err := svc.AuthorizeSecurityGroupEgress(addegress)
+						if err != nil {
+							fmt.Println(err.Error())
+						}
+					}
+
+					for j := range sriprangeegress {
+
+						var IpPermissionscollectionst []*ec2.IpPermission
+						IPRangeegress := []*ec2.IpRange{}
+						m := ec2.IpRange{
+							CidrIp: &sriprangeegress[j],
+						}
+
+						IPRangeegress = append(IPRangeegress, &m)
+
+						n := ec2.IpPermission{
+							FromPort:   aws.Int64(sgrulesegress.Egress[i].FromPort),
+							IpProtocol: aws.String(sgrulesegress.Egress[i].IPProtocal),
+							IpRanges:   IPRangeegress,
+							ToPort:     aws.Int64(sgrulesegress.Egress[i].ToPort),
+						}
+
+						IpPermissionscollectionst = append(IpPermissionscollectionst, &n)
+						addegress := &ec2.AuthorizeSecurityGroupEgressInput{
+							GroupId:       GroupId,
+							IpPermissions: IpPermissionscollectionst,
+						}
+						fmt.Println("Adding Egress Rule: ", addegress)
+						_, err := svc.AuthorizeSecurityGroupEgress(addegress)
+						if err != nil {
+							fmt.Println(err.Error())
+						}
+					}
 
 					//}
 
@@ -604,7 +603,7 @@ func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR
 					Filters: []*ec2.Filter{&ec2.Filter{
 						Name:   aws.String("vpc-id"),
 						Values: []*string{ID},
-					},&ec2.Filter{
+					}, &ec2.Filter{
 						Name:   aws.String("group-name"),
 						Values: SGName,
 					},
@@ -625,12 +624,12 @@ func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR
 				var totalcountexistingegress, totalcountymlegress int
 				existingruleslenegress := len(result01egress.SecurityGroups[0].IpPermissionsEgress)
 				rulesinymllenegress := len(sgrulesegress.Egress)
-				for i := 0; i < existingruleslenegress; i ++ {
+				for i := 0; i < existingruleslenegress; i++ {
 					var count int
 					count = len(result01egress.SecurityGroups[0].IpPermissionsEgress[i].IpRanges)
 					totalcountexistingegress = totalcountexistingegress + count
 				}
-				for i := 0; i < rulesinymllenegress; i ++ {
+				for i := 0; i < rulesinymllenegress; i++ {
 					var count int
 					count = len(sgrulesegress.Egress[i].IPRange)
 					totalcountymlegress = totalcountymlegress + count
@@ -685,7 +684,7 @@ func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR
 										}
 									} else {
 
-										if awsutil.DeepEqual(FromPort1,FromPort2) && awsutil.DeepEqual(IPProtocal1, IPProtocal2) && awsutil.DeepEqual(SPP1, SPP2) && awsutil.DeepEqual(ToPort1, ToPort2) {
+										if awsutil.DeepEqual(FromPort1, FromPort2) && awsutil.DeepEqual(IPProtocal1, IPProtocal2) && awsutil.DeepEqual(SPP1, SPP2) && awsutil.DeepEqual(ToPort1, ToPort2) {
 											fmt.Println("1,3")
 
 											fmt.Println("No Action needed, rules will the same")
@@ -724,7 +723,6 @@ func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR
 											} else {
 												fmt.Println("4,1")
 											}
-
 
 											fmt.Println("SG rule needs to be deleted")
 											fmt.Println(awsutil.StringValue(FromPort1), awsutil.StringValue(FromPort2))
@@ -793,88 +791,87 @@ func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR
 							CIDRIP1 := result01egress.SecurityGroups[0].IpPermissionsEgress[a].IpRanges[b].CidrIp
 							var there int
 							for c := 0; c < rulesinymllenegress; c++ {
-							ToPort2 := sgrulesegress.Egress[c].ToPort
-							FromPort2 := sgrulesegress.Egress[c].FromPort
-							IPProtocal2 := sgrulesegress.Egress[c].IPProtocal
-							lenrangeip := len(sgrulesegress.Egress[c].IPRange)
+								ToPort2 := sgrulesegress.Egress[c].ToPort
+								FromPort2 := sgrulesegress.Egress[c].FromPort
+								IPProtocal2 := sgrulesegress.Egress[c].IPProtocal
+								lenrangeip := len(sgrulesegress.Egress[c].IPRange)
 
-							for d := 0; d < lenrangeip; d++ {
-							CIDRIP2 := sgrulesegress.Egress[c].IPRange[d]
+								for d := 0; d < lenrangeip; d++ {
+									CIDRIP2 := sgrulesegress.Egress[c].IPRange[d]
 
-							//if aws.StringValue(IPProtocal1) == "-1" || IPProtocal2 == "-1" {
-							if aws.StringValue(IPProtocal1) == "-1" {
+									//if aws.StringValue(IPProtocal1) == "-1" || IPProtocal2 == "-1" {
+									if aws.StringValue(IPProtocal1) == "-1" {
 
-								if aws.StringValue(IPProtocal1) == IPProtocal2 && aws.StringValue(CIDRIP1) == CIDRIP2 {
-								fmt.Println("2,1")
+										if aws.StringValue(IPProtocal1) == IPProtocal2 && aws.StringValue(CIDRIP1) == CIDRIP2 {
+											fmt.Println("2,1")
 
-								fmt.Println("No Action needed, rules will the same")
-								fmt.Println(awsutil.Prettify(FromPort1), awsutil.Prettify(FromPort2))
-								fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
-								fmt.Println(awsutil.StringValue(CIDRIP1), awsutil.StringValue(CIDRIP2))
-								fmt.Println(awsutil.Prettify(ToPort1), awsutil.Prettify(ToPort2))
-								there = 1
+											fmt.Println("No Action needed, rules will the same")
+											fmt.Println(awsutil.Prettify(FromPort1), awsutil.Prettify(FromPort2))
+											fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
+											fmt.Println(awsutil.StringValue(CIDRIP1), awsutil.StringValue(CIDRIP2))
+											fmt.Println(awsutil.Prettify(ToPort1), awsutil.Prettify(ToPort2))
+											there = 1
 
-							} else {
+										} else {
 
-								fmt.Println("2,2")
-								fmt.Println("SG rule needs to be deleted")
-								fmt.Println(awsutil.Prettify(FromPort1), awsutil.Prettify(FromPort2))
-								fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
-								fmt.Println(awsutil.StringValue(CIDRIP1), awsutil.StringValue(CIDRIP2))
-								fmt.Println(awsutil.Prettify(ToPort1), awsutil.Prettify(ToPort2))
-								}
-							} else {
-
-								if awsutil.DeepEqual(FromPort1,FromPort2) && awsutil.DeepEqual(IPProtocal1, IPProtocal2) && awsutil.DeepEqual(CIDRIP1, CIDRIP2) && awsutil.DeepEqual(ToPort1, ToPort2) {
-
-								fmt.Println("2,3")
-								fmt.Println("No Action needed, rules will the same")
-								fmt.Println(awsutil.StringValue(FromPort1), awsutil.StringValue(FromPort2))
-								fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
-								fmt.Println(awsutil.StringValue(CIDRIP1), awsutil.StringValue(CIDRIP2))
-								fmt.Println(awsutil.StringValue(ToPort1), awsutil.StringValue(ToPort2))
-								there = 1
-
-								} else {
-
-								fmt.Println("2,4")
-
-									if awsutil.DeepEqual(FromPort1, FromPort2) {
-										fmt.Println("1,0")
+											fmt.Println("2,2")
+											fmt.Println("SG rule needs to be deleted")
+											fmt.Println(awsutil.Prettify(FromPort1), awsutil.Prettify(FromPort2))
+											fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
+											fmt.Println(awsutil.StringValue(CIDRIP1), awsutil.StringValue(CIDRIP2))
+											fmt.Println(awsutil.Prettify(ToPort1), awsutil.Prettify(ToPort2))
+										}
 									} else {
-										fmt.Println("1,1")
-									}
 
-									if awsutil.DeepEqual(IPProtocal1, IPProtocal2) {
-										fmt.Println("2,0")
-									} else {
-										fmt.Println("2,1")
-									}
+										if awsutil.DeepEqual(FromPort1, FromPort2) && awsutil.DeepEqual(IPProtocal1, IPProtocal2) && awsutil.DeepEqual(CIDRIP1, CIDRIP2) && awsutil.DeepEqual(ToPort1, ToPort2) {
 
-									if awsutil.DeepEqual(CIDRIP1, CIDRIP2) {
-										fmt.Println("3,0")
+											fmt.Println("2,3")
+											fmt.Println("No Action needed, rules will the same")
+											fmt.Println(awsutil.StringValue(FromPort1), awsutil.StringValue(FromPort2))
+											fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
+											fmt.Println(awsutil.StringValue(CIDRIP1), awsutil.StringValue(CIDRIP2))
+											fmt.Println(awsutil.StringValue(ToPort1), awsutil.StringValue(ToPort2))
+											there = 1
 
-									} else {
-										fmt.Println("3,1")
-									}
+										} else {
 
-									if awsutil.DeepEqual(ToPort1, ToPort2) {
-										fmt.Println("4,0")
+											fmt.Println("2,4")
 
-									} else {
-										fmt.Println("4,1")
-									}
+											if awsutil.DeepEqual(FromPort1, FromPort2) {
+												fmt.Println("1,0")
+											} else {
+												fmt.Println("1,1")
+											}
 
+											if awsutil.DeepEqual(IPProtocal1, IPProtocal2) {
+												fmt.Println("2,0")
+											} else {
+												fmt.Println("2,1")
+											}
 
-									fmt.Println("SG rule needs to be deleted")
-								fmt.Println(awsutil.StringValue(FromPort1), awsutil.StringValue(FromPort2))
-								fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
-								fmt.Println(awsutil.StringValue(CIDRIP1), awsutil.StringValue(CIDRIP2))
-								fmt.Println(awsutil.StringValue(ToPort1), awsutil.StringValue(ToPort2))
+											if awsutil.DeepEqual(CIDRIP1, CIDRIP2) {
+												fmt.Println("3,0")
+
+											} else {
+												fmt.Println("3,1")
+											}
+
+											if awsutil.DeepEqual(ToPort1, ToPort2) {
+												fmt.Println("4,0")
+
+											} else {
+												fmt.Println("4,1")
+											}
+
+											fmt.Println("SG rule needs to be deleted")
+											fmt.Println(awsutil.StringValue(FromPort1), awsutil.StringValue(FromPort2))
+											fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
+											fmt.Println(awsutil.StringValue(CIDRIP1), awsutil.StringValue(CIDRIP2))
+											fmt.Println(awsutil.StringValue(ToPort1), awsutil.StringValue(ToPort2))
+										}
 									}
 								}
 							}
-						}
 							if there == 1 {
 								fmt.Println("No Action needed")
 							} else {
@@ -927,7 +924,7 @@ func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR
 					}
 				}
 
-	           // Adding Ingress Rules
+				// Adding Ingress Rules
 
 				fmt.Println("Adding Ingress rules")
 
@@ -939,406 +936,404 @@ func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR
 				fmt.Println(awsutil.StringValue(srnameingress))
 				for i := 0; i < srcountingress; i++ {
 
-								//var srfromport = sgrulesingress.Ingress[i].FromPort
-								//var srtoport = sgrulesingress.Ingress[i].ToPort
-								//var sripprotocal = sgrulesingress.Ingress[i].IPProtocal
-								var sriprange = sgrulesingress.Ingress[i].IPRange
-								var srsgrange = sgrulesingress.Ingress[i].SecurityGroups
+					//var srfromport = sgrulesingress.Ingress[i].FromPort
+					//var srtoport = sgrulesingress.Ingress[i].ToPort
+					//var sripprotocal = sgrulesingress.Ingress[i].IPProtocal
+					var sriprange = sgrulesingress.Ingress[i].IPRange
+					var srsgrange = sgrulesingress.Ingress[i].SecurityGroups
 
-								//fmt.Println("SG Ingress rule from-port",awsutil.StringValue(srfromport))
-								//fmt.Println("SG Ingress rule to-port",awsutil.StringValue(srtoport))
-								//fmt.Println("SG Ingress rule Protocal",awsutil.StringValue(sripprotocal))
-								//fmt.Println("SG Ingress rule IPRange", awsutil.StringValue(sriprange))
-								//if sriprange != nil && srsgrange != nil{
-								//	fmt.Println("Please provide either IP Range or list of security groups both are not accepted")
-								//} else {
+					//fmt.Println("SG Ingress rule from-port",awsutil.StringValue(srfromport))
+					//fmt.Println("SG Ingress rule to-port",awsutil.StringValue(srtoport))
+					//fmt.Println("SG Ingress rule Protocal",awsutil.StringValue(sripprotocal))
+					//fmt.Println("SG Ingress rule IPRange", awsutil.StringValue(sriprange))
+					//if sriprange != nil && srsgrange != nil{
+					//	fmt.Println("Please provide either IP Range or list of security groups both are not accepted")
+					//} else {
 
-								for j := range srsgrange {
+					for j := range srsgrange {
 
-									var IpPermissionscollectionst []*ec2.IpPermission
-									SPRange := []*ec2.UserIdGroupPair{}
-									m := ec2.UserIdGroupPair{
-										GroupId: &srsgrange[j],
-									}
+						var IpPermissionscollectionst []*ec2.IpPermission
+						SPRange := []*ec2.UserIdGroupPair{}
+						m := ec2.UserIdGroupPair{
+							GroupId: &srsgrange[j],
+						}
 
-									SPRange = append(SPRange, &m)
+						SPRange = append(SPRange, &m)
 
-									n := ec2.IpPermission{
-										FromPort:         aws.Int64(sgrulesingress.Ingress[i].FromPort),
-										IpProtocol:       aws.String(sgrulesingress.Ingress[i].IPProtocal),
-										UserIdGroupPairs: SPRange,
-										ToPort:           aws.Int64(sgrulesingress.Ingress[i].ToPort),
-									}
+						n := ec2.IpPermission{
+							FromPort:         aws.Int64(sgrulesingress.Ingress[i].FromPort),
+							IpProtocol:       aws.String(sgrulesingress.Ingress[i].IPProtocal),
+							UserIdGroupPairs: SPRange,
+							ToPort:           aws.Int64(sgrulesingress.Ingress[i].ToPort),
+						}
 
-									IpPermissionscollectionst = append(IpPermissionscollectionst, &n)
-									addegress := &ec2.AuthorizeSecurityGroupIngressInput{
-										GroupId:       GroupId,
-										IpPermissions: IpPermissionscollectionst,
-									}
-									fmt.Println("Adding Ingress Rule: ", addegress)
-									_, err := svc.AuthorizeSecurityGroupIngress(addegress)
-									if err != nil {
-										fmt.Println(err.Error())
-									}
-								}
-								for j := range sriprange {
+						IpPermissionscollectionst = append(IpPermissionscollectionst, &n)
+						addegress := &ec2.AuthorizeSecurityGroupIngressInput{
+							GroupId:       GroupId,
+							IpPermissions: IpPermissionscollectionst,
+						}
+						fmt.Println("Adding Ingress Rule: ", addegress)
+						_, err := svc.AuthorizeSecurityGroupIngress(addegress)
+						if err != nil {
+							fmt.Println(err.Error())
+						}
+					}
+					for j := range sriprange {
 
-									var IpPermissionscollectionst []*ec2.IpPermission
-									IPRange := []*ec2.IpRange{}
-									m := ec2.IpRange{
-										CidrIp: &sriprange[j],
-									}
+						var IpPermissionscollectionst []*ec2.IpPermission
+						IPRange := []*ec2.IpRange{}
+						m := ec2.IpRange{
+							CidrIp: &sriprange[j],
+						}
 
-									IPRange = append(IPRange, &m)
+						IPRange = append(IPRange, &m)
 
-									n := ec2.IpPermission{
-										FromPort:   aws.Int64(sgrulesingress.Ingress[i].FromPort),
-										IpProtocol: aws.String(sgrulesingress.Ingress[i].IPProtocal),
-										IpRanges:   IPRange,
-										ToPort:     aws.Int64(sgrulesingress.Ingress[i].ToPort),
-									}
+						n := ec2.IpPermission{
+							FromPort:   aws.Int64(sgrulesingress.Ingress[i].FromPort),
+							IpProtocol: aws.String(sgrulesingress.Ingress[i].IPProtocal),
+							IpRanges:   IPRange,
+							ToPort:     aws.Int64(sgrulesingress.Ingress[i].ToPort),
+						}
 
-									IpPermissionscollectionst = append(IpPermissionscollectionst, &n)
-									addegress := &ec2.AuthorizeSecurityGroupIngressInput{
-										GroupId:       GroupId,
-										IpPermissions: IpPermissionscollectionst,
-									}
-									fmt.Println("Adding Ingress Rule: ", addegress)
-									_, err := svc.AuthorizeSecurityGroupIngress(addegress)
-									if err != nil {
-										fmt.Println(err.Error())
-									}
-								}
-								//}
-							}
+						IpPermissionscollectionst = append(IpPermissionscollectionst, &n)
+						addegress := &ec2.AuthorizeSecurityGroupIngressInput{
+							GroupId:       GroupId,
+							IpPermissions: IpPermissionscollectionst,
+						}
+						fmt.Println("Adding Ingress Rule: ", addegress)
+						_, err := svc.AuthorizeSecurityGroupIngress(addegress)
+						if err != nil {
+							fmt.Println(err.Error())
+						}
+					}
+					//}
+				}
 
 				checkingress := &ec2.DescribeSecurityGroupsInput{
-								Filters: []*ec2.Filter{&ec2.Filter{
-									Name:   aws.String("vpc-id"),
-									Values: []*string{ID},
-								}, &ec2.Filter{
-									Name:   aws.String("group-name"),
-									Values: SGName,
-								},
-								},
-							}
+					Filters: []*ec2.Filter{&ec2.Filter{
+						Name:   aws.String("vpc-id"),
+						Values: []*string{ID},
+					}, &ec2.Filter{
+						Name:   aws.String("group-name"),
+						Values: SGName,
+					},
+					},
+				}
 				result01ingress, err := svc.DescribeSecurityGroups(checkingress)
 				if err != nil {
-								if aerr, ok := err.(awserr.Error); ok {
-									switch aerr.Code() {
-									default:
-										fmt.Println(aerr.Error())
-									}
-								} else {
-									fmt.Println(err.Error())
-								}
+					if aerr, ok := err.(awserr.Error); ok {
+						switch aerr.Code() {
+						default:
+							fmt.Println(aerr.Error())
+						}
+					} else {
+						fmt.Println(err.Error())
+					}
 					return nil, nil
-							}
+				}
 				var totalcountexistingingress, totalcountymlingress int
 				existingrulesleningress := len(result01ingress.SecurityGroups[0].IpPermissions)
 				rulesinymlleningress := len(sgrulesingress.Ingress)
 				for i := 0; i < existingrulesleningress; i++ {
-								var count int
-								count = len(result01ingress.SecurityGroups[0].IpPermissions[i].IpRanges)
-								totalcountexistingingress = totalcountexistingingress + count
-							}
+					var count int
+					count = len(result01ingress.SecurityGroups[0].IpPermissions[i].IpRanges)
+					totalcountexistingingress = totalcountexistingingress + count
+				}
 				for i := 0; i < rulesinymlleningress; i++ {
-								var count int
-								count = len(sgrulesingress.Ingress[i].IPRange)
-								totalcountymlingress = totalcountymlingress + count
-							}
+					var count int
+					count = len(sgrulesingress.Ingress[i].IPRange)
+					totalcountymlingress = totalcountymlingress + count
+				}
 				if totalcountexistingingress > totalcountymlingress {
-				  for a := 0; a < existingrulesleningress; a++ {
+					for a := 0; a < existingrulesleningress; a++ {
 
-				 	ToPort1 := result01ingress.SecurityGroups[0].IpPermissions[a].ToPort
-				 	FromPort1 := result01ingress.SecurityGroups[0].IpPermissions[a].FromPort
-				 	IPProtocal1 := result01ingress.SecurityGroups[0].IpPermissions[a].IpProtocol
-					lenrange := len(result01ingress.SecurityGroups[0].IpPermissions[a].IpRanges)
-					lenSPrange := len(result01ingress.SecurityGroups[0].IpPermissions[a].UserIdGroupPairs)
+						ToPort1 := result01ingress.SecurityGroups[0].IpPermissions[a].ToPort
+						FromPort1 := result01ingress.SecurityGroups[0].IpPermissions[a].FromPort
+						IPProtocal1 := result01ingress.SecurityGroups[0].IpPermissions[a].IpProtocol
+						lenrange := len(result01ingress.SecurityGroups[0].IpPermissions[a].IpRanges)
+						lenSPrange := len(result01ingress.SecurityGroups[0].IpPermissions[a].UserIdGroupPairs)
 
-					for b := 0; b < lenSPrange; b++ {
+						for b := 0; b < lenSPrange; b++ {
 
-						SPP1 := result01ingress.SecurityGroups[0].IpPermissions[a].UserIdGroupPairs[b].GroupId
-						var there int
-						for c := 0; c < rulesinymlleningress; c++ {
+							SPP1 := result01ingress.SecurityGroups[0].IpPermissions[a].UserIdGroupPairs[b].GroupId
+							var there int
+							for c := 0; c < rulesinymlleningress; c++ {
 
-							ToPort2 := sgrulesingress.Ingress[c].ToPort
-							FromPort2 := sgrulesingress.Ingress[c].FromPort
-							IPProtocal2 := sgrulesingress.Ingress[c].IPProtocal
-							lenrangesp := len(sgrulesingress.Ingress[c].SecurityGroups)
+								ToPort2 := sgrulesingress.Ingress[c].ToPort
+								FromPort2 := sgrulesingress.Ingress[c].FromPort
+								IPProtocal2 := sgrulesingress.Ingress[c].IPProtocal
+								lenrangesp := len(sgrulesingress.Ingress[c].SecurityGroups)
 
-							for d := 0; d < lenrangesp; d++ {
-							SPP2 := sgrulesingress.Ingress[c].SecurityGroups[d]
+								for d := 0; d < lenrangesp; d++ {
+									SPP2 := sgrulesingress.Ingress[c].SecurityGroups[d]
 
-							if aws.StringValue(IPProtocal1) == "-1" {
-							//if aws.StringValue(IPProtocal1) == "-1" || IPProtocal2 == "-1" {
-								if aws.StringValue(IPProtocal1) == (IPProtocal2) && aws.StringValue(SPP1) == (SPP2) {
-									fmt.Println("3,1")
-									fmt.Println("No Action needed, rules will the same")
-									fmt.Println(awsutil.Prettify(FromPort1), awsutil.Prettify(FromPort2))
-									fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
-									fmt.Println(awsutil.StringValue(SPP1), awsutil.StringValue(SPP2))
-									fmt.Println(awsutil.Prettify(ToPort1), awsutil.Prettify(ToPort2))
-									there = 1
-								} else {
-									fmt.Println("3,2")
-									fmt.Println("SG rule needs to be deleted")
-									fmt.Println(awsutil.Prettify(FromPort1), awsutil.Prettify(FromPort2))
-									fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
-									fmt.Println(awsutil.StringValue(SPP1), awsutil.StringValue(SPP2))
-									fmt.Println(awsutil.Prettify(ToPort1), awsutil.Prettify(ToPort2))
+									if aws.StringValue(IPProtocal1) == "-1" {
+										//if aws.StringValue(IPProtocal1) == "-1" || IPProtocal2 == "-1" {
+										if aws.StringValue(IPProtocal1) == (IPProtocal2) && aws.StringValue(SPP1) == (SPP2) {
+											fmt.Println("3,1")
+											fmt.Println("No Action needed, rules will the same")
+											fmt.Println(awsutil.Prettify(FromPort1), awsutil.Prettify(FromPort2))
+											fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
+											fmt.Println(awsutil.StringValue(SPP1), awsutil.StringValue(SPP2))
+											fmt.Println(awsutil.Prettify(ToPort1), awsutil.Prettify(ToPort2))
+											there = 1
+										} else {
+											fmt.Println("3,2")
+											fmt.Println("SG rule needs to be deleted")
+											fmt.Println(awsutil.Prettify(FromPort1), awsutil.Prettify(FromPort2))
+											fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
+											fmt.Println(awsutil.StringValue(SPP1), awsutil.StringValue(SPP2))
+											fmt.Println(awsutil.Prettify(ToPort1), awsutil.Prettify(ToPort2))
+										}
+									} else {
+
+										if awsutil.DeepEqual(FromPort1, FromPort2) && awsutil.DeepEqual(IPProtocal1, IPProtocal2) && awsutil.DeepEqual(SPP1, SPP2) && awsutil.DeepEqual(ToPort1, ToPort2) {
+											fmt.Println("3,3")
+
+											fmt.Println("No Action needed, rules will the same")
+											fmt.Println(awsutil.StringValue(FromPort1), awsutil.StringValue(FromPort2))
+											fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
+											fmt.Println(awsutil.StringValue(SPP1), awsutil.StringValue(SPP1))
+											fmt.Println(awsutil.StringValue(ToPort1), awsutil.StringValue(ToPort2))
+											there = 1
+
+										} else {
+
+											fmt.Println("3,4")
+
+											if awsutil.DeepEqual(FromPort1, FromPort2) {
+												fmt.Println("1,0")
+											} else {
+												fmt.Println("1,1")
+											}
+
+											if awsutil.DeepEqual(IPProtocal1, IPProtocal2) {
+												fmt.Println("2,0")
+											} else {
+												fmt.Println("2,1")
+											}
+
+											if awsutil.DeepEqual(SPP1, SPP2) {
+												fmt.Println("3,0")
+
+											} else {
+												fmt.Println("3,1")
+											}
+
+											if awsutil.DeepEqual(ToPort1, ToPort2) {
+												fmt.Println("4,0")
+
+											} else {
+												fmt.Println("4,1")
+											}
+
+											fmt.Println("SG rule needs to be deleted")
+											fmt.Println(awsutil.StringValue(FromPort1), awsutil.StringValue(FromPort2))
+											fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
+											fmt.Println(awsutil.StringValue(SPP1), awsutil.StringValue(SPP1))
+											fmt.Println(awsutil.StringValue(ToPort1), awsutil.StringValue(ToPort2))
+										}
+									}
 								}
+							}
+							if there == 1 {
+								fmt.Println("No Action needed")
 							} else {
+								fmt.Println("Removing SG ingress rule")
 
-								if awsutil.DeepEqual(FromPort1,FromPort2) && awsutil.DeepEqual(IPProtocal1, IPProtocal2) && awsutil.DeepEqual(SPP1, SPP2) && awsutil.DeepEqual(ToPort1, ToPort2) {
-									fmt.Println("3,3")
-
-
-									fmt.Println("No Action needed, rules will the same")
-									fmt.Println(awsutil.StringValue(FromPort1), awsutil.StringValue(FromPort2))
-									fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
-									fmt.Println(awsutil.StringValue(SPP1), awsutil.StringValue(SPP1))
-									fmt.Println(awsutil.StringValue(ToPort1), awsutil.StringValue(ToPort2))
-									there = 1
-
-								} else {
-
-									fmt.Println("3,4")
-
-									if awsutil.DeepEqual(FromPort1, FromPort2) {
-										fmt.Println("1,0")
-									} else {
-										fmt.Println("1,1")
-									}
-
-									if awsutil.DeepEqual(IPProtocal1, IPProtocal2) {
-										fmt.Println("2,0")
-									} else {
-										fmt.Println("2,1")
-									}
-
-									if awsutil.DeepEqual(SPP1, SPP2) {
-										fmt.Println("3,0")
-
-									} else {
-										fmt.Println("3,1")
-									}
-
-									if awsutil.DeepEqual(ToPort1, ToPort2) {
-										fmt.Println("4,0")
-
-									} else {
-										fmt.Println("4,1")
-									}
-
-
-									fmt.Println("SG rule needs to be deleted")
-									fmt.Println(awsutil.StringValue(FromPort1), awsutil.StringValue(FromPort2))
-									fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
-									fmt.Println(awsutil.StringValue(SPP1), awsutil.StringValue(SPP1))
-									fmt.Println(awsutil.StringValue(ToPort1), awsutil.StringValue(ToPort2))
-								}
-							}
-						}
-						}
-						if there == 1 {
-							fmt.Println("No Action needed")
-						} else {
-							fmt.Println("Removing SG ingress rule")
-
-							var m ec2.IpPermission
-							IpPermissionsremovestingress := []*ec2.IpPermission{}
-							if aws.StringValue(IPProtocal1) == "-1" {
-								m = ec2.IpPermission{
-									IpProtocol: IPProtocal1,
-									UserIdGroupPairs: []*ec2.UserIdGroupPair{&ec2.UserIdGroupPair{
-										GroupId:     SPP1,
-										Description: nil,
-									},
-									},
-								}
-							} else {
-								m = ec2.IpPermission{
-									FromPort:   FromPort1,
-									IpProtocol: IPProtocal1,
-									UserIdGroupPairs: []*ec2.UserIdGroupPair{&ec2.UserIdGroupPair{
-										GroupId:     SPP1,
-										Description: nil,
-									},
-									},
-									ToPort: ToPort1,
-								}
-							}
-							IpPermissionsremovestingress = append(IpPermissionsremovestingress, &m)
-							//fmt.Println("SG ingress rule to be removed: ", awsutil.StringValue(IpPermissionsremovest))
-							removeingress := &ec2.RevokeSecurityGroupIngressInput{
-								GroupId:       GroupId,
-								IpPermissions: IpPermissionsremovestingress,
-							}
-							fmt.Println("Removing Ingress Rule: ", removeingress)
-							_, err := svc.RevokeSecurityGroupIngress(removeingress)
-							if err != nil {
-								if aerr, ok := err.(awserr.Error); ok {
-									switch aerr.Code() {
-									default:
-										fmt.Println(aerr.Error())
+								var m ec2.IpPermission
+								IpPermissionsremovestingress := []*ec2.IpPermission{}
+								if aws.StringValue(IPProtocal1) == "-1" {
+									m = ec2.IpPermission{
+										IpProtocol: IPProtocal1,
+										UserIdGroupPairs: []*ec2.UserIdGroupPair{&ec2.UserIdGroupPair{
+											GroupId:     SPP1,
+											Description: nil,
+										},
+										},
 									}
 								} else {
-									fmt.Println(err.Error())
+									m = ec2.IpPermission{
+										FromPort:   FromPort1,
+										IpProtocol: IPProtocal1,
+										UserIdGroupPairs: []*ec2.UserIdGroupPair{&ec2.UserIdGroupPair{
+											GroupId:     SPP1,
+											Description: nil,
+										},
+										},
+										ToPort: ToPort1,
+									}
 								}
-								return nil, nil
-							}
-						}
-					}
-					for b := 0; b < lenrange; b++ {
-
-						CIDRIP1 := result01ingress.SecurityGroups[0].IpPermissions[a].IpRanges[b].CidrIp
-						var there int
-						for c := 0; c < rulesinymlleningress; c++ {
-
-							ToPort2 := sgrulesingress.Ingress[c].ToPort
-							FromPort2 := sgrulesingress.Ingress[c].FromPort
-							IPProtocal2 := sgrulesingress.Ingress[c].IPProtocal
-							lenrangeip := len(sgrulesingress.Ingress[c].IPRange)
-
-							for d := 0; d < lenrangeip; d++ {
-
-							CIDRIP2 := sgrulesingress.Ingress[c].IPRange[d]
-
-							//val := "-1"
-							//protocal, _ := fmt.Println(awsutil.StringValue(IPProtocal1))
-							//if aws.StringValue(IPProtocal1) == "-1" || IPProtocal2 == "-1" {
-							if aws.StringValue(IPProtocal1) == "-1" {
-							if aws.StringValue(IPProtocal1) == (IPProtocal2) && aws.StringValue(CIDRIP1) == (CIDRIP2) {
-
-								fmt.Println("4,1")
-								fmt.Println("No Action needed, rules will the same")
-								fmt.Println(awsutil.Prettify(FromPort1), awsutil.Prettify(FromPort2))
-								fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
-								fmt.Println(awsutil.StringValue(CIDRIP1), awsutil.StringValue(CIDRIP2))
-								fmt.Println(awsutil.Prettify(ToPort1), awsutil.Prettify(ToPort2))
-
-								there = 1
-
-							} else {
-								fmt.Println("4,2")
-
-								fmt.Println("SG rule needs to be deleted")
-								fmt.Println(awsutil.Prettify(FromPort1), awsutil.Prettify(FromPort2))
-								fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
-								fmt.Println(awsutil.StringValue(CIDRIP1), awsutil.StringValue(CIDRIP2))
-								fmt.Println(awsutil.Prettify(ToPort1), awsutil.Prettify(ToPort2))
-							}
-						} else {
-								if awsutil.DeepEqual(FromPort1,FromPort2) && awsutil.DeepEqual(IPProtocal1, IPProtocal2) && awsutil.DeepEqual(CIDRIP1, CIDRIP2) && awsutil.DeepEqual(ToPort1, ToPort2) {
-								fmt.Println("4,3")
-
-								fmt.Println("No Action needed, rules will the same")
-								fmt.Println(awsutil.StringValue(FromPort1), awsutil.StringValue(FromPort2))
-								fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
-								fmt.Println(awsutil.StringValue(CIDRIP1), awsutil.StringValue(CIDRIP2))
-								fmt.Println(awsutil.StringValue(ToPort1), awsutil.StringValue(ToPort2))
-
-								there = 1
-
-							} else {
-								fmt.Println("4,4")
-
-									if awsutil.DeepEqual(FromPort1, FromPort2) {
-										fmt.Println("1,0")
-									} else {
-										fmt.Println("1,1")
-									}
-
-									if awsutil.DeepEqual(IPProtocal1, IPProtocal2) {
-										fmt.Println("2,0")
-									} else {
-										fmt.Println("2,1")
-									}
-
-									if awsutil.DeepEqual(CIDRIP1, CIDRIP2) {
-										fmt.Println("3,0")
-
-									} else {
-										fmt.Println("3,1")
-									}
-
-									if awsutil.DeepEqual(ToPort1, ToPort2) {
-										fmt.Println("4,0")
-
-									} else {
-										fmt.Println("4,1")
-									}
-
-								fmt.Println("SG rule needs to be deleted")
-								fmt.Println((FromPort1), awsutil.StringValue(FromPort2))
-								fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
-								fmt.Println(awsutil.StringValue(CIDRIP1), awsutil.StringValue(CIDRIP2))
-								fmt.Println(awsutil.StringValue(ToPort1), awsutil.StringValue(ToPort2))
-							}
-						}
-					}
-						}
-						if there == 1 {
-							fmt.Println("No Action needed")
-						} else {
-							fmt.Println("Removing SG ingress rule")
-
-							var m ec2.IpPermission
-							IpPermissionsremovestingress := []*ec2.IpPermission{}
-
-							if aws.StringValue(IPProtocal1) == "-1" {
-								m = ec2.IpPermission{
-									IpProtocol: IPProtocal1,
-									IpRanges: []*ec2.IpRange{&ec2.IpRange{
-										CidrIp:      CIDRIP1,
-										Description: nil,
-									},
-									},
+								IpPermissionsremovestingress = append(IpPermissionsremovestingress, &m)
+								//fmt.Println("SG ingress rule to be removed: ", awsutil.StringValue(IpPermissionsremovest))
+								removeingress := &ec2.RevokeSecurityGroupIngressInput{
+									GroupId:       GroupId,
+									IpPermissions: IpPermissionsremovestingress,
 								}
-							} else {
-								m = ec2.IpPermission{
-									FromPort:   FromPort1,
-									IpProtocol: IPProtocal1,
-									IpRanges: []*ec2.IpRange{&ec2.IpRange{
-										CidrIp:      CIDRIP1,
-										Description: nil,
-									},
-									},
-									ToPort: ToPort1,
+								fmt.Println("Removing Ingress Rule: ", removeingress)
+								_, err := svc.RevokeSecurityGroupIngress(removeingress)
+								if err != nil {
+									if aerr, ok := err.(awserr.Error); ok {
+										switch aerr.Code() {
+										default:
+											fmt.Println(aerr.Error())
+										}
+									} else {
+										fmt.Println(err.Error())
+									}
+									return nil, nil
 								}
 							}
-							IpPermissionsremovestingress = append(IpPermissionsremovestingress, &m)
-							//fmt.Println("SG ingress rule to be removed: ", awsutil.StringValue(IpPermissionsremovest))
-							removeingress := &ec2.RevokeSecurityGroupIngressInput{
-								GroupId:       GroupId,
-								IpPermissions: IpPermissionsremovestingress,
+						}
+						for b := 0; b < lenrange; b++ {
+
+							CIDRIP1 := result01ingress.SecurityGroups[0].IpPermissions[a].IpRanges[b].CidrIp
+							var there int
+							for c := 0; c < rulesinymlleningress; c++ {
+
+								ToPort2 := sgrulesingress.Ingress[c].ToPort
+								FromPort2 := sgrulesingress.Ingress[c].FromPort
+								IPProtocal2 := sgrulesingress.Ingress[c].IPProtocal
+								lenrangeip := len(sgrulesingress.Ingress[c].IPRange)
+
+								for d := 0; d < lenrangeip; d++ {
+
+									CIDRIP2 := sgrulesingress.Ingress[c].IPRange[d]
+
+									//val := "-1"
+									//protocal, _ := fmt.Println(awsutil.StringValue(IPProtocal1))
+									//if aws.StringValue(IPProtocal1) == "-1" || IPProtocal2 == "-1" {
+									if aws.StringValue(IPProtocal1) == "-1" {
+										if aws.StringValue(IPProtocal1) == (IPProtocal2) && aws.StringValue(CIDRIP1) == (CIDRIP2) {
+
+											fmt.Println("4,1")
+											fmt.Println("No Action needed, rules will the same")
+											fmt.Println(awsutil.Prettify(FromPort1), awsutil.Prettify(FromPort2))
+											fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
+											fmt.Println(awsutil.StringValue(CIDRIP1), awsutil.StringValue(CIDRIP2))
+											fmt.Println(awsutil.Prettify(ToPort1), awsutil.Prettify(ToPort2))
+
+											there = 1
+
+										} else {
+											fmt.Println("4,2")
+
+											fmt.Println("SG rule needs to be deleted")
+											fmt.Println(awsutil.Prettify(FromPort1), awsutil.Prettify(FromPort2))
+											fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
+											fmt.Println(awsutil.StringValue(CIDRIP1), awsutil.StringValue(CIDRIP2))
+											fmt.Println(awsutil.Prettify(ToPort1), awsutil.Prettify(ToPort2))
+										}
+									} else {
+										if awsutil.DeepEqual(FromPort1, FromPort2) && awsutil.DeepEqual(IPProtocal1, IPProtocal2) && awsutil.DeepEqual(CIDRIP1, CIDRIP2) && awsutil.DeepEqual(ToPort1, ToPort2) {
+											fmt.Println("4,3")
+
+											fmt.Println("No Action needed, rules will the same")
+											fmt.Println(awsutil.StringValue(FromPort1), awsutil.StringValue(FromPort2))
+											fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
+											fmt.Println(awsutil.StringValue(CIDRIP1), awsutil.StringValue(CIDRIP2))
+											fmt.Println(awsutil.StringValue(ToPort1), awsutil.StringValue(ToPort2))
+
+											there = 1
+
+										} else {
+											fmt.Println("4,4")
+
+											if awsutil.DeepEqual(FromPort1, FromPort2) {
+												fmt.Println("1,0")
+											} else {
+												fmt.Println("1,1")
+											}
+
+											if awsutil.DeepEqual(IPProtocal1, IPProtocal2) {
+												fmt.Println("2,0")
+											} else {
+												fmt.Println("2,1")
+											}
+
+											if awsutil.DeepEqual(CIDRIP1, CIDRIP2) {
+												fmt.Println("3,0")
+
+											} else {
+												fmt.Println("3,1")
+											}
+
+											if awsutil.DeepEqual(ToPort1, ToPort2) {
+												fmt.Println("4,0")
+
+											} else {
+												fmt.Println("4,1")
+											}
+
+											fmt.Println("SG rule needs to be deleted")
+											fmt.Println((FromPort1), awsutil.StringValue(FromPort2))
+											fmt.Println(awsutil.StringValue(IPProtocal1), awsutil.StringValue(IPProtocal2))
+											fmt.Println(awsutil.StringValue(CIDRIP1), awsutil.StringValue(CIDRIP2))
+											fmt.Println(awsutil.StringValue(ToPort1), awsutil.StringValue(ToPort2))
+										}
+									}
+								}
 							}
-							fmt.Println("Removing Ingress Rule: ", removeingress)
-							_, err := svc.RevokeSecurityGroupIngress(removeingress)
-							if err != nil {
-								if aerr, ok := err.(awserr.Error); ok {
-									switch aerr.Code() {
-									default:
-										fmt.Println(aerr.Error())
+							if there == 1 {
+								fmt.Println("No Action needed")
+							} else {
+								fmt.Println("Removing SG ingress rule")
+
+								var m ec2.IpPermission
+								IpPermissionsremovestingress := []*ec2.IpPermission{}
+
+								if aws.StringValue(IPProtocal1) == "-1" {
+									m = ec2.IpPermission{
+										IpProtocol: IPProtocal1,
+										IpRanges: []*ec2.IpRange{&ec2.IpRange{
+											CidrIp:      CIDRIP1,
+											Description: nil,
+										},
+										},
 									}
 								} else {
-									fmt.Println(err.Error())
+									m = ec2.IpPermission{
+										FromPort:   FromPort1,
+										IpProtocol: IPProtocal1,
+										IpRanges: []*ec2.IpRange{&ec2.IpRange{
+											CidrIp:      CIDRIP1,
+											Description: nil,
+										},
+										},
+										ToPort: ToPort1,
+									}
 								}
-								return nil, nil
+								IpPermissionsremovestingress = append(IpPermissionsremovestingress, &m)
+								//fmt.Println("SG ingress rule to be removed: ", awsutil.StringValue(IpPermissionsremovest))
+								removeingress := &ec2.RevokeSecurityGroupIngressInput{
+									GroupId:       GroupId,
+									IpPermissions: IpPermissionsremovestingress,
+								}
+								fmt.Println("Removing Ingress Rule: ", removeingress)
+								_, err := svc.RevokeSecurityGroupIngress(removeingress)
+								if err != nil {
+									if aerr, ok := err.(awserr.Error); ok {
+										switch aerr.Code() {
+										default:
+											fmt.Println(aerr.Error())
+										}
+									} else {
+										fmt.Println(err.Error())
+									}
+									return nil, nil
+								}
+								//fmt.Println(resultremingress)
 							}
-							//fmt.Println(resultremingress)
 						}
 					}
 				}
-			}
 
 			} else {
 
 				fmt.Println("Creating Security Group: ", SGNames[i])
 				input := &ec2.CreateSecurityGroupInput{
 					Description: aws.String(SGNames[i]),
-					GroupName:   aws.String(ClusterName+"-"+SGNames[i]),
+					GroupName:   aws.String(ClusterName + "-" + SGNames[i]),
 					VpcId:       ID,
 				}
 				result, err := svc.CreateSecurityGroup(input)
@@ -1355,7 +1350,7 @@ func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR
 					}
 					return nil, nil
 				}
-				fmt.Println("Security Group ID: ",result.GroupId)
+				fmt.Println("Security Group ID: ", result.GroupId)
 
 				// Egress rule
 				fmt.Println("Adding Egress rules")
@@ -1366,55 +1361,54 @@ func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR
 				var srcountegress = len(sgrulesegress.Egress)
 				var srnameegress = sgrulesegress.Name
 				fmt.Println(awsutil.StringValue(srnameegress))
-				for i := 0;  i < srcountegress; i ++ {
-					    var IpPermissionscollectionst []*ec2.IpPermission
+				for i := 0; i < srcountegress; i++ {
+					var IpPermissionscollectionst []*ec2.IpPermission
 
-					    //var srfromport = sgrulesegress.Egress[i].FromPort
-						//var srtoport = sgrulesegress.Egress[i].ToPort
-						//var sripprotocal = sgrulesegress.Egress[i].IPProtocal
-						var sriprange = sgrulesegress.Egress[i].IPRange
-						var srsgs = sgrulesegress.Egress[i].SecurityGroups
+					//var srfromport = sgrulesegress.Egress[i].FromPort
+					//var srtoport = sgrulesegress.Egress[i].ToPort
+					//var sripprotocal = sgrulesegress.Egress[i].IPProtocal
+					var sriprange = sgrulesegress.Egress[i].IPRange
+					var srsgs = sgrulesegress.Egress[i].SecurityGroups
 
-						//fmt.Println("SG from port",awsutil.StringValue(srfromport))
-					    //fmt.Println("SG to port",awsutil.StringValue(srtoport))
-					    //fmt.Println("SG Protocal",awsutil.StringValue(sripprotocal))
-					    //fmt.Println("SG from Range", awsutil.StringValue(sriprange))
-				     	//fmt.Println("Security groups be attached list", awsutil.StringValue(srsgs))
+					//fmt.Println("SG from port",awsutil.StringValue(srfromport))
+					//fmt.Println("SG to port",awsutil.StringValue(srtoport))
+					//fmt.Println("SG Protocal",awsutil.StringValue(sripprotocal))
+					//fmt.Println("SG from Range", awsutil.StringValue(sriprange))
+					//fmt.Println("Security groups be attached list", awsutil.StringValue(srsgs))
 
-
-					    IPRange := []*ec2.IpRange{}
-						for j :=0; j < len(sriprange); j ++ {
-							m := ec2.IpRange{
-								CidrIp: &sriprange[j],
-							}
-							IPRange = append(IPRange, &m)
+					IPRange := []*ec2.IpRange{}
+					for j := 0; j < len(sriprange); j++ {
+						m := ec2.IpRange{
+							CidrIp: &sriprange[j],
 						}
+						IPRange = append(IPRange, &m)
+					}
 
-						SGRange := []*ec2.UserIdGroupPair{}
-						for j :=0; j < len(srsgs); j ++ {
-							m := ec2.UserIdGroupPair{
-								GroupId: &srsgs[j],
-							}
-							SGRange = append(SGRange, &m)
+					SGRange := []*ec2.UserIdGroupPair{}
+					for j := 0; j < len(srsgs); j++ {
+						m := ec2.UserIdGroupPair{
+							GroupId: &srsgs[j],
 						}
+						SGRange = append(SGRange, &m)
+					}
 
-						m := ec2.IpPermission{
-							FromPort:         aws.Int64(sgrulesegress.Egress[i].FromPort),
-							IpProtocol:       aws.String(sgrulesegress.Egress[i].IPProtocal),
-							IpRanges:         IPRange,
-							ToPort:           aws.Int64(sgrulesegress.Egress[i].ToPort),
-							//UserIdGroupPairs: SGRange,
-						}
-						IpPermissionscollectionst = append(IpPermissionscollectionst, &m)
+					m := ec2.IpPermission{
+						FromPort:   aws.Int64(sgrulesegress.Egress[i].FromPort),
+						IpProtocol: aws.String(sgrulesegress.Egress[i].IPProtocal),
+						IpRanges:   IPRange,
+						ToPort:     aws.Int64(sgrulesegress.Egress[i].ToPort),
+						//UserIdGroupPairs: SGRange,
+					}
+					IpPermissionscollectionst = append(IpPermissionscollectionst, &m)
 
-					    addegress := &ec2.AuthorizeSecurityGroupEgressInput{
-						  GroupId: result.GroupId,
-						  IpPermissions: IpPermissionscollectionst,
-					    }
-					    fmt.Println("Adding Egress Rule: ", addegress)
-					    //fmt.Println(awsutil.StringValue(addegress))
-					    _, err := svc.AuthorizeSecurityGroupEgress(addegress)
-					    if err != nil {
+					addegress := &ec2.AuthorizeSecurityGroupEgressInput{
+						GroupId:       result.GroupId,
+						IpPermissions: IpPermissionscollectionst,
+					}
+					fmt.Println("Adding Egress Rule: ", addegress)
+					//fmt.Println(awsutil.StringValue(addegress))
+					_, err := svc.AuthorizeSecurityGroupEgress(addegress)
+					if err != nil {
 						if aerr, ok := err.(awserr.Error); ok {
 							switch aerr.Code() {
 							default:
@@ -1425,11 +1419,11 @@ func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR
 							// Message from an error.
 							fmt.Println(err.Error())
 						}
-							return nil, nil
+						return nil, nil
 					}
-					    //fmt.Println(resultaddegress)
+					//fmt.Println(resultaddegress)
 
-					}
+				}
 
 				// Ingress rule
 				fmt.Println("Adding Ingress rules")
@@ -1440,7 +1434,7 @@ func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR
 				var srcountingress = len(sgrulesingress.Ingress)
 				var srnameingress = sgrulesingress.Name
 				fmt.Println(awsutil.StringValue(srnameingress))
-				for i := 0;  i < srcountingress; i ++ {
+				for i := 0; i < srcountingress; i++ {
 					var IpPermissionscollectionst []*ec2.IpPermission
 
 					//var srfromport = sgrulesegress.Ingress[i].FromPort
@@ -1455,9 +1449,8 @@ func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR
 					//fmt.Println("SG from Range", awsutil.StringValue(sriprange))
 					//fmt.Println("Security groups be attached list", awsutil.StringValue(srsgs))
 
-
 					IPRange := []*ec2.IpRange{}
-					for j :=0; j < len(sriprange); j ++ {
+					for j := 0; j < len(sriprange); j++ {
 						m := ec2.IpRange{
 							CidrIp: &sriprange[j],
 						}
@@ -1465,7 +1458,7 @@ func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR
 					}
 
 					SGRange := []*ec2.UserIdGroupPair{}
-					for j :=0; j < len(srsgs); j ++ {
+					for j := 0; j < len(srsgs); j++ {
 						m := ec2.UserIdGroupPair{
 							GroupId: &srsgs[j],
 						}
@@ -1473,16 +1466,16 @@ func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR
 					}
 
 					m := ec2.IpPermission{
-						FromPort:         aws.Int64(sgrulesingress.Ingress[i].FromPort),
-						IpProtocol:       aws.String(sgrulesingress.Ingress[i].IPProtocal),
-						IpRanges:         IPRange,
-						ToPort:           aws.Int64(sgrulesingress.Ingress[i].ToPort),
+						FromPort:   aws.Int64(sgrulesingress.Ingress[i].FromPort),
+						IpProtocol: aws.String(sgrulesingress.Ingress[i].IPProtocal),
+						IpRanges:   IPRange,
+						ToPort:     aws.Int64(sgrulesingress.Ingress[i].ToPort),
 						//UserIdGroupPairs: SGRange,
 					}
 					IpPermissionscollectionst = append(IpPermissionscollectionst, &m)
 
 					addegress := &ec2.AuthorizeSecurityGroupIngressInput{
-						GroupId: result.GroupId,
+						GroupId:       result.GroupId,
 						IpPermissions: IpPermissionscollectionst,
 					}
 					fmt.Println("Adding Ingress Rule: ", addegress)
@@ -1510,7 +1503,7 @@ func Create_SG(sess *session.Session, SGNames []string, ClusterName string, CIDR
 				Filters: []*ec2.Filter{&ec2.Filter{
 					Name:   aws.String("vpc-id"),
 					Values: []*string{ID},
-				},&ec2.Filter{
+				}, &ec2.Filter{
 					Name:   aws.String("group-name"),
 					Values: SGName,
 				},
@@ -1655,40 +1648,40 @@ func Create_VPC(sess *session.Session, file []byte, cluster string, S3 string, V
 	NoOP := len(CheckStack(sess, StackName).Stacks[0].Outputs)
 
 	for p := 0; p < NoOP; p++ {
-	//	time.Sleep(2 * time.Second)
+		//	time.Sleep(2 * time.Second)
 		k := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputKey)
 		var c string = strings.Trim(k, "\"")
 		if string(c) == "SubnetIds" {
-		//	time.Sleep(2 * time.Second)
+			//	time.Sleep(2 * time.Second)
 			value := CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputValue
 			fmt.Println("Subnets: ", awsutil.StringValue(value))
 			vpcsubnets = value
-		//	time.Sleep(2 * time.Second)
+			//	time.Sleep(2 * time.Second)
 			//fmt.Println(awsutil.StringValue(vpcsubnets))
 		}
 	}
 	for p := 0; p < NoOP; p++ {
-	//	time.Sleep(2 * time.Second)
+		//	time.Sleep(2 * time.Second)
 		k := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputKey)
 		var c string = strings.Trim(k, "\"")
 		if string(c) == "SecurityGroups" {
-	//		time.Sleep(2 * time.Second)
+			//		time.Sleep(2 * time.Second)
 			value := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputValue)
 			fmt.Println("SecurityGroups: ", value)
 			vpcsecuritygps = value
-	//		time.Sleep(2 * time.Second)
+			//		time.Sleep(2 * time.Second)
 		}
 	}
 	for p := 0; p < NoOP; p++ {
-	//	time.Sleep(2 * time.Second)
+		//	time.Sleep(2 * time.Second)
 		k := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputKey)
 		var c string = strings.Trim(k, "\"")
 		if string(c) == "ClusterName" {
-		//	time.Sleep(2 * time.Second)
+			//	time.Sleep(2 * time.Second)
 			value := awsutil.StringValue(CheckStack(sess, StackName).Stacks[0].Outputs[p].OutputValue)
 			fmt.Println("Blue ClusterName: ", value)
 			vpcclustername = value
-		//	time.Sleep(2 * time.Second)
+			//	time.Sleep(2 * time.Second)
 		}
 	}
 
@@ -2005,7 +1998,7 @@ func UpdateStack(sess *session.Session, u cftvpc, stack []*awscf.Parameter) *aws
 	return resp
 
 }
-func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclustername string, vpcsubnets *string, ElementsSGIDs map[string]string,ElementsSubnetIDs map[string]string, file []byte, cluster string, s3 string, eksfileName string) (string, []*string, string) {
+func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclustername string, vpcsubnets *string, ElementsSGIDs map[string]string, ElementsSubnetIDs map[string]string, file []byte, cluster string, s3 string, eksfileName string) (string, []*string, string) {
 
 	// Creating vars
 	svc := eks.New(sess)
@@ -2016,7 +2009,6 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 	FileMaster := file
 	err := yaml.Unmarshal([]byte(FileMaster), &eksmaster)
 	Module := "Master"
-
 
 	KubernetesVersion := eksmaster.Master.KubernetesVersion
 	Tags = eksmaster.Master.Tags
@@ -2038,8 +2030,8 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 
 			//vpcsubnetssplit := strings.Split(awsutil.StringValue(vpcsubnets), ",")
 			pvpsgs0 := []*string{}
-			for i := 0; i < len(vpcsecuritygps); i ++ {
-				pvpsgs0 = append(pvpsgs0,vpcsecuritygps[i])
+			for i := 0; i < len(vpcsecuritygps); i++ {
+				pvpsgs0 = append(pvpsgs0, vpcsecuritygps[i])
 			}
 			//pvpcsubnets := []*string{}
 			//for i := 0; i < len(pvpcsubnets0); i ++ {
@@ -2061,7 +2053,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 			}
 
 			pvpcsg := []*string{}
-			for i := 0; i < len(arropt); i ++ {
+			for i := 0; i < len(arropt); i++ {
 				pvpcsg = append(pvpcsg, &arropt[i])
 			}
 			SGIds = pvpcsg
@@ -2077,11 +2069,11 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 
 			vpcsubnetssplit := strings.Split(awsutil.StringValue(vpcsubnets), ",")
 			pvpcsubnets0 := []string{}
-			for i := 0; i < len(vpcsubnetssplit); i ++ {
-				pvpcsubnets0 = append(pvpcsubnets0,strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(vpcsubnetssplit[i], "\\", ""), "\"", "")))
+			for i := 0; i < len(vpcsubnetssplit); i++ {
+				pvpcsubnets0 = append(pvpcsubnets0, strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(vpcsubnetssplit[i], "\\", ""), "\"", "")))
 			}
 			pvpcsubnets := []*string{}
-				for i := 0; i < len(pvpcsubnets0); i ++ {
+			for i := 0; i < len(pvpcsubnets0); i++ {
 				pvpcsubnets = append(pvpcsubnets, &pvpcsubnets0[i])
 			}
 			SubnetIds = pvpcsubnets
@@ -2100,7 +2092,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 			}
 
 			pvpcsubnets := []*string{}
-			for i := 0; i < len(arropt); i ++ {
+			for i := 0; i < len(arropt); i++ {
 				pvpcsubnets = append(pvpcsubnets, &arropt[i])
 			}
 			SubnetIds = pvpcsubnets
@@ -2123,7 +2115,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 		os.Exit(1)
 	}
 
-    loglice := []string{"api","scheduler", "authenticator", "audit", "controllerManager"}
+	loglice := []string{"api", "scheduler", "authenticator", "audit", "controllerManager"}
 	pvplogging := []*string{}
 	for i := range loglice {
 		pvplogging = append(pvplogging, &loglice[i])
@@ -2139,7 +2131,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 
 	fmt.Printf("Checking Cluster state\n")
 	var status string
-	status, _, _, err, _, _ = ListStack_sdk(sess, ClusterName, "",Module)
+	status, _, _, err, _, _ = ListStack_sdk(sess, ClusterName, "", Module)
 	if err != nil {
 		fmt.Println(os.Stderr, "Cluster info not available - Error: ")
 		//os.Exit(1)
@@ -2160,11 +2152,11 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 
 				if eksmaster.Master.Logging != nil {
 					input := &eks.CreateClusterInput{
-						ClientRequestToken: nil,
-						Name:               aws.String(ClusterName),
+						ClientRequestToken:      nil,
+						Name:                    aws.String(ClusterName),
 						KubernetesNetworkConfig: &eks.KubernetesNetworkConfigRequest{ServiceIpv4Cidr: &KubernetesNetworkCIDR},
 						ResourcesVpcConfig: &eks.VpcConfigRequest{
-							SecurityGroupIds: SGIds,
+							SecurityGroupIds:      SGIds,
 							SubnetIds:             SubnetIds,
 							EndpointPrivateAccess: eksmaster.Master.PrivateAccess,
 							EndpointPublicAccess:  eksmaster.Master.PublicAccess,
@@ -2172,7 +2164,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 						},
 						RoleArn: aws.String(arn),
 						Version: aws.String(KubernetesVersion),
-						Logging: &eks.Logging{ClusterLogging: []*eks.LogSetup{&eks.LogSetup{Enabled: newTrue(), Types: eksmaster.Master.Logging},{Enabled: newFalse(), Types: diff2 }},},
+						Logging: &eks.Logging{ClusterLogging: []*eks.LogSetup{&eks.LogSetup{Enabled: newTrue(), Types: eksmaster.Master.Logging}, {Enabled: newFalse(), Types: diff2}}},
 					}
 					result, err := svc.CreateCluster(input)
 					if err != nil {
@@ -2205,7 +2197,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 					println("Checking Status.......")
 					for {
 						var a string = "CREATING"
-						b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "",Module)
+						b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "", Module)
 						fmt.Println("Creating Cluster...")
 						if a != b {
 							fmt.Println("Status: ", awsutil.StringValue(b))
@@ -2221,7 +2213,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 						Name:               aws.String(ClusterName),
 						//EncryptionConfig: []*eks.EncryptionConfig{&eks.EncryptionConfig{Resources: []*string{aws.String("secrets")}, Provider: &eks.Provider{KeyArn: eksmaster.Master.KMSKey}}},
 						ResourcesVpcConfig: &eks.VpcConfigRequest{
-							SecurityGroupIds: SGIds,
+							SecurityGroupIds:      SGIds,
 							SubnetIds:             SubnetIds,
 							EndpointPrivateAccess: eksmaster.Master.PrivateAccess,
 							EndpointPublicAccess:  eksmaster.Master.PublicAccess,
@@ -2261,7 +2253,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 					println("Checking Status.......")
 					for {
 						var a string = "CREATING"
-						b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "",Module)
+						b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "", Module)
 						fmt.Println("Creating Cluster...")
 						if a != b {
 							fmt.Println("Status: ", awsutil.StringValue(b))
@@ -2272,16 +2264,15 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 					}
 				}
 
-
 			} else {
 
 				if eksmaster.Master.Logging != nil {
 					input := &eks.CreateClusterInput{
 						ClientRequestToken: nil,
 						Name:               aws.String(ClusterName),
-						EncryptionConfig: []*eks.EncryptionConfig{&eks.EncryptionConfig{Resources: []*string{aws.String("secrets")}, Provider: &eks.Provider{KeyArn: eksmaster.Master.KMSKey}}},
+						EncryptionConfig:   []*eks.EncryptionConfig{&eks.EncryptionConfig{Resources: []*string{aws.String("secrets")}, Provider: &eks.Provider{KeyArn: eksmaster.Master.KMSKey}}},
 						ResourcesVpcConfig: &eks.VpcConfigRequest{
-							SecurityGroupIds: SGIds,
+							SecurityGroupIds:      SGIds,
 							SubnetIds:             SubnetIds,
 							EndpointPrivateAccess: eksmaster.Master.PrivateAccess,
 							EndpointPublicAccess:  eksmaster.Master.PublicAccess,
@@ -2289,7 +2280,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 						},
 						RoleArn: aws.String(arn),
 						Version: aws.String(KubernetesVersion),
-						Logging: &eks.Logging{ClusterLogging: []*eks.LogSetup{&eks.LogSetup{Enabled: newTrue(), Types: eksmaster.Master.Logging},{Enabled: newFalse(), Types: diff2 }},},
+						Logging: &eks.Logging{ClusterLogging: []*eks.LogSetup{&eks.LogSetup{Enabled: newTrue(), Types: eksmaster.Master.Logging}, {Enabled: newFalse(), Types: diff2}}},
 					}
 					result, err := svc.CreateCluster(input)
 					if err != nil {
@@ -2322,7 +2313,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 					println("Checking Status.......")
 					for {
 						var a string = "CREATING"
-						b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "",Module)
+						b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "", Module)
 						fmt.Println("Creating Cluster...")
 						if a != b {
 							fmt.Println("Status: ", awsutil.StringValue(b))
@@ -2335,9 +2326,9 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 					input := &eks.CreateClusterInput{
 						ClientRequestToken: nil,
 						Name:               aws.String(ClusterName),
-						EncryptionConfig: []*eks.EncryptionConfig{&eks.EncryptionConfig{Resources: []*string{aws.String("secrets")}, Provider: &eks.Provider{KeyArn: eksmaster.Master.KMSKey}}},
+						EncryptionConfig:   []*eks.EncryptionConfig{&eks.EncryptionConfig{Resources: []*string{aws.String("secrets")}, Provider: &eks.Provider{KeyArn: eksmaster.Master.KMSKey}}},
 						ResourcesVpcConfig: &eks.VpcConfigRequest{
-							SecurityGroupIds: SGIds,
+							SecurityGroupIds:      SGIds,
 							SubnetIds:             SubnetIds,
 							EndpointPrivateAccess: eksmaster.Master.PrivateAccess,
 							EndpointPublicAccess:  eksmaster.Master.PublicAccess,
@@ -2377,7 +2368,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 					println("Checking Status.......")
 					for {
 						var a string = "CREATING"
-						b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "",Module)
+						b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "", Module)
 						fmt.Println("Creating Cluster...")
 						if a != b {
 							fmt.Println("Status: ", awsutil.StringValue(b))
@@ -2396,11 +2387,11 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 
 				if eksmaster.Master.Logging != nil {
 					input := &eks.CreateClusterInput{
-						ClientRequestToken: nil,
-						Name:               aws.String(ClusterName),
+						ClientRequestToken:      nil,
+						Name:                    aws.String(ClusterName),
 						KubernetesNetworkConfig: &eks.KubernetesNetworkConfigRequest{ServiceIpv4Cidr: &KubernetesNetworkCIDR},
 						ResourcesVpcConfig: &eks.VpcConfigRequest{
-							SecurityGroupIds: SGIds,
+							SecurityGroupIds:      SGIds,
 							SubnetIds:             SubnetIds,
 							EndpointPrivateAccess: eksmaster.Master.PrivateAccess,
 							EndpointPublicAccess:  eksmaster.Master.PublicAccess,
@@ -2408,8 +2399,8 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 						},
 						RoleArn: aws.String(arn),
 						Version: aws.String(KubernetesVersion),
-						Logging: &eks.Logging{ClusterLogging: []*eks.LogSetup{&eks.LogSetup{Enabled: newTrue(), Types: eksmaster.Master.Logging},{Enabled: newFalse(), Types: diff2 }},},
-						Tags: tags2,
+						Logging: &eks.Logging{ClusterLogging: []*eks.LogSetup{&eks.LogSetup{Enabled: newTrue(), Types: eksmaster.Master.Logging}, {Enabled: newFalse(), Types: diff2}}},
+						Tags:    tags2,
 					}
 					result, err := svc.CreateCluster(input)
 					if err != nil {
@@ -2442,7 +2433,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 					println("Checking Status.......")
 					for {
 						var a string = "CREATING"
-						b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "",Module)
+						b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "", Module)
 						fmt.Println("Creating Cluster...")
 						if a != b {
 							fmt.Println("Status: ", awsutil.StringValue(b))
@@ -2458,7 +2449,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 						Name:               aws.String(ClusterName),
 						//EncryptionConfig: []*eks.EncryptionConfig{&eks.EncryptionConfig{Resources: []*string{aws.String("secrets")}, Provider: &eks.Provider{KeyArn: eksmaster.Master.KMSKey}}},
 						ResourcesVpcConfig: &eks.VpcConfigRequest{
-							SecurityGroupIds: SGIds,
+							SecurityGroupIds:      SGIds,
 							SubnetIds:             SubnetIds,
 							EndpointPrivateAccess: eksmaster.Master.PrivateAccess,
 							EndpointPublicAccess:  eksmaster.Master.PublicAccess,
@@ -2466,7 +2457,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 						},
 						RoleArn: aws.String(arn),
 						Version: aws.String(KubernetesVersion),
-						Tags: tags2,
+						Tags:    tags2,
 					}
 					result, err := svc.CreateCluster(input)
 					if err != nil {
@@ -2499,7 +2490,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 					println("Checking Status.......")
 					for {
 						var a string = "CREATING"
-						b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "",Module)
+						b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "", Module)
 						fmt.Println("Creating Cluster...")
 						if a != b {
 							fmt.Println("Status: ", awsutil.StringValue(b))
@@ -2510,16 +2501,15 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 					}
 				}
 
-
 			} else {
 
 				if eksmaster.Master.Logging != nil {
 					input := &eks.CreateClusterInput{
 						ClientRequestToken: nil,
 						Name:               aws.String(ClusterName),
-						EncryptionConfig: []*eks.EncryptionConfig{&eks.EncryptionConfig{Resources: []*string{aws.String("secrets")}, Provider: &eks.Provider{KeyArn: eksmaster.Master.KMSKey}}},
+						EncryptionConfig:   []*eks.EncryptionConfig{&eks.EncryptionConfig{Resources: []*string{aws.String("secrets")}, Provider: &eks.Provider{KeyArn: eksmaster.Master.KMSKey}}},
 						ResourcesVpcConfig: &eks.VpcConfigRequest{
-							SecurityGroupIds: SGIds,
+							SecurityGroupIds:      SGIds,
 							SubnetIds:             SubnetIds,
 							EndpointPrivateAccess: eksmaster.Master.PrivateAccess,
 							EndpointPublicAccess:  eksmaster.Master.PublicAccess,
@@ -2527,8 +2517,8 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 						},
 						RoleArn: aws.String(arn),
 						Version: aws.String(KubernetesVersion),
-						Logging: &eks.Logging{ClusterLogging: []*eks.LogSetup{&eks.LogSetup{Enabled: newTrue(), Types: eksmaster.Master.Logging},{Enabled: newFalse(), Types: diff2 }},},
-						Tags: tags2,
+						Logging: &eks.Logging{ClusterLogging: []*eks.LogSetup{&eks.LogSetup{Enabled: newTrue(), Types: eksmaster.Master.Logging}, {Enabled: newFalse(), Types: diff2}}},
+						Tags:    tags2,
 					}
 					result, err := svc.CreateCluster(input)
 					if err != nil {
@@ -2561,7 +2551,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 					println("Checking Status.......")
 					for {
 						var a string = "CREATING"
-						b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "",Module)
+						b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "", Module)
 						fmt.Println("Creating Cluster...")
 						if a != b {
 							fmt.Println("Status: ", awsutil.StringValue(b))
@@ -2574,9 +2564,9 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 					input := &eks.CreateClusterInput{
 						ClientRequestToken: nil,
 						Name:               aws.String(ClusterName),
-						EncryptionConfig: []*eks.EncryptionConfig{&eks.EncryptionConfig{Resources: []*string{aws.String("secrets")}, Provider: &eks.Provider{KeyArn: eksmaster.Master.KMSKey}}},
+						EncryptionConfig:   []*eks.EncryptionConfig{&eks.EncryptionConfig{Resources: []*string{aws.String("secrets")}, Provider: &eks.Provider{KeyArn: eksmaster.Master.KMSKey}}},
 						ResourcesVpcConfig: &eks.VpcConfigRequest{
-							SecurityGroupIds: SGIds,
+							SecurityGroupIds:      SGIds,
 							SubnetIds:             SubnetIds,
 							EndpointPrivateAccess: eksmaster.Master.PrivateAccess,
 							EndpointPublicAccess:  eksmaster.Master.PublicAccess,
@@ -2584,7 +2574,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 						},
 						RoleArn: aws.String(arn),
 						Version: aws.String(KubernetesVersion),
-						Tags: tags2,
+						Tags:    tags2,
 					}
 					result, err := svc.CreateCluster(input)
 					if err != nil {
@@ -2617,7 +2607,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 					println("Checking Status.......")
 					for {
 						var a string = "CREATING"
-						b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "",Module)
+						b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "", Module)
 						fmt.Println("Creating Cluster...")
 						if a != b {
 							fmt.Println("Status: ", awsutil.StringValue(b))
@@ -2634,13 +2624,14 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 
 	} else if status == "ACTIVE" {
 
-		if eksmaster.Master.KMSKey == nil {} else {
+		if eksmaster.Master.KMSKey == nil {
+		} else {
 			fmt.Println("Cluster exist, updating KMS Key")
 			fmt.Println("Updating encryption configs")
 			input0 := &eks.AssociateEncryptionConfigInput{
 				ClientRequestToken: nil,
 				ClusterName:        aws.String(ClusterName),
-				EncryptionConfig: []*eks.EncryptionConfig{&eks.EncryptionConfig{Resources: []*string{aws.String("secrets")}, Provider: &eks.Provider{KeyArn: eksmaster.Master.KMSKey}}},
+				EncryptionConfig:   []*eks.EncryptionConfig{&eks.EncryptionConfig{Resources: []*string{aws.String("secrets")}, Provider: &eks.Provider{KeyArn: eksmaster.Master.KMSKey}}},
 			}
 			result0, err := svc.AssociateEncryptionConfig(input0)
 			if err != nil {
@@ -2672,8 +2663,8 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 			fmt.Println(result0)
 			println("Checking Status.......")
 			for {
-				var a  = "UPDATING"
-				b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName,"", Module)
+				var a = "UPDATING"
+				b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "", Module)
 				fmt.Println("Updating Cluster  ...")
 				if a != b {
 					fmt.Println("Status: ", awsutil.StringValue(b))
@@ -2724,8 +2715,8 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 		fmt.Println(result)
 		println("Checking Status.......")
 		for {
-			var a  = "UPDATING"
-			b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "",Module)
+			var a = "UPDATING"
+			b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "", Module)
 			fmt.Println("Updating Cluster  ...")
 			if a != b {
 				fmt.Println("Status: ", awsutil.StringValue(b))
@@ -2735,12 +2726,11 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 			}
 		}
 
-
 		fmt.Println("Updating logging configs")
 		input3 := &eks.UpdateClusterConfigInput{
 			ClientRequestToken: nil,
 			Name:               aws.String(ClusterName),
-			Logging: &eks.Logging{ClusterLogging: []*eks.LogSetup{&eks.LogSetup{Enabled: newTrue(), Types: eksmaster.Master.Logging},{Enabled: newFalse(), Types: diff2 }},},
+			Logging:            &eks.Logging{ClusterLogging: []*eks.LogSetup{&eks.LogSetup{Enabled: newTrue(), Types: eksmaster.Master.Logging}, {Enabled: newFalse(), Types: diff2}}},
 		}
 		result3, err := svc.UpdateClusterConfig(input3)
 		if err != nil {
@@ -2772,8 +2762,8 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 		fmt.Println(result3)
 		println("Checking Status.......")
 		for {
-			var a  = "UPDATING"
-			b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "",Module)
+			var a = "UPDATING"
+			b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "", Module)
 			fmt.Println("Updating Cluster  ...")
 			if a != b {
 				fmt.Println("Status: ", awsutil.StringValue(b))
@@ -2787,7 +2777,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 		input2 := &eks.UpdateClusterVersionInput{
 			ClientRequestToken: nil,
 			Name:               aws.String(ClusterName),
-			Version: aws.String(KubernetesVersion),
+			Version:            aws.String(KubernetesVersion),
 		}
 		result2, err := svc.UpdateClusterVersion(input2)
 		if err != nil {
@@ -2820,7 +2810,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 		println("Checking Status.......")
 		for {
 			var a string = "UPDATING"
-			b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName,"", Module)
+			b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "", Module)
 			fmt.Println("Updating Cluster  ...")
 			if a != b {
 				fmt.Println("Status: ", awsutil.StringValue(b))
@@ -2833,8 +2823,8 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 	} else if status == "UPDATING" {
 		println("Checking Status.......")
 		for {
-			var a  = "UPDATING"
-			b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName,"", Module)
+			var a = "UPDATING"
+			b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "", Module)
 			fmt.Println("Cluster updating ...")
 			if a != b {
 				fmt.Println("Status: ", awsutil.StringValue(b))
@@ -2857,8 +2847,8 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 				//},
 				//SubnetIds: SubnetIds,
 				EndpointPrivateAccess: eksmaster.Master.PrivateAccess,
-				EndpointPublicAccess: eksmaster.Master.PublicAccess,
-				PublicAccessCidrs: eksmaster.Master.PublicCIDR,
+				EndpointPublicAccess:  eksmaster.Master.PublicAccess,
+				PublicAccessCidrs:     eksmaster.Master.PublicCIDR,
 			},
 		}
 		result, err := svc.UpdateClusterConfig(input)
@@ -2892,7 +2882,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 		println("Checking Status.......")
 		for {
 			var a string = "UPDATING"
-			b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "",Module)
+			b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "", Module)
 			fmt.Println("Updating Cluster  ...")
 			if a != b {
 				fmt.Println("Status: ", awsutil.StringValue(b))
@@ -2902,12 +2892,11 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 			}
 		}
 
-
 		fmt.Println("Updating logging configs")
 		input3 := &eks.UpdateClusterConfigInput{
 			ClientRequestToken: nil,
 			Name:               aws.String(ClusterName),
-			Logging: &eks.Logging{ClusterLogging: []*eks.LogSetup{&eks.LogSetup{Enabled: newTrue(), Types: eksmaster.Master.Logging},{Enabled: newFalse(), Types: diff2 }},},
+			Logging:            &eks.Logging{ClusterLogging: []*eks.LogSetup{&eks.LogSetup{Enabled: newTrue(), Types: eksmaster.Master.Logging}, {Enabled: newFalse(), Types: diff2}}},
 		}
 		result3, err := svc.UpdateClusterConfig(input3)
 		if err != nil {
@@ -2940,7 +2929,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 		println("Checking Status.......")
 		for {
 			var a string = "UPDATING"
-			b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "",Module)
+			b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "", Module)
 			fmt.Println("Updating Cluster  ...")
 			if a != b {
 				fmt.Println("Status: ", awsutil.StringValue(b))
@@ -2950,12 +2939,11 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 			}
 		}
 
-
 		fmt.Println("Updating cluster version")
 		input2 := &eks.UpdateClusterVersionInput{
 			ClientRequestToken: nil,
 			Name:               aws.String(ClusterName),
-			Version: aws.String(KubernetesVersion),
+			Version:            aws.String(KubernetesVersion),
 		}
 		result2, err := svc.UpdateClusterVersion(input2)
 		if err != nil {
@@ -2988,7 +2976,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 		println("Checking Status.......")
 		for {
 			var a string = "UPDATING"
-			b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName,"", Module)
+			b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "", Module)
 			fmt.Println("Updating Cluster  ...")
 			if a != b {
 				fmt.Println("Status: ", awsutil.StringValue(b))
@@ -3004,7 +2992,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 		println("Checking Status.......")
 		for {
 			var a string = "DELETING"
-			b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "",Module)
+			b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "", Module)
 			fmt.Println("Deleting Cluster ...")
 			if a != b {
 				fmt.Println("Status: ", awsutil.StringValue(b))
@@ -3020,7 +3008,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 		println("Checking Status.......")
 		for {
 			var a string = "CREATING"
-			b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName,"", Module)
+			b, _, _, _, _, _ := ListStack_sdk(sess, ClusterName, "", Module)
 			fmt.Println("Creating Cluster ...")
 			if a != b {
 				fmt.Println("Status: ", awsutil.StringValue(b))
@@ -3033,7 +3021,7 @@ func Create_Master_sdk(sess *session.Session, vpcsecuritygps []*string, vpcclust
 	} else {
 		fmt.Println(status, "check inputs")
 	}
-	_, results, _, _, _, _ := ListStack_sdk(sess, ClusterName, "",Module)
+	_, results, _, _, _, _ := ListStack_sdk(sess, ClusterName, "", Module)
 	fmt.Println(results)
 
 	return ClusterName, SubnetIds, Module
@@ -3044,13 +3032,13 @@ func Create_NodeGroup_SDK(sess *session.Session, nodelen int, MClusterName strin
 	svc := eks.New(sess)
 	svcsskey := ec2.New(sess)
 	// Creating vars
-	var  AmiType, NodeClusterName,  capacitytype, disksize, NodeRole, NodegroupName, ReleaseVersion, Version string
+	var AmiType, NodeClusterName, capacitytype, disksize, NodeRole, NodegroupName, ReleaseVersion, Version string
 	var Tags, Labels map[string]string
 	var ScalingConfig map[string]int
 	var InstanceTypes []*string
 	var RemoteAccessSG []string
 	var SpotInstance bool
-	var NewDiskLimit, MinSize,MaxSize,DesiredSize  int
+	var NewDiskLimit, MinSize, MaxSize, DesiredSize int
 	var ConfNode NodeList
 	var NSubnetIds []*string
 	//var Taints map[string]map[string]string
@@ -3068,7 +3056,6 @@ func Create_NodeGroup_SDK(sess *session.Session, nodelen int, MClusterName strin
 		panic(err)
 	}
 
-
 	Module := "NodeGroup"
 	NodegroupName = ConfNode.Nodes[int(nodelen)].NodegroupName
 	InstanceTypes = ConfNode.Nodes[int(nodelen)].InstanceTypes
@@ -3081,13 +3068,13 @@ func Create_NodeGroup_SDK(sess *session.Session, nodelen int, MClusterName strin
 	RemoteAccessSG = ConfNode.Nodes[int(nodelen)].RemoteAccess.SourceSecurityGroups
 	//RemoteAccessSSH = ConfNode.Nodes[int(nodelen)].RemoteAccess.SSHKey
 	TaintsTotal := []*eks.Taint{}
-    for i := range ConfNode.Nodes[int(nodelen)].Taints{
+	for i := range ConfNode.Nodes[int(nodelen)].Taints {
 		m := eks.Taint{
 			Effect: aws.String(ConfNode.Nodes[int(nodelen)].Taints[i].Effect),
 			Key:    aws.String(ConfNode.Nodes[int(nodelen)].Taints[i].Key),
 			Value:  aws.String(ConfNode.Nodes[int(nodelen)].Taints[i].Value),
 		}
-		TaintsTotal = append(TaintsTotal,&m)
+		TaintsTotal = append(TaintsTotal, &m)
 	}
 
 	if ScalingConfig["DesiredSize"] == 0 {
@@ -3125,8 +3112,8 @@ func Create_NodeGroup_SDK(sess *session.Session, nodelen int, MClusterName strin
 	}
 	if InstanceTypes == nil {
 		//NodeClusterName = ConfNode.Nodes[int(nodelen)].ClusterName
-//		val := "t3.large"
-//		InstanceTypes[0] = &val
+		//		val := "t3.large"
+		//		InstanceTypes[0] = &val
 	}
 	if SpotInstance == true {
 		capacitytype = "SPOT"
@@ -3138,7 +3125,7 @@ func Create_NodeGroup_SDK(sess *session.Session, nodelen int, MClusterName strin
 		NewDiskLimit, errcatch = strconv.Atoi(disksize)
 		if errcatch != nil {
 			result3, _ := regexp.MatchString("g", strings.ToLower(disksize))
-			if result3 == true{
+			if result3 == true {
 				NewDiskLimit, _ = strconv.Atoi(strings.Trim(strings.ToLower(disksize), "gb"))
 			} else {
 				result4, _ := regexp.MatchString("gb", strings.ToLower(disksize))
@@ -3191,7 +3178,7 @@ func Create_NodeGroup_SDK(sess *session.Session, nodelen int, MClusterName strin
 
 	// Creating SSH Key pair
 
-	SSHkeyName:= NodeClusterName+"-"+NodegroupName+".yml"
+	SSHkeyName := NodeClusterName + "-" + NodegroupName + ".yml"
 
 	inputkeypair := &ec2.CreateKeyPairInput{
 		DryRun:            nil,
@@ -3218,7 +3205,7 @@ func Create_NodeGroup_SDK(sess *session.Session, nodelen int, MClusterName strin
 	fmt.Println("Node Subnets: ", MSubnetIds)
 	fmt.Println("Node Group Name: ", NodegroupName)
 	fmt.Println("Node SubnetIds: ", NSubnetIds)
-	fmt.Println("Node Taints: ",awsutil.StringValue(TaintsTotal))
+	fmt.Println("Node Taints: ", awsutil.StringValue(TaintsTotal))
 	fmt.Println("Node Tags: ", awsutil.StringValue(Tags))
 	fmt.Println("Node Labels: ", awsutil.StringValue(labels2))
 	fmt.Println("Node MaxSize: ", MaxSize)
@@ -3248,17 +3235,17 @@ func Create_NodeGroup_SDK(sess *session.Session, nodelen int, MClusterName strin
 		if tags2 == nil {
 			update_noderole(sess, NodeRoleName)
 			input := &eks.CreateNodegroupInput{
-				AmiType: &AmiType,
-				CapacityType: &capacitytype,
+				AmiType:            &AmiType,
+				CapacityType:       &capacitytype,
 				ClientRequestToken: nil,
-				ClusterName: &NodeClusterName,
-				DiskSize: aws.Int64(int64(NewDiskLimit)),
-				InstanceTypes: InstanceTypes,
-				Labels: labels2,
-				NodeRole: &NodeRole,
-				NodegroupName: &NodegroupName,
-				Subnets: NSubnetIds,
-				ReleaseVersion: &ReleaseVersion,
+				ClusterName:        &NodeClusterName,
+				DiskSize:           aws.Int64(int64(NewDiskLimit)),
+				InstanceTypes:      InstanceTypes,
+				Labels:             labels2,
+				NodeRole:           &NodeRole,
+				NodegroupName:      &NodegroupName,
+				Subnets:            NSubnetIds,
+				ReleaseVersion:     &ReleaseVersion,
 				ScalingConfig: &eks.NodegroupScalingConfig{
 					DesiredSize: aws.Int64(int64(DesiredSize)),
 					MaxSize:     aws.Int64(int64(MaxSize)),
@@ -3308,7 +3295,7 @@ func Create_NodeGroup_SDK(sess *session.Session, nodelen int, MClusterName strin
 			println("Checking Status.......")
 			for {
 				var a string = "CREATING"
-				b, _, _, _, _, _ := ListStack_sdk(sess, NodeClusterName, NodegroupName,Module)
+				b, _, _, _, _, _ := ListStack_sdk(sess, NodeClusterName, NodegroupName, Module)
 				fmt.Println("Creating NodeGroups...")
 				if a != b {
 					fmt.Println("Status: ", awsutil.StringValue(b))
@@ -3319,19 +3306,19 @@ func Create_NodeGroup_SDK(sess *session.Session, nodelen int, MClusterName strin
 			}
 		} else {
 			input := &eks.CreateNodegroupInput{
-				AmiType: &AmiType,
-				CapacityType: &capacitytype,
+				AmiType:            &AmiType,
+				CapacityType:       &capacitytype,
 				ClientRequestToken: nil,
-				ClusterName: &NodeClusterName,
-				DiskSize: aws.Int64(int64(NewDiskLimit)),
-				InstanceTypes: InstanceTypes,
-				Labels: labels2,
-				NodeRole: &NodeRole,
-				NodegroupName: &NodegroupName,
-				Subnets: NSubnetIds,
-				ReleaseVersion: &ReleaseVersion,
-				Tags: tags2,
-				Version: &Version,
+				ClusterName:        &NodeClusterName,
+				DiskSize:           aws.Int64(int64(NewDiskLimit)),
+				InstanceTypes:      InstanceTypes,
+				Labels:             labels2,
+				NodeRole:           &NodeRole,
+				NodegroupName:      &NodegroupName,
+				Subnets:            NSubnetIds,
+				ReleaseVersion:     &ReleaseVersion,
+				Tags:               tags2,
+				Version:            &Version,
 				ScalingConfig: &eks.NodegroupScalingConfig{
 					DesiredSize: aws.Int64(int64(DesiredSize)),
 					MaxSize:     aws.Int64(int64(MaxSize)),
@@ -3384,7 +3371,7 @@ func Create_NodeGroup_SDK(sess *session.Session, nodelen int, MClusterName strin
 			println("Checking Status.......")
 			for {
 				var a string = "CREATING"
-				b, _, _, _, _, _ := ListStack_sdk(sess, NodeClusterName, NodegroupName,Module)
+				b, _, _, _, _, _ := ListStack_sdk(sess, NodeClusterName, NodegroupName, Module)
 				fmt.Println("Creating NodeGroups...")
 				if a != b {
 					fmt.Println("Status: ", awsutil.StringValue(b))
@@ -3457,7 +3444,7 @@ func Create_NodeGroup_SDK(sess *session.Session, nodelen int, MClusterName strin
 							Key:    keystaints1,
 							Value:  effstaints1,
 						}
-						TaintsTotalRemoved = append(TaintsTotalRemoved,&m)
+						TaintsTotalRemoved = append(TaintsTotalRemoved, &m)
 					}
 				}
 				j++
@@ -3469,8 +3456,8 @@ func Create_NodeGroup_SDK(sess *session.Session, nodelen int, MClusterName strin
 
 		input := &eks.UpdateNodegroupConfigInput{
 			ClientRequestToken: nil,
-			ClusterName: &NodeClusterName,
-			NodegroupName: &NodegroupName,
+			ClusterName:        &NodeClusterName,
+			NodegroupName:      &NodegroupName,
 			ScalingConfig: &eks.NodegroupScalingConfig{
 				DesiredSize: aws.Int64(int64(DesiredSize)),
 				MaxSize:     aws.Int64(int64(MaxSize)),
@@ -3516,7 +3503,7 @@ func Create_NodeGroup_SDK(sess *session.Session, nodelen int, MClusterName strin
 		println("Checking Status.......")
 		for {
 			var a string = "UPDATING"
-			b, _, _, _, _, _ := ListStack_sdk(sess, NodeClusterName, NodegroupName,Module)
+			b, _, _, _, _, _ := ListStack_sdk(sess, NodeClusterName, NodegroupName, Module)
 			fmt.Println("Updating Node Group ...")
 			if a != b {
 				fmt.Println("Status: ", awsutil.StringValue(b))
@@ -3526,13 +3513,12 @@ func Create_NodeGroup_SDK(sess *session.Session, nodelen int, MClusterName strin
 			}
 		}
 
-
 	} else if status == "UPDATING" {
 
 		println("Checking Status.......")
 		for {
-			var a  = "UPDATING"
-			b, _, _, _, _, _ := ListStack_sdk(sess, cluster,NodegroupName, Module)
+			var a = "UPDATING"
+			b, _, _, _, _, _ := ListStack_sdk(sess, cluster, NodegroupName, Module)
 			fmt.Println("NodeGroup getting updated ...")
 			if a != b {
 				fmt.Println("Status: ", awsutil.StringValue(b))
@@ -3603,7 +3589,7 @@ func Create_NodeGroup_SDK(sess *session.Session, nodelen int, MClusterName strin
 							Key:    keystaints1,
 							Value:  effstaints1,
 						}
-						TaintsTotalRemoved = append(TaintsTotalRemoved,&m)
+						TaintsTotalRemoved = append(TaintsTotalRemoved, &m)
 					}
 				}
 				j++
@@ -3615,8 +3601,8 @@ func Create_NodeGroup_SDK(sess *session.Session, nodelen int, MClusterName strin
 
 		input := &eks.UpdateNodegroupConfigInput{
 			ClientRequestToken: nil,
-			ClusterName: &NodeClusterName,
-			NodegroupName: &NodegroupName,
+			ClusterName:        &NodeClusterName,
+			NodegroupName:      &NodegroupName,
 			ScalingConfig: &eks.NodegroupScalingConfig{
 				DesiredSize: aws.Int64(int64(DesiredSize)),
 				MaxSize:     aws.Int64(int64(MaxSize)),
@@ -3662,7 +3648,7 @@ func Create_NodeGroup_SDK(sess *session.Session, nodelen int, MClusterName strin
 		println("Checking Status.......")
 		for {
 			var a string = "UPDATING"
-			b, _, _, _, _, _ := ListStack_sdk(sess, NodeClusterName, NodegroupName,Module)
+			b, _, _, _, _, _ := ListStack_sdk(sess, NodeClusterName, NodegroupName, Module)
 			fmt.Println("Updating Node Group ...")
 			if a != b {
 				fmt.Println("Status: ", awsutil.StringValue(b))
@@ -3672,14 +3658,13 @@ func Create_NodeGroup_SDK(sess *session.Session, nodelen int, MClusterName strin
 			}
 		}
 
-
 	} else if status == "DELETING" {
 
 		println("Checking Status.......")
 		fmt.Println("NodeGroup getting deleted, updates will not be performed ...")
 		for {
 			var a string = "DELETING"
-			b, _, _, _, _, _ := ListStack_sdk(sess, cluster, NodegroupName,Module)
+			b, _, _, _, _, _ := ListStack_sdk(sess, cluster, NodegroupName, Module)
 			fmt.Println("NodeGroup getting deleted ...")
 			if a != b {
 				fmt.Println("Status: ", awsutil.StringValue(b))
@@ -3696,7 +3681,7 @@ func Create_NodeGroup_SDK(sess *session.Session, nodelen int, MClusterName strin
 		for {
 			var a string = "CREATING"
 			fmt.Println("NodeGroup getting created, updates will not to performed")
-			b, _, _, _, _, _ := ListStack_sdk(sess, cluster,NodegroupName, Module)
+			b, _, _, _, _, _ := ListStack_sdk(sess, cluster, NodegroupName, Module)
 			fmt.Println("NodeGroup getting created ...")
 			if a != b {
 				fmt.Println("Status: ", awsutil.StringValue(b))
@@ -3709,7 +3694,7 @@ func Create_NodeGroup_SDK(sess *session.Session, nodelen int, MClusterName strin
 	} else {
 		fmt.Println(status, "check inputs")
 	}
-	_, _, results, _, _, _ := ListStack_sdk(sess, cluster, NodegroupName,Module)
+	_, _, results, _, _, _ := ListStack_sdk(sess, cluster, NodegroupName, Module)
 	fmt.Println(results)
 
 }
@@ -3756,7 +3741,7 @@ func create_role(sess *session.Session, clustername string) string {
 		return ""
 	}
 
-	fmt.Println("Role created: ",result)
+	fmt.Println("Role created: ", result)
 
 	input2 := &iam.AttachRolePolicyInput{
 		PolicyArn: aws.String("arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"),
@@ -3854,15 +3839,14 @@ func create_role(sess *session.Session, clustername string) string {
 	}
 	//fmt.Println("Attach service policy to Role: ", result4.String())
 
-	return	aws.StringValue(result.Role.Arn)
-
+	return aws.StringValue(result.Role.Arn)
 
 }
 func get_role(sess *session.Session, clustername string) (string, string) {
 
 	svc := iam.New(sess)
 	input := &iam.GetRoleInput{
-		RoleName:                 aws.String(clustername),
+		RoleName: aws.String(clustername),
 	}
 	result, err := svc.GetRole(input)
 	if err != nil {
@@ -3891,9 +3875,8 @@ func get_role(sess *session.Session, clustername string) (string, string) {
 		return "", ""
 	}
 
-	fmt.Println("Role: ",result)
-	return	aws.StringValue(result.Role.Arn), aws.StringValue(result.Role.RoleName)
-
+	fmt.Println("Role: ", result)
+	return aws.StringValue(result.Role.Arn), aws.StringValue(result.Role.RoleName)
 
 }
 func update_noderole(sess *session.Session, NodeRoleName string) {
@@ -3902,7 +3885,7 @@ func update_noderole(sess *session.Session, NodeRoleName string) {
 
 	input3 := &iam.UpdateAssumeRolePolicyInput{
 		PolicyDocument: aws.String("{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Principal\": {\n        \"Service\": \"eks.amazonaws.com\"\n      },\n      \"Action\": \"sts:AssumeRole\"\n    },\n    {\n      \"Effect\": \"Allow\",\n      \"Principal\": {\n        \"Service\": \"ec2.amazonaws.com\"\n      },\n      \"Action\": \"sts:AssumeRole\"\n    }\n  ]\n}"),
-		RoleName:  &NodeRoleName,
+		RoleName:       &NodeRoleName,
 	}
 	_, err := svc.UpdateAssumeRolePolicy(input3)
 	if err != nil {
@@ -4030,7 +4013,6 @@ func update_noderole(sess *session.Session, NodeRoleName string) {
 
 	//return	aws.StringValue(result.Role.Arn)
 
-
 }
 func exitErrorf(msg string, args ...interface{}) {
 	fmt.Fprintf(os.Stderr, msg+"\n", args...)
@@ -4044,7 +4026,7 @@ func ListStack_sdk(sess *session.Session, ClusterName string, NodegroupName stri
 	var err error
 	time.Sleep(2 * time.Second)
 	svc := eks.New(sess)
-	if Module == "Master"{
+	if Module == "Master" {
 		input := &eks.DescribeClusterInput{
 			Name: aws.String(ClusterName),
 		}
@@ -4072,12 +4054,12 @@ func ListStack_sdk(sess *session.Session, ClusterName string, NodegroupName stri
 			return "", nil, nil, err, nil, nil
 		} else {
 			Status = result1.Cluster.Status
-			return strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(awsutil.StringValue(Status), "\"",""),"\\","")), result1, nil, err, nil, nil
+			return strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(awsutil.StringValue(Status), "\"", ""), "\\", "")), result1, nil, err, nil, nil
 
 		}
-	} else if Module == "NodeGroup"{
+	} else if Module == "NodeGroup" {
 		input := &eks.DescribeNodegroupInput{
-			ClusterName: aws.String(ClusterName),
+			ClusterName:   aws.String(ClusterName),
 			NodegroupName: aws.String(NodegroupName),
 		}
 		result2, err := svc.DescribeNodegroup(input)
@@ -4102,11 +4084,11 @@ func ListStack_sdk(sess *session.Session, ClusterName string, NodegroupName stri
 			return "", nil, nil, err, nil, nil
 		} else {
 			Status = result2.Nodegroup.Status
-			return strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(awsutil.StringValue(Status), "\"",""),"\\","")), nil, result2, err, nil, nil
+			return strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(awsutil.StringValue(Status), "\"", ""), "\\", "")), nil, result2, err, nil, nil
 		}
 	}
 
-		return strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(awsutil.StringValue(Status), "\"",""),"\\","")),result1, result2, err, result2.Nodegroup.Labels, result2.Nodegroup.Taints
+	return strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(awsutil.StringValue(Status), "\"", ""), "\\", "")), result1, result2, err, result2.Nodegroup.Labels, result2.Nodegroup.Taints
 }
 func readJSON(path string) (*map[string]interface{}, error) {
 	data, err := ioutil.ReadFile(path)
@@ -4138,7 +4120,7 @@ func difference(slice1 []*string, slice2 []*string) []string {
 		}
 		// Swap the slices, only if it was the first loop
 		if i == 0 {
-			slice1, slice2 = slice2,slice1
+			slice1, slice2 = slice2, slice1
 		}
 	}
 

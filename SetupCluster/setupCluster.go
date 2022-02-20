@@ -4,12 +4,12 @@ import (
 	"bufio"
 	"fmt"
 	ekssetup "github.com/ArnaLabs/K8Cli/SetupCluster/EKS"
+	"github.com/ArnaLabs/K8Cli/pkg/gcp"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
-	"github.com/ArnaLabs/K8Cli/pkg/gcp"
 )
 
 type CldDetails struct {
@@ -43,10 +43,10 @@ func CheckCluster(sf string, f string, context string, clustertype string, clust
 	}
 
 	filegreenConfigYml, err := ioutil.ReadFile(clustergreenfile)
-  if os.IsNotExist(err) {
-    fmt.Printf("Green cluster config doesn't exist, ignoring\n")
-  }else if err != nil {
-    fmt.Printf("Unable to open green config file, err : %v", err)
+	if os.IsNotExist(err) {
+		fmt.Printf("Green cluster config doesn't exist, ignoring\n")
+	} else if err != nil {
+		fmt.Printf("Unable to open green config file, err : %v", err)
 	}
 
 	//err = yaml.Unmarshal([]byte(filegreenConfigYml), &cloud)
@@ -69,16 +69,16 @@ func CheckCluster(sf string, f string, context string, clustertype string, clust
 		}
 	}
 
-  if cloud.Cloud.Name == "GCP" {
-    fmt.Printf("\nSetting up GCP Cluster\n")
+	if cloud.Cloud.Name == "GCP" {
+		fmt.Printf("\nSetting up GCP Cluster\n")
 
-    if err := gcp.ApplyCluster(fileConfigYml); err != nil {
-      fmt.Printf("Unable to apply gcp cluster, err : %v", err)
-      // Exit and return error code 1
-      os.Exit(1)
-    }
+		if err := gcp.ApplyCluster(fileConfigYml); err != nil {
+			fmt.Printf("Unable to apply gcp cluster, err : %v", err)
+			// Exit and return error code 1
+			os.Exit(1)
+		}
 
-  }
+	}
 
 	//End EKS Cluster elements session values
 	//if cloud.Cloud.Name == "Azure" {
@@ -101,7 +101,7 @@ func failOnError(cmd *exec.Cmd) {
 	}
 }
 
-func UpdateKubeConfig(f string, context string)  {
+func UpdateKubeConfig(f string, context string) {
 	file := f
 	var cloud CldDetails
 
@@ -126,7 +126,7 @@ func UpdateKubeConfig(f string, context string)  {
 
 func updateKubeConfigByProfile(profile string, context string) {
 	os.Setenv("AWS_PROFILE", profile)
-	cmd := exec.Command("aws",  "eks", "update-kubeconfig", "--name", context, "--alias", context)
+	cmd := exec.Command("aws", "eks", "update-kubeconfig", "--name", context, "--alias", context)
 	failOnError(cmd)
 }
 
@@ -134,6 +134,6 @@ func updateKubeConfigByKeys(AccessKey string, SecretKay string, Region string, c
 	os.Setenv("AWS_ACCESS_KEY_ID", AccessKey)
 	os.Setenv("AWS_SECRET_ACCESS_KEY", SecretKay)
 	os.Setenv("AWS_DEFAULT_REGION", Region)
-	cmd := exec.Command("aws",  "eks", "update-kubeconfig", "--name", context, "--alias", context)
+	cmd := exec.Command("aws", "eks", "update-kubeconfig", "--name", context, "--alias", context)
 	failOnError(cmd)
 }

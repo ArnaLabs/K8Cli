@@ -122,6 +122,16 @@ func CreateCluster(ctx context.Context, c *container.ClusterManagerClient, clust
 
 	nodePools := []*containerpb.NodePool{}
 
+	for _, node := range cluster.Nodes {
+		nodePools = append(nodePools, &containerpb.NodePool{
+			Name: node.NodeGroupName,
+			Config: &containerpb.NodeConfig{
+				Tags:   node.Tags,
+				Labels: node.Labels,
+			},
+		})
+	}
+
 	parent := "projects/" + cluster.Cloud.Project + "/locations/" + cluster.Cloud.Region
 	req := &containerpb.CreateClusterRequest{
 		Parent: parent,

@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	cloud.google.com/go/compute v1.3.0
+	cloud.google.com/go/container v1.1.0
 	github.com/aws/aws-sdk-go v1.38.46
 	github.com/imdario/mergo v0.3.11 // indirect
 	github.com/kr/pretty v0.2.0 // indirect

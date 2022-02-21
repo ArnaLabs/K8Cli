@@ -6,8 +6,10 @@ import (
 	"strings"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	container "cloud.google.com/go/container/apiv1"
 	"google.golang.org/api/option"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
+	containerpb "google.golang.org/genproto/googleapis/container/v1"
 	"gopkg.in/yaml.v2"
 )
 
@@ -26,39 +28,50 @@ func ApplyCluster(clusterYaml []byte) error {
 
 	fmt.Printf("applying gcp cluster with config: %v\n", cluster)
 
-	var c *compute.NetworksClient
+	var nwClient *compute.NetworksClient
 	var snClient *compute.SubnetworksClient
+	var cmClient *container.ClusterManagerClient
 	var err error
 	project := cluster.Cloud.Project
 
 	if cluster.Cloud.CredentialsPath != "" {
-		c, err = compute.NewNetworksRESTClient(ctx, option.WithServiceAccountFile(cluster.Cloud.CredentialsPath))
+		nwClient, err = compute.NewNetworksRESTClient(ctx, option.WithServiceAccountFile(cluster.Cloud.CredentialsPath))
 		if err != nil {
 			return err
 		}
-		defer c.Close()
+		defer nwClient.Close()
 		snClient, err = compute.NewSubnetworksRESTClient(ctx, option.WithServiceAccountFile(cluster.Cloud.CredentialsPath))
 		if err != nil {
 			return err
 		}
 		defer snClient.Close()
-	} else {
-		fmt.Println("Using default credentials for google cloud")
-		c, err = compute.NewNetworksRESTClient(ctx)
+		cmClient, err = container.NewClusterManagerClient(ctx, option.WithServiceAccountFile(cluster.Cloud.CredentialsPath))
 		if err != nil {
 			return err
 		}
-		defer c.Close()
+		defer cmClient.Close()
+	} else {
+		fmt.Println("Using default credentials for google cloud")
+		nwClient, err = compute.NewNetworksRESTClient(ctx)
+		if err != nil {
+			return err
+		}
+		defer nwClient.Close()
 		snClient, err = compute.NewSubnetworksRESTClient(ctx)
 		if err != nil {
 			return err
 		}
 		defer snClient.Close()
+		cmClient, err = container.NewClusterManagerClient(ctx)
+		if err != nil {
+			return err
+		}
+		defer cmClient.Close()
 	}
 
 	name := cluster.Cloud.Cluster + "-vpc"
 
-	vpc, err := GetVPC(ctx, c, name, project)
+	vpc, err := GetVPC(ctx, nwClient, name, project)
 	if err != nil {
 		return err
 	}
@@ -75,7 +88,7 @@ func ApplyCluster(clusterYaml []byte) error {
 			},
 		}
 
-		op, err := c.Insert(ctx, req)
+		op, err := nwClient.Insert(ctx, req)
 		if err != nil {
 			return err
 		}
@@ -84,7 +97,7 @@ func ApplyCluster(clusterYaml []byte) error {
 			return err
 		}
 
-		vpc, err = GetVPC(ctx, c, name, project)
+		vpc, err = GetVPC(ctx, nwClient, name, project)
 		if err != nil {
 			return err
 		}
@@ -98,6 +111,37 @@ func ApplyCluster(clusterYaml []byte) error {
 			return err
 		}
 	}
+
+	return CreateCluster(ctx, cmClient, cluster, vpc)
+}
+
+func CreateCluster(ctx context.Context, c *container.ClusterManagerClient, cluster Cluster, vpc *computepb.Network) error {
+
+	network := *vpc.SelfLink
+	subnetwork := vpc.Subnetworks[0]
+
+	nodePools := []*containerpb.NodePool{}
+
+	parent := "projects/" + cluster.Cloud.Project + "/locations/" + cluster.Cloud.Region
+	req := &containerpb.CreateClusterRequest{
+		Parent: parent,
+		Cluster: &containerpb.Cluster{
+			Name:                  cluster.Cloud.Cluster,
+			Description:           "Cluster " + cluster.Cloud.Cluster + " created by K8cli",
+			InitialClusterVersion: cluster.Master.KubernetesVersion,
+			Network:               network,
+			Subnetwork:            subnetwork,
+			NodePools:             nodePools,
+		},
+	}
+
+	// TODO use the first parameter to track the status
+	_, err := c.CreateCluster(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Cluster created")
 
 	return nil
 }

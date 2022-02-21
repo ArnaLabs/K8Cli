@@ -13,4 +13,7 @@ type Cluster struct {
 		Subnets               map[string]string `yaml:"Subnets"`
 		AutoCreateSubnetworks *bool             `yaml:"AutoCreateSubnetworks"`
 	} `yaml:"VPC"`
+	Master struct {
+		KubernetesVersion string `yaml:"KubernetesVersion"`
+	} `yaml:"Master"`
 }

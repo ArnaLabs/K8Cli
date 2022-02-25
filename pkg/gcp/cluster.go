@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	compute "cloud.google.com/go/compute/apiv1"
 	container "cloud.google.com/go/container/apiv1"
@@ -112,10 +113,30 @@ func ApplyCluster(clusterYaml []byte) error {
 		}
 	}
 
-	return CreateCluster(ctx, cmClient, cluster, vpc)
+	if err := CreateCluster(ctx, cmClient, cluster, vpc); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func CreateCluster(ctx context.Context, c *container.ClusterManagerClient, cluster Cluster, vpc *computepb.Network) error {
+
+	name := "projects/" + cluster.Cloud.Project + "/locations/" + cluster.Cloud.Region + "/clusters/" + cluster.Cloud.Cluster
+	// TODO use first param for updates
+	_, err := c.GetCluster(ctx, &containerpb.GetClusterRequest{
+		Name: name,
+	})
+	if err == nil {
+		fmt.Println("cluster already exists, returning")
+		return nil
+	}
+	if err != nil {
+		// Some unknown error
+		if !strings.Contains(err.Error(), "NotFound") {
+			return err
+		}
+	}
 
 	network := *vpc.SelfLink
 	subnetwork := vpc.Subnetworks[0]
@@ -142,18 +163,42 @@ func CreateCluster(ctx context.Context, c *container.ClusterManagerClient, clust
 			Network:               network,
 			Subnetwork:            subnetwork,
 			NodePools:             nodePools,
+			ResourceLabels:        cluster.Cluster.Labels,
 		},
 	}
 
-	// TODO use the first parameter to track the status
-	_, err := c.CreateCluster(ctx, req)
+	op, err := c.CreateCluster(ctx, req)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("Cluster created")
+	fmt.Printf("Cluster creation initiated, status : %d\nop:%v\n", op.GetStatus(), op)
 
-	return nil
+	return WaitForOperation(ctx, c, cluster.Cloud.Project, op)
+
+}
+
+func WaitForOperation(ctx context.Context, c *container.ClusterManagerClient, project string, op *containerpb.Operation) error {
+	name := fmt.Sprintf("projects/%s/locations/%s/operations/%s", project, op.GetZone(), op.Name)
+
+	fmt.Printf("Waiting for operation to complete : %s\n", name)
+
+	for {
+		o, err := c.GetOperation(ctx, &containerpb.GetOperationRequest{
+			Name: name,
+		})
+		if err != nil {
+			return err
+		}
+		if o.GetStatus() == containerpb.Operation_DONE {
+			fmt.Println("Operation complete!")
+			return nil
+		}
+
+		fmt.Printf("\nOperation not complete yet, sleeping 10s\n")
+		time.Sleep(10 * time.Second)
+	}
+
 }
 
 func CreateSubnets(ctx context.Context, c *compute.SubnetworksClient, cluster Cluster, vpcUrl *string) error {

@@ -16,6 +16,10 @@ type Cluster struct {
 	Master struct {
 		KubernetesVersion string `yaml:"KubernetesVersion"`
 	} `yaml:"Master"`
+	Cluster struct {
+		Labels      map[string]string `yaml:"labels"`
+		ServiceCIDR string            `yaml:"serviceCidr"`
+	} `yaml:"Cluster"`
 	Nodes []struct {
 		NodeGroupName string            `yaml:"NodegroupName"`
 		MachineType   string            `yaml:"MachineType"`

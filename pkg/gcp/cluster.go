@@ -144,12 +144,34 @@ func CreateCluster(ctx context.Context, c *container.ClusterManagerClient, clust
 	nodePools := []*containerpb.NodePool{}
 
 	for _, node := range cluster.Nodes {
+
+		taints := []*containerpb.NodeTaint{}
+		for _, t := range node.Taints {
+			taints = append(taints, &containerpb.NodeTaint{
+				Key:    t.Key,
+				Value:  t.Value,
+				Effect: containerpb.NodeTaint_Effect(containerpb.NodeTaint_Effect_value[t.Effect]),
+			})
+		}
+
+		autoScaling := &containerpb.NodePoolAutoscaling{
+			Enabled:      node.ScalingConfig.MinSize > 0 && node.ScalingConfig.MaxSize > 0,
+			MinNodeCount: node.ScalingConfig.MinSize,
+			MaxNodeCount: node.ScalingConfig.MaxSize,
+		}
+
 		nodePools = append(nodePools, &containerpb.NodePool{
 			Name: node.NodeGroupName,
 			Config: &containerpb.NodeConfig{
-				Tags:   node.Tags,
-				Labels: node.Labels,
+				MachineType: node.MachineType,
+				DiskSizeGb:  node.DiskSize,
+				Tags:        node.Tags,
+				Labels:      node.Labels,
+				Taints:      taints,
+				Preemptible: node.SpotInstance,
 			},
+			InitialNodeCount: node.ScalingConfig.DesiredSize,
+			Autoscaling:      autoScaling,
 		})
 	}
 

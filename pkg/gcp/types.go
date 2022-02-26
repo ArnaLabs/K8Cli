@@ -20,7 +20,6 @@ type Cluster struct {
 		Labels       map[string]string `yaml:"Labels"`
 		ServiceCIDR  string            `yaml:"ServiceCidr"`
 		PrivateNodes bool              `yaml:"PrivateNodes"`
-		AutoScaling  bool              `yaml:"AutoScaling"`
 	} `yaml:"Cluster"`
 	Nodes []struct {
 		NodeGroupName string            `yaml:"NodegroupName"`

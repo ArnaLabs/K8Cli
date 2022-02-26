@@ -17,9 +17,8 @@ VPC:
 Cluster:
   # Whether nodes have public ips
   PrivateNodes: false
-  AutoScaling: true
   Labels:
-    owner: J
+    owner: "j"
     purpose: "testing purpose"
 
 Master:

@@ -1,29 +1,42 @@
 Cloud:
   Name: GCP
-  Project: sunlit-apricot-341702
-  Zone: us-east-1
-  Cluster: gcp-test-cluster1
-  CredentialsPath: /path/to/serviceaccount/creds
+  Project: project_id_here
+  Region: us-east1
+  Cluster: gcp-test-cluster4
+  # Optional, will use application default creds instead
+  # CredentialsPath: /path/to/serviceaccount/creds
 
 VPC:
-  VpcBlock: 10.1.0.0/16
+  AutoCreateSubnetworks: false
+  # Optional if AutoCreateSubnetworks is true
+  Subnets:
+    Subnet01Block: 10.1.1.0/24
+    Subnet02Block: 10.1.2.0/24
+    Subnet03Block: 10.1.8.0/24
+
+Cluster:
+  # Whether nodes have public ips
+  PrivateNodes: false
+  Labels:
+    owner: J
+    purpose: "testing purpose"
 
 Master:
-  KubernetesVersion: 1.20
-  SubnetId: SubnetBlock1
-  KubernetesServiceCIDR: 10.1.4.0/24
-  PublicAccess: true
+  KubernetesVersion: "1.21"
+  SubnetId: Subnet01Block
+  # Mandatory for private nodes cluster
+  MasterCidr: 10.1.3.0/24
 
 Nodes:
   - NodegroupName: nodegroup-1
     MachineType: e2-medium
-    DiskSize: 30G
+    DiskSize: 30
     Labels:
       Nodetype: test
       NodeVale: "test2"
     Tags:
-      tag1: val1
-      tag2: val2
+    - tag1
+    - tag2
     SpotInstance: false # Preemptible instances in gcp
     Taints:
       - Effect: NO_SCHEDULE
@@ -33,6 +46,7 @@ Nodes:
         Key:    "b"
         Value:  "c"
     ScalingConfig:
-      DesiredSize: 4
+      # DesiredSize is mandatory, others are optional
+      DesiredSize: 1
       MaxSize: 4
-      MinSize: 4
+      MinSize: 1

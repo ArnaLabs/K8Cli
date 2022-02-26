@@ -186,6 +186,9 @@ func CreateCluster(ctx context.Context, c *container.ClusterManagerClient, clust
 			Subnetwork:            subnetwork,
 			NodePools:             nodePools,
 			ResourceLabels:        cluster.Cluster.Labels,
+			PrivateClusterConfig: &containerpb.PrivateClusterConfig{
+				EnablePrivateNodes: cluster.Cluster.PrivateNodes,
+			},
 		},
 	}
 

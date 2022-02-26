@@ -189,6 +189,9 @@ func CreateCluster(ctx context.Context, c *container.ClusterManagerClient, clust
 			PrivateClusterConfig: &containerpb.PrivateClusterConfig{
 				EnablePrivateNodes: cluster.Cluster.PrivateNodes,
 			},
+			Autoscaling: &containerpb.ClusterAutoscaling{
+				EnableNodeAutoprovisioning: cluster.Cluster.AutoScaling,
+			},
 		},
 	}
 

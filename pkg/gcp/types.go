@@ -17,10 +17,10 @@ type Cluster struct {
 		KubernetesVersion string `yaml:"KubernetesVersion"`
 	} `yaml:"Master"`
 	Cluster struct {
-		Labels       map[string]string `yaml:"labels"`
-		ServiceCIDR  string            `yaml:"serviceCidr"`
+		Labels       map[string]string `yaml:"Labels"`
+		ServiceCIDR  string            `yaml:"ServiceCidr"`
 		PrivateNodes bool              `yaml:"PrivateNodes"`
-		AutoScaling  bool              `yaml:AutoScaling`
+		AutoScaling  bool              `yaml:"AutoScaling"`
 	} `yaml:"Cluster"`
 	Nodes []struct {
 		NodeGroupName string            `yaml:"NodegroupName"`

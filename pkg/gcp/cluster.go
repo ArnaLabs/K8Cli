@@ -190,6 +190,11 @@ func CreateCluster(ctx context.Context, c *container.ClusterManagerClient, clust
 				EnablePrivateNodes: cluster.Cluster.PrivateNodes,
 			},
 			Autoscaling: &containerpb.ClusterAutoscaling{},
+			VerticalPodAutoscaling: &containerpb.VerticalPodAutoscaling{
+				Enabled: cluster.Cluster.VPA,
+			},
+			LoggingConfig:    getLoggingConfig(cluster),
+			MonitoringConfig: getMonitoringConfig(cluster),
 		},
 	}
 
@@ -202,6 +207,33 @@ func CreateCluster(ctx context.Context, c *container.ClusterManagerClient, clust
 
 	return WaitForOperation(ctx, c, cluster.Cloud.Project, op)
 
+}
+
+func getLoggingConfig(c Cluster) *containerpb.LoggingConfig {
+	if !c.Cluster.CloudLogging {
+		return nil
+	}
+	return &containerpb.LoggingConfig{
+		ComponentConfig: &containerpb.LoggingComponentConfig{
+			EnableComponents: []containerpb.LoggingComponentConfig_Component{
+				containerpb.LoggingComponentConfig_SYSTEM_COMPONENTS,
+				containerpb.LoggingComponentConfig_WORKLOADS,
+			},
+		},
+	}
+}
+
+func getMonitoringConfig(c Cluster) *containerpb.MonitoringConfig {
+	if !c.Cluster.CloudMonitoring {
+		return nil
+	}
+	return &containerpb.MonitoringConfig{
+		ComponentConfig: &containerpb.MonitoringComponentConfig{
+			EnableComponents: []containerpb.MonitoringComponentConfig_Component{
+				containerpb.MonitoringComponentConfig_SYSTEM_COMPONENTS,
+			},
+		},
+	}
 }
 
 func WaitForOperation(ctx context.Context, c *container.ClusterManagerClient, project string, op *containerpb.Operation) error {

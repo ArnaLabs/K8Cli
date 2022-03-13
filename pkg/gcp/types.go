@@ -17,9 +17,13 @@ type Cluster struct {
 		KubernetesVersion string `yaml:"KubernetesVersion"`
 	} `yaml:"Master"`
 	Cluster struct {
-		Labels       map[string]string `yaml:"Labels"`
-		ServiceCIDR  string            `yaml:"ServiceCidr"`
-		PrivateNodes bool              `yaml:"PrivateNodes"`
+		Labels          map[string]string `yaml:"Labels"`
+		ServiceCIDR     string            `yaml:"ServiceCidr"`
+		PrivateNodes    bool              `yaml:"PrivateNodes"`
+		VPA             bool              `yaml:"Vpa"`
+		CloudLogging    bool              `yaml:"CloudLogging"`
+		CloudMonitoring bool              `yaml:"CloudMonitoring"`
+		Prometheus      bool              `yaml:"Prometheus"` // TODO integrate
 	} `yaml:"Cluster"`
 	Nodes []struct {
 		NodeGroupName string            `yaml:"NodegroupName"`

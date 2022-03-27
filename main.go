@@ -110,7 +110,7 @@ func main() {
 		SetupCluster.CheckCluster(securityfolder, clusterfile, context, clustertype, clustergreenfile)
 
 	} else if operation == "delete" {
-    clusterfile = InitialConfigVals.ClusterDetails.ClusterYaml + "/cluster.yml"
+		clusterfile = InitialConfigVals.ClusterDetails.ClusterYaml + "/cluster.yml"
 		fmt.Println(clusterfile)
 		fmt.Printf("%v\n", InitialConfigVals)
 

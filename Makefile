@@ -7,7 +7,11 @@ run:
 
 .PHONY: rungcp
 rungcp:
-	go run *.go --operation cluster --context gcp-cluster1      
+	go run *.go --operation cluster --context gcp-cluster1
+
+.PHONY: delgcp
+delgcp:
+	go run *.go --operation delete --context gcp-cluster1
 
 .PHONY: fmt
 fmt: ## Run go fmt against code.

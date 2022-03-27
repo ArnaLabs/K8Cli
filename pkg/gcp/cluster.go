@@ -308,3 +308,50 @@ func GetVPC(ctx context.Context, c *compute.NetworksClient, name, project string
 	}
 	return nw, nil
 }
+
+func DeleteCluster(clusterYaml []byte) error {
+	var cluster Cluster
+	ctx := context.Background()
+
+	if err := yaml.Unmarshal(clusterYaml, &cluster); err != nil {
+		return err
+	}
+
+	if cluster.Cloud.Project == "" {
+		return fmt.Errorf("Project id not defined")
+	}
+
+	var cmClient *container.ClusterManagerClient
+
+	if cluster.Cloud.CredentialsPath != "" {
+		cmClient, err := container.NewClusterManagerClient(ctx, option.WithServiceAccountFile(cluster.Cloud.CredentialsPath))
+		if err != nil {
+			return err
+		}
+		defer cmClient.Close()
+	} else {
+		fmt.Println("Using default credentials for google cloud")
+		cmClient, err := container.NewClusterManagerClient(ctx)
+		if err != nil {
+			return err
+		}
+		defer cmClient.Close()
+	}
+
+	fmt.Printf("deleting gcp cluster with config: %v\n", cluster)
+
+	name := "projects/" + cluster.Cloud.Project + "/locations/" + cluster.Cloud.Region + "/clusters/" + cluster.Cloud.Cluster
+
+	op, err := cmClient.DeleteCluster(ctx, &containerpb.DeleteClusterRequest{
+		Name: name,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Cluster deletion initiated, status : %d\nop:%v\n", op.GetStatus(), op)
+
+	return WaitForOperation(ctx, cmClient, cluster.Cloud.Project, op)
+
+}

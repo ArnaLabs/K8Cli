@@ -88,6 +88,33 @@ func CheckCluster(sf string, f string, context string, clustertype string, clust
 	//}
 }
 
+// DeleteCluster deletes the given cluster
+func DeleteCluster(file string) {
+	var cloud CldDetails
+
+	fileConfigYml, err := ioutil.ReadFile(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = yaml.Unmarshal([]byte(fileConfigYml), &cloud)
+	if err != nil {
+		panic(err)
+	}
+
+	if cloud.Cloud.Name == "GCP" {
+		fmt.Printf("\nDeleting GCP Cluster\n")
+
+		if err := gcp.DeleteCluster(fileConfigYml); err != nil {
+			fmt.Printf("Unable to delete gcp cluster, err : %v", err)
+			// Exit and return error code 1
+			os.Exit(1)
+		}
+
+	}
+
+}
+
 func failOnError(cmd *exec.Cmd) {
 	stderr, _ := cmd.StderrPipe()
 	if err := cmd.Start(); err != nil {

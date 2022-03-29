@@ -311,6 +311,7 @@ func GetVPC(ctx context.Context, c *compute.NetworksClient, name, project string
 
 func DeleteCluster(clusterYaml []byte) error {
 	var cluster Cluster
+	var err error
 	ctx := context.Background()
 
 	if err := yaml.Unmarshal(clusterYaml, &cluster); err != nil {
@@ -324,21 +325,22 @@ func DeleteCluster(clusterYaml []byte) error {
 	var cmClient *container.ClusterManagerClient
 
 	if cluster.Cloud.CredentialsPath != "" {
-		cmClient, err := container.NewClusterManagerClient(ctx, option.WithServiceAccountFile(cluster.Cloud.CredentialsPath))
+		cmClient, err = container.NewClusterManagerClient(ctx, option.WithServiceAccountFile(cluster.Cloud.CredentialsPath))
 		if err != nil {
 			return err
 		}
 		defer cmClient.Close()
 	} else {
 		fmt.Println("Using default credentials for google cloud")
-		cmClient, err := container.NewClusterManagerClient(ctx)
+		cmClient, err = container.NewClusterManagerClient(ctx)
 		if err != nil {
 			return err
 		}
+
 		defer cmClient.Close()
 	}
 
-	fmt.Printf("deleting gcp cluster with config: %v\n", cluster)
+	fmt.Printf("deleting gcp cluster with config: %+v\n", cluster)
 
 	name := "projects/" + cluster.Cloud.Project + "/locations/" + cluster.Cloud.Region + "/clusters/" + cluster.Cloud.Cluster
 

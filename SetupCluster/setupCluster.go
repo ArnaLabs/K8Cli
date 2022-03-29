@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	ekssetup "github.com/ArnaLabs/K8Cli/SetupCluster/EKS"
-	"github.com/ArnaLabs/K8Cli/pkg/gcp"
+	gcpsetup "github.com/ArnaLabs/K8Cli/SetupCluster/GCP"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
@@ -72,7 +72,7 @@ func CheckCluster(sf string, f string, context string, clustertype string, clust
 	if cloud.Cloud.Name == "GCP" {
 		fmt.Printf("\nSetting up GCP Cluster\n")
 
-		if err := gcp.ApplyCluster(fileConfigYml); err != nil {
+		if err := gcpsetup.ApplyCluster(fileConfigYml); err != nil {
 			fmt.Printf("Unable to apply gcp cluster, err : %v", err)
 			// Exit and return error code 1
 			os.Exit(1)
@@ -105,7 +105,7 @@ func DeleteCluster(file string) {
 	if cloud.Cloud.Name == "GCP" {
 		fmt.Printf("\nDeleting GCP Cluster\n")
 
-		if err := gcp.DeleteCluster(fileConfigYml); err != nil {
+		if err := gcpsetup.DeleteCluster(fileConfigYml); err != nil {
 			fmt.Printf("Unable to delete gcp cluster, err : %v", err)
 			// Exit and return error code 1
 			os.Exit(1)

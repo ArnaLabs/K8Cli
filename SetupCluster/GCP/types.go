@@ -1,4 +1,4 @@
-package gcp
+package GCP
 
 type Cluster struct {
 	Cloud struct {

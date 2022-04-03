@@ -128,8 +128,8 @@ func CreateCluster(ctx context.Context, c *container.ClusterManagerClient, clust
 		Name: name,
 	})
 	if err == nil {
-		fmt.Println("cluster already exists, returning")
-		return nil
+		fmt.Println("cluster already exists, updating with the new configuration")
+		return UpdateCluster(ctx, c, name, cluster)
 	}
 	if err != nil {
 		// Some unknown error

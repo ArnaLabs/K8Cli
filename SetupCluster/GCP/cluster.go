@@ -124,12 +124,12 @@ func CreateCluster(ctx context.Context, c *container.ClusterManagerClient, clust
 
 	name := "projects/" + cluster.Cloud.Project + "/locations/" + cluster.Cloud.Region + "/clusters/" + cluster.Cloud.Cluster
 	// TODO use first param for updates
-	_, err := c.GetCluster(ctx, &containerpb.GetClusterRequest{
+	cl, err := c.GetCluster(ctx, &containerpb.GetClusterRequest{
 		Name: name,
 	})
 	if err == nil {
 		fmt.Println("cluster already exists, updating with the new configuration")
-		return UpdateCluster(ctx, c, name, cluster)
+		return UpdateCluster(ctx, c, cl, cluster)
 	}
 	if err != nil {
 		// Some unknown error

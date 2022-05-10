@@ -17,16 +17,16 @@ type GcpClient struct {
 	Cluster              *Cluster
 }
 
-func FromYaml(clusterYaml []byte) (error, *GcpClient) {
+func FromYaml(clusterYaml []byte) (*GcpClient, error) {
 	var cluster Cluster
 	ctx := context.Background()
 
 	if err := yaml.Unmarshal(clusterYaml, &cluster); err != nil {
-		return err, nil
+		return nil, err
 	}
 
 	if cluster.Cloud.Project == "" {
-		return fmt.Errorf("Project id not defined"), nil
+		return nil, fmt.Errorf("Project id not defined")
 	}
 
 	fmt.Printf("applying gcp cluster with config: %v\n", cluster)
@@ -39,38 +39,38 @@ func FromYaml(clusterYaml []byte) (error, *GcpClient) {
 	if cluster.Cloud.CredentialsPath != "" {
 		nwClient, err = compute.NewNetworksRESTClient(ctx, option.WithServiceAccountFile(cluster.Cloud.CredentialsPath))
 		if err != nil {
-			return err, nil
+			return nil, err
 		}
 		snClient, err = compute.NewSubnetworksRESTClient(ctx, option.WithServiceAccountFile(cluster.Cloud.CredentialsPath))
 		if err != nil {
-			return err, nil
+			return nil, err
 		}
 		cmClient, err = container.NewClusterManagerClient(ctx, option.WithServiceAccountFile(cluster.Cloud.CredentialsPath))
 		if err != nil {
-			return err, nil
+			return nil, err
 		}
 	} else {
 		fmt.Println("Using default credentials for google cloud")
 		nwClient, err = compute.NewNetworksRESTClient(ctx)
 		if err != nil {
-			return err, nil
+			return nil, err
 		}
 		snClient, err = compute.NewSubnetworksRESTClient(ctx)
 		if err != nil {
-			return err, nil
+			return nil, err
 		}
 		cmClient, err = container.NewClusterManagerClient(ctx)
 		if err != nil {
-			return err, nil
+			return nil, err
 		}
 	}
 
-	return nil, &GcpClient{
+	return &GcpClient{
 		NetworksClient:       nwClient,
 		SubnetworksClient:    snClient,
 		ClusterManagerClient: cmClient,
 		Cluster:              &cluster,
-	}
+	}, nil
 }
 
 func (g *GcpClient) Apply() error {

@@ -75,5 +75,11 @@ func FromYaml(clusterYaml []byte) (error, *GcpClient) {
 
 func (g *GcpClient) Apply() error {
 	fmt.Println("Applying GKE")
+	ctx := context.Background()
+
+	if err := g.ApplyNetwork(ctx); err != nil {
+		return err
+	}
+
 	return nil
 }

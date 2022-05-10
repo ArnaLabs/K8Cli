@@ -32,6 +32,35 @@ func (g *GcpClient) ApplyNetwork(ctx context.Context) error {
 		return nil
 	}
 
+	expectedSubnets := []string{}
+	for subnet := range g.Cluster.VPC.Subnets {
+		expectedSubnets = append(expectedSubnets, subnet)
+	}
+
+	for _, subnet := range expectedSubnets {
+		found := false
+		// gcp only supports lowercase name for subnets
+		subnetName := strings.ToLower(subnet)
+
+		for _, existingSubnet := range vpc.Subnetworks {
+			s := strings.Split(existingSubnet, "/")
+			sn := s[len(s)-1]
+
+			if sn == subnetName {
+				found = true
+				break
+			}
+
+		}
+
+		if !found {
+			err := g.CreateSubnet(ctx, vpc, subnet)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -65,6 +94,33 @@ func (g *GcpClient) CreateVPC(ctx context.Context, name string) error {
 	}
 
 	op, err := g.NetworksClient.Insert(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	if err := op.Wait(ctx); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (g *GcpClient) CreateSubnet(ctx context.Context, vpc *computepb.Network, name string) error {
+	cluster := g.Cluster
+	subnet := cluster.VPC.Subnets[name]
+	fmt.Printf("Creating subnet %s %s\n", name, subnet)
+	subnetName := strings.ToLower(name)
+
+	req := &computepb.InsertSubnetworkRequest{
+		Project: cluster.Cloud.Project,
+		Region:  cluster.Cloud.Region,
+		SubnetworkResource: &computepb.Subnetwork{
+			Name:        &subnetName,
+			IpCidrRange: &subnet,
+			Network:     vpc.SelfLink,
+			Region:      &cluster.Cloud.Region,
+		},
+	}
+	op, err := g.SubnetworksClient.Insert(ctx, req)
 	if err != nil {
 		return err
 	}

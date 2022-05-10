@@ -9,6 +9,7 @@ type Cluster struct {
 		CredentialsPath string `yaml:"CredentialsPath"`
 	} `yaml:"Cloud"`
 	VPC struct {
+		// Doesn't allow deleting existing subnets during updation
 		Subnets               map[string]string `yaml:"Subnets"`
 		AutoCreateSubnetworks *bool             `yaml:"AutoCreateSubnetworks"`
 	} `yaml:"VPC"`

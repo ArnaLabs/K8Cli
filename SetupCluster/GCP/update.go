@@ -31,10 +31,10 @@ func UpdateCluster(ctx context.Context, c *container.ClusterManagerClient, cl *c
 		}
 
 		fmt.Printf("Master version updation initiated, status : %d\nop:%v\n", op.GetStatus(), op)
-		err = WaitForOperation(ctx, c, cluster.Cloud.Project, op)
-		if err != nil {
-			return err
-		}
+		// err = WaitForOperation(ctx, c, cluster.Cloud.Project, op)
+		// if err != nil {
+		// return err
+		// }
 	} else {
 		fmt.Printf("Nothing to update")
 	}

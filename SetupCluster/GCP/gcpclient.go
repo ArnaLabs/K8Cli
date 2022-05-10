@@ -77,7 +77,12 @@ func (g *GcpClient) Apply() error {
 	fmt.Println("Applying GKE")
 	ctx := context.Background()
 
-	if err := g.ApplyNetwork(ctx); err != nil {
+	vpc, err := g.ApplyNetwork(ctx)
+	if err != nil {
+		return err
+	}
+
+	if err := g.ApplyCluster(ctx, vpc); err != nil {
 		return err
 	}
 

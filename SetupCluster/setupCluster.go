@@ -113,11 +113,11 @@ func DeleteCluster(file string) {
 	if cloud.Cloud.Name == "GCP" {
 		fmt.Printf("\nDeleting GCP Cluster\n")
 
-		if err := gcpsetup.DeleteCluster(fileConfigYml); err != nil {
-			fmt.Printf("Unable to delete gcp cluster, err : %v", err)
-			// Exit and return error code 1
-			os.Exit(1)
-		}
+		// if err := gcpsetup.DeleteCluster(fileConfigYml); err != nil {
+		// fmt.Printf("Unable to delete gcp cluster, err : %v", err)
+		// // Exit and return error code 1
+		// os.Exit(1)
+		// }
 
 	}
 

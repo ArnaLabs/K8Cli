@@ -8,14 +8,14 @@ import (
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
-func (g *GcpClient) ApplyNetwork(ctx context.Context) error {
+func (g *GcpClient) ApplyNetwork(ctx context.Context) (*computepb.Network, error) {
 	fmt.Println("Applying VPC Network")
 
 	name := g.Cluster.Cloud.Cluster + "-vpc"
 
 	vpc, err := g.GetVPC(ctx, name)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if vpc == nil {
@@ -23,13 +23,13 @@ func (g *GcpClient) ApplyNetwork(ctx context.Context) error {
 		g.CreateVPC(ctx, name)
 		vpc, err = g.GetVPC(ctx, name)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 
 	// subnets are created automatically by gcp
 	if *vpc.AutoCreateSubnetworks {
-		return nil
+		return vpc, nil
 	}
 
 	expectedSubnets := []string{}
@@ -56,12 +56,12 @@ func (g *GcpClient) ApplyNetwork(ctx context.Context) error {
 		if !found {
 			err := g.CreateSubnet(ctx, vpc, subnet)
 			if err != nil {
-				return err
+				return nil, err
 			}
 		}
 	}
 
-	return nil
+	return g.GetVPC(ctx, name)
 }
 
 func (g *GcpClient) GetVPC(ctx context.Context, name string) (*computepb.Network, error) {

@@ -130,3 +130,31 @@ func (g *GcpClient) CreateSubnet(ctx context.Context, vpc *computepb.Network, na
 	}
 	return nil
 }
+
+func (g *GcpClient) DeleteNetwork(ctx context.Context) error {
+	fmt.Println("Deleting VPC")
+	cluster := g.Cluster
+	name := g.Cluster.Cloud.Cluster + "-vpc"
+
+	vpc, err := g.GetVPC(ctx, name)
+	if err != nil {
+		return err
+	}
+
+	req := &computepb.DeleteNetworkRequest{
+		Project: cluster.Cloud.Project,
+		Network: vpc.GetName(),
+	}
+
+	op, err := g.NetworksClient.Delete(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	if err := op.Wait(ctx); err != nil {
+		return err
+	}
+
+	fmt.Println("VPC deleted")
+	return nil
+}

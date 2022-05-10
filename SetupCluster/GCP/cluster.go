@@ -163,3 +163,28 @@ func getMonitoringConfig(c *Cluster) *containerpb.MonitoringConfig {
 		},
 	}
 }
+
+func (g *GcpClient) DeleteCluster(ctx context.Context) error {
+	cluster, err := g.GetCluster(ctx)
+	if err != nil {
+		return err
+	}
+	if cluster == nil {
+		fmt.Println("cluester doesn't exist, probably already deleted")
+		return nil
+	}
+
+	req := &containerpb.DeleteClusterRequest{
+		Name: cluster.SelfLink,
+	}
+
+	op, err := g.ClusterManagerClient.DeleteCluster(ctx, req)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Cluster deletion initiated, status : %d\nop:%v\n", op.GetStatus(), op)
+
+	return g.WaitForClusterOperation(ctx, op)
+}

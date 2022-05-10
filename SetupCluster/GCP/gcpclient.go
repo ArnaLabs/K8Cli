@@ -88,3 +88,18 @@ func (g *GcpClient) Apply() error {
 
 	return nil
 }
+
+func (g *GcpClient) Delete() error {
+	fmt.Println("Deleting GKE")
+	ctx := context.Background()
+
+	if err := g.DeleteCluster(ctx); err != nil {
+		return err
+	}
+
+	if err := g.DeleteNetwork(ctx); err != nil {
+		return err
+	}
+
+	return nil
+}

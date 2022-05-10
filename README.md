@@ -83,3 +83,24 @@ aws eks update-kubeconfig --name <cluster_name> --alias <alias_name>
 
 
 // Udated commands:
+
+
+GKE - supported master versions
+
+```
+gcloud container get-server-config --flatten="channels" --filter="channels.channel=RAPID" \
+    --format="yaml(channels.channel,channels.validVersions)" --region us-east1
+
+Fetching server config for us-east1
+---
+channels:
+  channel: RAPID
+  validVersions:
+  - 1.23.5-gke.2400
+  - 1.23.5-gke.1500
+  - 1.22.8-gke.2200
+  - 1.22.8-gke.200
+  - 1.22.7-gke.1500
+  - 1.21.11-gke.1900
+  - 1.21.11-gke.1100
+```

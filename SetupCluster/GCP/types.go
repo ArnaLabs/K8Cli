@@ -9,7 +9,6 @@ type Cluster struct {
 		CredentialsPath string `yaml:"CredentialsPath"`
 	} `yaml:"Cloud"`
 	VPC struct {
-		VpcBlock              *string           `yaml:"VpcBlock"`
 		Subnets               map[string]string `yaml:"Subnets"`
 		AutoCreateSubnetworks *bool             `yaml:"AutoCreateSubnetworks"`
 	} `yaml:"VPC"`

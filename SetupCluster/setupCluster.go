@@ -72,7 +72,7 @@ func CheckCluster(sf string, f string, context string, clustertype string, clust
 	if cloud.Cloud.Name == "GCP" {
 		fmt.Printf("\nSetting up GCP Cluster\n")
 
-		err, gcpSetupClient := gcpsetup.FromYaml(fileConfigYml)
+		gcpSetupClient, err := gcpsetup.FromYaml(fileConfigYml)
 
 		if err != nil {
 			fmt.Printf("Unable to create gcp cluster client, err : %v", err)

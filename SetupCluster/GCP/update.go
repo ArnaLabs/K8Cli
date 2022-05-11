@@ -42,3 +42,21 @@ func UpdateCluster(ctx context.Context, c *container.ClusterManagerClient, cl *c
 	return nil
 
 }
+
+func (g *GcpClient) UpdateMaster(ctx context.Context) error {
+	name := "projects/" + g.Cluster.Cloud.Project + "/locations/" + g.Cluster.Cloud.Region + "/clusters/" + g.Cluster.Cloud.Cluster
+	req := &containerpb.UpdateClusterRequest{
+		Name: name,
+		Update: &containerpb.ClusterUpdate{
+			DesiredMasterVersion: g.Cluster.Master.KubernetesVersion,
+		},
+	}
+
+	op, err := g.ClusterManagerClient.UpdateCluster(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Master version updation initiated, status : %d\nop:%v\n", op.GetStatus(), op)
+	return g.WaitForClusterOperation(ctx, op)
+}

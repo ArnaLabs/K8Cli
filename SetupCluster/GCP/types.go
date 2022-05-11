@@ -17,7 +17,7 @@ type Cluster struct {
 		KubernetesVersion string `yaml:"KubernetesVersion"`
 	} `yaml:"Master"`
 	Cluster struct {
-		SubnetId string `yaml:"SubnetId"`
+		SubnetId             string            `yaml:"SubnetId"`
 		Labels               map[string]string `yaml:"Labels"`
 		ServiceCIDR          string            `yaml:"ServiceCidr"`
 		PrivateClusterConfig *struct {

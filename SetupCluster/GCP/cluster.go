@@ -25,9 +25,16 @@ func (g *GcpClient) ApplyCluster(ctx context.Context, vpc *computepb.Network) er
 		if err != nil {
 			return err
 		}
+		return nil
 	}
 
-	fmt.Println(cl)
+	if cl.GetCurrentMasterVersion() != g.Cluster.Master.KubernetesVersion {
+		fmt.Println("k8s master version changed, updating")
+		err := g.UpdateMaster(ctx)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -45,7 +52,7 @@ func (g *GcpClient) GetCluster(ctx context.Context) (*containerpb.Cluster, error
 
 func (g *GcpClient) CreateCluster(ctx context.Context, vpc *computepb.Network) error {
 	network := *vpc.SelfLink
-  subnetId := g.Cluster.Cluster.SubnetId
+	subnetId := g.Cluster.Cluster.SubnetId
 	subnetwork := strings.ToLower(subnetId)
 
 	nodePools := []*containerpb.NodePool{}

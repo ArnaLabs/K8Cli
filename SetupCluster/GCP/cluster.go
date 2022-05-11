@@ -45,7 +45,8 @@ func (g *GcpClient) GetCluster(ctx context.Context) (*containerpb.Cluster, error
 
 func (g *GcpClient) CreateCluster(ctx context.Context, vpc *computepb.Network) error {
 	network := *vpc.SelfLink
-	subnetwork := vpc.Subnetworks[0]
+  subnetId := g.Cluster.Cluster.SubnetId
+	subnetwork := strings.ToLower(subnetId)
 
 	nodePools := []*containerpb.NodePool{}
 
@@ -92,8 +93,10 @@ func (g *GcpClient) CreateCluster(ctx context.Context, vpc *computepb.Network) e
 			Subnetwork:            subnetwork,
 			NodePools:             nodePools,
 			ResourceLabels:        g.Cluster.Cluster.Labels,
-			PrivateClusterConfig: &containerpb.PrivateClusterConfig{
-				EnablePrivateNodes: g.Cluster.Cluster.PrivateNodes,
+			PrivateClusterConfig:  privateClusterConfig(g.Cluster),
+			IpAllocationPolicy: &containerpb.IPAllocationPolicy{
+				UseIpAliases: g.Cluster.Cluster.VPCNativeRouting,
+				UseRoutes:    !g.Cluster.Cluster.VPCNativeRouting,
 			},
 			Autoscaling: &containerpb.ClusterAutoscaling{},
 			VerticalPodAutoscaling: &containerpb.VerticalPodAutoscaling{
@@ -101,7 +104,28 @@ func (g *GcpClient) CreateCluster(ctx context.Context, vpc *computepb.Network) e
 			},
 			LoggingConfig:    getLoggingConfig(g.Cluster),
 			MonitoringConfig: getMonitoringConfig(g.Cluster),
+			AddonsConfig: &containerpb.AddonsConfig{
+				HttpLoadBalancing: &containerpb.HttpLoadBalancing{
+					Disabled: !g.Cluster.Cluster.HttpLoadBalancer,
+				},
+			},
+			ShieldedNodes: &containerpb.ShieldedNodes{
+				Enabled: g.Cluster.Cluster.ShieldedNodes,
+			},
 		},
+	}
+
+	if g.Cluster.Cluster.NetworkPolicy {
+		req.Cluster.NetworkPolicy = &containerpb.NetworkPolicy{
+			Enabled:  true,
+			Provider: containerpb.NetworkPolicy_CALICO,
+		}
+	}
+
+	if g.Cluster.Cluster.WorkloadIdentity {
+		req.Cluster.WorkloadIdentityConfig = &containerpb.WorkloadIdentityConfig{
+			WorkloadPool: g.Cluster.Cloud.Project + "svc.id.goog",
+		}
 	}
 
 	op, err := g.ClusterManagerClient.CreateCluster(ctx, req)
@@ -112,6 +136,19 @@ func (g *GcpClient) CreateCluster(ctx context.Context, vpc *computepb.Network) e
 	fmt.Printf("Cluster creation initiated, status : %d\nop:%v\n", op.GetStatus(), op)
 
 	return g.WaitForClusterOperation(ctx, op)
+}
+
+func privateClusterConfig(cluster *Cluster) *containerpb.PrivateClusterConfig {
+	if cluster.Cluster.PrivateClusterConfig == nil {
+		return nil
+	}
+	return &containerpb.PrivateClusterConfig{
+		EnablePrivateNodes:  true,
+		MasterIpv4CidrBlock: cluster.Cluster.PrivateClusterConfig.ControlPlaneCidr,
+		MasterGlobalAccessConfig: &containerpb.PrivateClusterMasterGlobalAccessConfig{
+			Enabled: cluster.Cluster.PrivateClusterConfig.ControlPlaneGlobalAccess,
+		},
+	}
 }
 
 func (g *GcpClient) WaitForClusterOperation(ctx context.Context, op *containerpb.Operation) error {

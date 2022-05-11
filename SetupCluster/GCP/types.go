@@ -17,13 +17,24 @@ type Cluster struct {
 		KubernetesVersion string `yaml:"KubernetesVersion"`
 	} `yaml:"Master"`
 	Cluster struct {
-		Labels          map[string]string `yaml:"Labels"`
-		ServiceCIDR     string            `yaml:"ServiceCidr"`
-		PrivateNodes    bool              `yaml:"PrivateNodes"`
-		VPA             bool              `yaml:"Vpa"`
-		CloudLogging    bool              `yaml:"CloudLogging"`
-		CloudMonitoring bool              `yaml:"CloudMonitoring"`
-		Prometheus      bool              `yaml:"Prometheus"` // TODO integrate
+		SubnetId string `yaml:"SubnetId"`
+		Labels               map[string]string `yaml:"Labels"`
+		ServiceCIDR          string            `yaml:"ServiceCidr"`
+		PrivateClusterConfig *struct {
+			ControlPlaneExternalAccess bool   `yaml:"ControlPlaneExternalAccess"`
+			ControlPlaneGlobalAccess   bool   `yaml:"ControlPlaneGlobalAccess"`
+			ControlPlaneCidr           string `yaml:"ControlPlaneCidr"`
+		} `yaml:"PrivateClusterConfig"`
+		VPA               bool `yaml:"Vpa"`
+		VPCNativeRouting  bool `yaml:"VPCNativeRouting"`
+		CloudLogging      bool `yaml:"CloudLogging"`
+		CloudMonitoring   bool `yaml:"CloudMonitoring"`
+		Prometheus        bool `yaml:"Prometheus"`
+		NetworkPolicy     bool `yaml:"NetworkPolicy"`
+		HttpLoadBalancer  bool `yaml:"HttpLoadBalancer"`
+		ShieldedNodes     bool `yaml:"ShieldedNodes"`
+		ManagedPrometheus bool `yaml:"ManagedPrometheus"`
+		WorkloadIdentity  bool `yaml:"WorkloadIdentity"`
 	} `yaml:"Cluster"`
 	Nodes []struct {
 		NodeGroupName string            `yaml:"NodegroupName"`

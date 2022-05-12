@@ -28,14 +28,9 @@ func (g *GcpClient) ApplyCluster(ctx context.Context, vpc *computepb.Network) er
 		return nil
 	}
 
-	if cl.GetCurrentMasterVersion() != g.Cluster.Master.KubernetesVersion {
-		fmt.Println("k8s master version changed, updating")
-		err := g.UpdateMaster(ctx)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+	fmt.Println("cluster already exists, checkign for changes")
+
+	return g.UpdateCluster(cl)
 }
 
 func (g *GcpClient) GetCluster(ctx context.Context) (*containerpb.Cluster, error) {

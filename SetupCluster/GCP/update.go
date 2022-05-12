@@ -11,6 +11,7 @@ import (
 func (g *GcpClient) UpdateCluster(ctx context.Context, cl *containerpb.Cluster) error {
 	name := "projects/" + g.Cluster.Cloud.Project + "/locations/" + g.Cluster.Cloud.Region + "/clusters/" + cl.Name
 	if !reflect.DeepEqual(cl.ResourceLabels, g.Cluster.Cluster.Labels) {
+		fmt.Println("cluster labels changed, updating")
 		err := g.UpdateLabels(ctx, cl, name)
 		if err != nil {
 			return err
@@ -90,6 +91,6 @@ func (g *GcpClient) UpdateLabels(ctx context.Context, cl *containerpb.Cluster, n
 		return err
 	}
 
-	fmt.Printf("Addons updation initiated, status : %d\nop:%v\n", op.GetStatus(), op)
+	fmt.Printf("Labels updation initiated, status : %d\nop:%v\n", op.GetStatus(), op)
 	return g.WaitForClusterOperation(ctx, op)
 }

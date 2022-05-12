@@ -1,5 +1,24 @@
 package GCP
 
+type NodePoolConfig struct {
+	NodeGroupName string            `yaml:"NodegroupName"`
+	MachineType   string            `yaml:"MachineType"`
+	DiskSize      int32             `yaml:"DiskSize"`
+	Tags          []string          `yaml:"Tags"`
+	Labels        map[string]string `yaml:"Labels"`
+	SpotInstance  bool              `yaml:"SpotInstance"`
+	Taints        []struct {
+		Effect string `yaml:"Effect"`
+		Key    string `yaml:"Key"`
+		Value  string `yaml:"Value"`
+	} `yaml:"Taints"`
+	ScalingConfig struct {
+		DesiredSize int32 `yaml:"DesiredSize"`
+		MinSize     int32 `yaml:"MinSize"`
+		MaxSize     int32 `yaml:"MaxSize"`
+	} `yaml:"ScalingConfig"`
+}
+
 type Cluster struct {
 	Cloud struct {
 		Name            string `yaml:"Name"`
@@ -36,22 +55,5 @@ type Cluster struct {
 		ManagedPrometheus bool `yaml:"ManagedPrometheus"`
 		WorkloadIdentity  bool `yaml:"WorkloadIdentity"`
 	} `yaml:"Cluster"`
-	Nodes []struct {
-		NodeGroupName string            `yaml:"NodegroupName"`
-		MachineType   string            `yaml:"MachineType"`
-		DiskSize      int32             `yaml:"DiskSize"`
-		Tags          []string          `yaml:"Tags"`
-		Labels        map[string]string `yaml:"Labels"`
-		SpotInstance  bool              `yaml:"SpotInstance"`
-		Taints        []struct {
-			Effect string `yaml:"Effect"`
-			Key    string `yaml:"Key"`
-			Value  string `yaml:"Value"`
-		} `yaml:"Taints"`
-		ScalingConfig struct {
-			DesiredSize int32 `yaml:"DesiredSize"`
-			MinSize     int32 `yaml:"MinSize"`
-			MaxSize     int32 `yaml:"MaxSize"`
-		} `yaml:"ScalingConfig"`
-	} `yaml:"Nodes"`
+	Nodes []NodePoolConfig `yaml:"Nodes"`
 }

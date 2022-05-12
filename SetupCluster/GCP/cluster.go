@@ -205,6 +205,7 @@ func getMonitoringConfig(c *Cluster) *containerpb.MonitoringConfig {
 
 func (g *GcpClient) DeleteCluster(ctx context.Context) error {
 	cluster, err := g.GetCluster(ctx)
+	name := "projects/" + g.Cluster.Cloud.Project + "/locations/" + g.Cluster.Cloud.Region + "/clusters/" + g.Cluster.Cloud.Cluster
 	if err != nil {
 		return err
 	}
@@ -214,7 +215,7 @@ func (g *GcpClient) DeleteCluster(ctx context.Context) error {
 	}
 
 	req := &containerpb.DeleteClusterRequest{
-		Name: cluster.SelfLink,
+		Name: name,
 	}
 
 	op, err := g.ClusterManagerClient.DeleteCluster(ctx, req)

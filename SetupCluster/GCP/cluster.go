@@ -28,9 +28,9 @@ func (g *GcpClient) ApplyCluster(ctx context.Context, vpc *computepb.Network) er
 		return nil
 	}
 
-	fmt.Println("cluster already exists, checkign for changes")
+	fmt.Println("cluster already exists, checking for changes")
 
-	return g.UpdateCluster(cl)
+	return g.UpdateCluster(ctx, cl)
 }
 
 func (g *GcpClient) GetCluster(ctx context.Context) (*containerpb.Cluster, error) {

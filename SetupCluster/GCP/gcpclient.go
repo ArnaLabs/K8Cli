@@ -97,9 +97,9 @@ func (g *GcpClient) Delete() error {
 		return err
 	}
 
-	if err := g.DeleteNetwork(ctx); err != nil {
-		return err
-	}
+	// if err := g.DeleteNetwork(ctx); err != nil {
+	// return err
+	// }
 
 	return nil
 }

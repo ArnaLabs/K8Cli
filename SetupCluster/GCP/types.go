@@ -31,6 +31,7 @@ type Cluster struct {
 		// Doesn't allow deleting existing subnets during updation
 		Subnets               map[string]string `yaml:"Subnets"`
 		AutoCreateSubnetworks *bool             `yaml:"AutoCreateSubnetworks"`
+		ExistingVPC           string            `yaml:"ExistingVPC"`
 	} `yaml:"VPC"`
 	Master struct {
 		KubernetesVersion string `yaml:"KubernetesVersion"`

@@ -12,6 +12,9 @@ func (g *GcpClient) ApplyNetwork(ctx context.Context) (*computepb.Network, error
 	fmt.Println("Applying VPC Network")
 
 	name := g.Cluster.Cloud.Cluster + "-vpc"
+	if g.Cluster.VPC.ExistingVPC != "" {
+		name = g.Cluster.VPC.ExistingVPC
+	}
 
 	vpc, err := g.GetVPC(ctx, name)
 	if err != nil {

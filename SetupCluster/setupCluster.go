@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	ekssetup "github.com/ArnaLabs/K8Cli/SetupCluster/EKS"
+	gcpsetup "github.com/ArnaLabs/K8Cli/SetupCluster/GCP"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
@@ -42,8 +43,10 @@ func CheckCluster(sf string, f string, context string, clustertype string, clust
 	}
 
 	filegreenConfigYml, err := ioutil.ReadFile(clustergreenfile)
-	if err != nil {
-		fmt.Println(err)
+	if os.IsNotExist(err) {
+		fmt.Printf("Green cluster config doesn't exist, ignoring\n")
+	} else if err != nil {
+		fmt.Printf("Unable to open green config file, err : %v", err)
 	}
 
 	//err = yaml.Unmarshal([]byte(filegreenConfigYml), &cloud)
@@ -66,12 +69,66 @@ func CheckCluster(sf string, f string, context string, clustertype string, clust
 		}
 	}
 
+	if cloud.Cloud.Name == "GCP" {
+		fmt.Printf("\nSetting up GCP Cluster\n")
+
+		gcpSetupClient, err := gcpsetup.FromYaml(fileConfigYml)
+
+		if err != nil {
+			fmt.Printf("Unable to create gcp cluster client, err : %v", err)
+			// Exit and return error code 1
+			os.Exit(1)
+		}
+
+		if err := gcpSetupClient.Apply(); err != nil {
+			fmt.Printf("Unable to apply gke cluster, err : %v", err)
+			// Exit and return error code 1
+			os.Exit(1)
+		}
+
+	}
+
 	//End EKS Cluster elements session values
 	//if cloud.Cloud.Name == "Azure" {
 	//	fmt.Printf("Cloud: %#v\n", cloud.Cloud.Name)
 	//	fmt.Printf("Region: %#v\n", cloud.Cloud.Region)
 	//	fmt.Println("Setting up AKS Cluster")
 	//}
+}
+
+// DeleteCluster deletes the given cluster
+func DeleteCluster(file string) {
+	var cloud CldDetails
+
+	fileConfigYml, err := ioutil.ReadFile(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = yaml.Unmarshal([]byte(fileConfigYml), &cloud)
+	if err != nil {
+		panic(err)
+	}
+
+	if cloud.Cloud.Name == "GCP" {
+		fmt.Printf("\nDeleting GCP Cluster\n")
+
+		gcpSetupClient, err := gcpsetup.FromYaml(fileConfigYml)
+
+		if err != nil {
+			fmt.Printf("Unable to create gcp cluster client, err : %v", err)
+			// Exit and return error code 1
+			os.Exit(1)
+		}
+
+		if err := gcpSetupClient.Delete(); err != nil {
+			fmt.Printf("Unable to delete gke cluster, err : %v", err)
+			// Exit and return error code 1
+			os.Exit(1)
+		}
+
+	}
+
 }
 
 func failOnError(cmd *exec.Cmd) {
@@ -87,7 +144,7 @@ func failOnError(cmd *exec.Cmd) {
 	}
 }
 
-func UpdateKubeConfig(f string, context string)  {
+func UpdateKubeConfig(f string, context string) {
 	file := f
 	var cloud CldDetails
 
@@ -112,7 +169,7 @@ func UpdateKubeConfig(f string, context string)  {
 
 func updateKubeConfigByProfile(profile string, context string) {
 	os.Setenv("AWS_PROFILE", profile)
-	cmd := exec.Command("aws",  "eks", "update-kubeconfig", "--name", context, "--alias", context)
+	cmd := exec.Command("aws", "eks", "update-kubeconfig", "--name", context, "--alias", context)
 	failOnError(cmd)
 }
 
@@ -120,6 +177,6 @@ func updateKubeConfigByKeys(AccessKey string, SecretKay string, Region string, c
 	os.Setenv("AWS_ACCESS_KEY_ID", AccessKey)
 	os.Setenv("AWS_SECRET_ACCESS_KEY", SecretKay)
 	os.Setenv("AWS_DEFAULT_REGION", Region)
-	cmd := exec.Command("aws",  "eks", "update-kubeconfig", "--name", context, "--alias", context)
+	cmd := exec.Command("aws", "eks", "update-kubeconfig", "--name", context, "--alias", context)
 	failOnError(cmd)
 }

@@ -1,0 +1,52 @@
+Cloud:
+  Name: GCP
+  Project: project_id_here
+  Region: us-east1
+  Cluster: gcp-test-cluster4
+  # Optional, will use application default creds instead
+  # CredentialsPath: /path/to/serviceaccount/creds
+
+VPC:
+  AutoCreateSubnetworks: false
+  # Optional if AutoCreateSubnetworks is true
+  Subnets:
+    Subnet01Block: 10.1.1.0/24
+    Subnet02Block: 10.1.2.0/24
+    Subnet03Block: 10.1.8.0/24
+
+Cluster:
+  # Whether nodes have public ips
+  PrivateNodes: false
+  Labels:
+    owner: "j"
+    purpose: "testing purpose"
+
+Master:
+  KubernetesVersion: "1.21"
+  SubnetId: Subnet01Block
+  # Mandatory for private nodes cluster
+  MasterCidr: 10.1.3.0/24
+
+Nodes:
+  - NodegroupName: nodegroup-1
+    MachineType: e2-medium
+    DiskSize: 30
+    Labels:
+      Nodetype: test
+      NodeVale: "test2"
+    Tags:
+    - tag1
+    - tag2
+    SpotInstance: false # Preemptible instances in gcp
+    Taints:
+      - Effect: NO_SCHEDULE
+        Key:    "2"
+        Value:  "3"
+      - Effect: NO_SCHEDULE
+        Key:    "b"
+        Value:  "c"
+    ScalingConfig:
+      # DesiredSize is mandatory, others are optional
+      DesiredSize: 1
+      MaxSize: 4
+      MinSize: 1

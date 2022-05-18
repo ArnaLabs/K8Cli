@@ -18,3 +18,5 @@
 k8-cloud
 K8Cli/*
 templates/*
+
+bin/

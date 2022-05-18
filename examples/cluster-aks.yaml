@@ -1,0 +1,47 @@
+---
+Cloud:
+  Name: AKS
+  ClientId: xxxx
+  SecretAccKey: xxxx
+  TenantId: xxxx
+  SubscriptionId: xxxx
+  Region: us-east-2
+  Cluster: test-aks
+
+VPC:
+  VpcBlock: 10.1.0.0/16
+  Subnets: # Individual subnets can be assigned to nodegroups, podcidr, service cidr etc
+    Subnet01Block: 10.1.1.0/24
+    Subnet02Block: 10.1.2.0/24
+
+Master:
+  KubernetesVersion: 1.20
+  PublicAccess: true
+  SubnetId: Subnet01Block
+  KubernetesServiceCIDR: 10.1.2.0/24
+
+Nodes: 
+  - NodegroupName: nodegroup-1
+    SubnetId: Subnet02Block
+    VmSize: StandardD2V2 # Azure VM size
+    DiskSize: 30G
+    ScalingConfig:
+      DesiredSize: 4
+      MaxSize: 4
+      MinSize: 4
+    Labels:
+      Nodetype: test
+      NodeVale: "test2"
+    Taints:
+      - Effect: NO_SCHEDULE
+        Key:    "2"
+        Value:  "3"
+      - Effect: NO_SCHEDULE
+        Key:    "b"
+        Value:  "c"
+    Tags:
+      tag1: value1
+      tag2: value2
+
+    RemoteAccess:
+     SSHKey: "~/.ssh/id_rsa.pub"
